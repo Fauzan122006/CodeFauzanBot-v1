@@ -11,6 +11,9 @@ module.exports = {
                 .setRequired(true))
         .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
     async execute(interaction) {
+        // Defer reply untuk proses yang mungkin lama
+        await interaction.deferReply();
+
         const channel = interaction.options.getChannel('channel');
         const guildId = interaction.guildId;
 
@@ -18,6 +21,7 @@ module.exports = {
         config[guildId].levelChannel = channel.id;
         saveConfig();
 
-        await interaction.reply(`Level-up channel set to ${channel}!`);
+        // Gunakan editReply karena sudah defer
+        await interaction.editReply(`Level-up channel set to ${channel}!`);
     },
 };

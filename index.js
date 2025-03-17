@@ -1,4 +1,4 @@
-const { Client, IntentsBitField } = require('discord.js');
+const { Client, IntentsBitField, REST, Routes, Collection } = require('discord.js');
 const fs = require('fs');
 const path = require('path');
 const { config } = require('./utils/saveData');
@@ -17,6 +17,21 @@ const client = new Client({
     ]
 });
 
+// Collection untuk menyimpan command
+client.commands = new Collection();
+
+// Load semua command dari folder commands
+const commandsPath = path.join(__dirname, 'commands');
+const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
+
+const commands = [];
+for (const file of commandFiles) {
+    const filePath = path.join(commandsPath, file);
+    const command = require(filePath);
+    client.commands.set(command.data.name, command);
+    commands.push(command.data.toJSON());
+}
+
 // Load semua event dari folder events
 const eventFiles = fs.readdirSync(path.join(__dirname, 'events')).filter(file => file.endsWith('.js'));
 
@@ -29,6 +44,42 @@ for (const file of eventFiles) {
     }
 }
 
+// Registrasi slash commands saat bot siap
+client.once('ready', async () => {
+    console.log(`Logged in as ${client.user.tag}`);
+
+    try {
+        const rest = new REST({ version: '10' }).setToken(config.clienttoken);
+        await rest.put(
+            Routes.applicationCommands(config.clientid),
+            { body: commands }
+        );
+        console.log('Successfully registered application commands.');
+    } catch (error) {
+        console.error('Error registering commands:', error);
+    }
+});
+
+// Handle interaction (slash command)
+client.on('interactionCreate', async interaction => {
+    if (!interaction.isCommand()) return;
+
+    const command = client.commands.get(interaction.commandName);
+    if (!command) return;
+
+    try {
+        // Eksekusi command
+        await command.execute(interaction);
+    } catch (error) {
+        console.error('Error executing command:', error);
+        if (!interaction.replied && !interaction.deferred) {
+            await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
+        } else if (interaction.deferred) {
+            await interaction.editReply({ content: 'There was an error while executing this command!', ephemeral: true });
+        }
+    }
+});
+
 // Error handling untuk login
 if (!config.clienttoken || config.clienttoken === "YOUR_BOT_TOKEN") {
     console.error("Error: Bot token is missing or not set in botconfig/config.json. Please set a valid token.");
@@ -38,4 +89,9 @@ if (!config.clienttoken || config.clienttoken === "YOUR_BOT_TOKEN") {
 client.login(config.clienttoken).catch(error => {
     console.error('Error logging in:', error);
     process.exit(1);
+});
+
+// Handle unhandled promise rejections
+process.on('unhandledRejection', (reason, promise) => {
+    console.error('Unhandled Rejection at:', promise, 'reason:', reason);
 });

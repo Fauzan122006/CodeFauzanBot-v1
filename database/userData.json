@@ -1,8 +1,14 @@
 {
   "1037250535855759401": {
-    "xp": 235,
+    "xp": 245,
     "level": 1,
-    "achievements": [],
-    "voiceTime": 0
+    "messageCount": 1000,
+    "achievements": [
+      "first-step",
+      "pro-typer"
+    ],
+    "activeTime": 277,
+    "voiceTime": 0,
+    "lastActive": 1742194424736
   }
 }

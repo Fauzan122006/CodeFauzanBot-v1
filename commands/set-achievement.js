@@ -11,6 +11,9 @@ module.exports = {
                 .setRequired(true))
         .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
     async execute(interaction) {
+        // Defer reply untuk proses yang mungkin lama
+        await interaction.deferReply();
+
         const channel = interaction.options.getChannel('channel');
         const guildId = interaction.guildId;
 
@@ -18,6 +21,7 @@ module.exports = {
         config[guildId].achievementChannel = channel.id;
         saveConfig();
 
-        await interaction.reply(`Achievement channel set to ${channel}!`);
+        // Gunakan editReply karena sudah defer
+        await interaction.editReply(`Achievement channel set to ${channel}!`);
     },
 };
