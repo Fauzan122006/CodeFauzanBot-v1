@@ -60,26 +60,6 @@ client.once('ready', async () => {
     }
 });
 
-// Handle interaction (slash command)
-client.on('interactionCreate', async interaction => {
-    if (!interaction.isCommand()) return;
-
-    const command = client.commands.get(interaction.commandName);
-    if (!command) return;
-
-    try {
-        // Eksekusi command
-        await command.execute(interaction);
-    } catch (error) {
-        console.error('Error executing command:', error);
-        if (!interaction.replied && !interaction.deferred) {
-            await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
-        } else if (interaction.deferred) {
-            await interaction.editReply({ content: 'There was an error while executing this command!', ephemeral: true });
-        }
-    }
-});
-
 // Error handling untuk login
 if (!config.clienttoken || config.clienttoken === "YOUR_BOT_TOKEN") {
     console.error("Error: Bot token is missing or not set in botconfig/config.json. Please set a valid token.");

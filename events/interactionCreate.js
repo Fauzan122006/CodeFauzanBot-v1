@@ -4,10 +4,10 @@ const { config } = require('../utils/saveData');
 
 module.exports = {
     name: 'interactionCreate',
-    async execute(interaction) {
-        try {
-            // Tangani Slash Command
-            if (interaction.isCommand()) {
+    async execute(interaction, client) {
+        // Tangani Slash Command
+        if (interaction.isCommand()) {
+            try {
                 const commandFiles = fs.readdirSync(path.join(__dirname, '../commands')).filter(file => file.endsWith('.js'));
                 const commandName = interaction.commandName;
 
@@ -18,67 +18,150 @@ module.exports = {
                         break;
                     }
                 }
+            } catch (error) {
+                console.error('Error handling slash command:', error);
+                // Hanya balas kalau interaksi belum diakui sama sekali
+                if (!interaction.replied && !interaction.deferred) {
+                    await interaction.reply({
+                        content: 'Terjadi error saat memproses command. Silakan coba lagi atau hubungi developer.',
+                        flags: 64
+                    }).catch(() => {});
+                } else if (interaction.deferred && !interaction.replied) {
+                    await interaction.editReply({
+                        content: 'Terjadi error saat memproses command. Silakan coba lagi atau hubungi developer.'
+                    }).catch(() => {});
+                }
             }
+            return;
+        }
 
-            // Tangani Select Menu
-            if (interaction.isStringSelectMenu()) {
+        // Tangani Select Menu
+        if (interaction.isStringSelectMenu()) {
+            try {
                 const customId = interaction.customId;
                 if (customId.startsWith('select-role-')) {
-                    const selectedRoleName = interaction.values[0]; // Role yang dipilih user
+                    await interaction.deferReply({ flags: 64 });
 
-                    // Cari role di config berdasarkan nama
+                    const selectedRoleName = interaction.values[0];
                     const roleData = config.rolesList.find(role => role.name === selectedRoleName);
                     if (!roleData) {
-                        await interaction.reply({ content: 'Role tidak ditemukan di konfigurasi!', ephemeral: true });
+                        await interaction.editReply({ content: 'Role tidak ditemukan di konfigurasi!' });
                         return;
                     }
 
-                    // Cari role di server berdasarkan nama
                     let role = interaction.guild.roles.cache.find(r => r.name.toLowerCase() === selectedRoleName.toLowerCase());
                     if (!role) {
                         try {
-                            // Buat role otomatis kalau belum ada
                             role = await interaction.guild.roles.create({
                                 name: selectedRoleName,
                                 reason: 'Role dibuat otomatis oleh bot untuk fitur select roles',
-                                color: 0, // Gunakan 0 untuk warna default (abu-abu)
-                                permissions: [] // Kosongkan permission kalau tidak perlu
+                                color: 0,
+                                permissions: []
                             });
-                            await interaction.reply({ content: `Role **${selectedRoleName}** telah dibuat otomatis di server!`, ephemeral: true });
+                            await interaction.editReply({ content: `Role **${selectedRoleName}** telah dibuat otomatis di server!` });
                         } catch (error) {
-                            await interaction.reply({ content: `Gagal membuat role **${selectedRoleName}**: ${error.message}`, ephemeral: true });
+                            await interaction.editReply({ content: `Gagal membuat role **${selectedRoleName}**: ${error.message}` });
                             return;
                         }
                     }
 
-                    // Cek apakah bot punya permission untuk manage roles
                     if (!interaction.guild.members.me.permissions.has('ManageRoles')) {
-                        await interaction.reply({ content: 'Bot tidak punya permission untuk manage roles! Berikan permission Manage Roles ke bot.', ephemeral: true });
+                        await interaction.editReply({ content: 'Bot tidak punya permission untuk manage roles! Berikan permission Manage Roles ke bot.' });
                         return;
                     }
 
-                    // Cek apakah role bot lebih tinggi dari role yang ingin diberikan
                     const botHighestRole = interaction.guild.members.me.roles.highest;
                     if (botHighestRole.comparePositionTo(role) <= 0) {
-                        await interaction.reply({ content: `Bot tidak bisa memberikan role **${selectedRoleName}** karena role bot lebih rendah dari role tersebut. Pindahkan role bot ke posisi lebih tinggi di daftar roles.`, ephemeral: true });
+                        await interaction.editReply({
+                            content: `Bot tidak bisa memberikan role **${selectedRoleName}** karena role bot lebih rendah dari role tersebut. Pindahkan role bot ke posisi lebih tinggi di daftar roles.`
+                        });
                         return;
                     }
 
-                    // Tambah atau hapus role dari user
                     const member = interaction.member;
                     if (member.roles.cache.has(role.id)) {
                         await member.roles.remove(role);
-                        await interaction.reply({ content: `Role **${selectedRoleName}** telah dihapus dari kamu!`, ephemeral: true });
+                        await interaction.editReply({ content: `Role **${selectedRoleName}** telah dihapus dari kamu!` });
                     } else {
                         await member.roles.add(role);
-                        await interaction.reply({ content: `Role **${selectedRoleName}** telah ditambahkan ke kamu!`, ephemeral: true });
+                        await interaction.editReply({ content: `Role **${selectedRoleName}** telah ditambahkan ke kamu!` });
                     }
                 }
+            } catch (error) {
+                console.error('Error handling select menu:', error);
+                if (!interaction.replied && !interaction.deferred) {
+                    await interaction.reply({
+                        content: 'Terjadi error saat memproses select menu. Silakan coba lagi atau hubungi developer.',
+                        flags: 64
+                    }).catch(() => {});
+                } else if (interaction.deferred && !interaction.replied) {
+                    await interaction.editReply({
+                        content: 'Terjadi error saat memproses select menu. Silakan coba lagi atau hubungi developer.'
+                    }).catch(() => {});
+                }
             }
-        } catch (error) {
-            console.error('Error handling interaction:', error);
-            if (!interaction.replied) {
-                await interaction.reply({ content: 'Terjadi error saat memproses interaksi. Silakan coba lagi atau hubungi developer.', ephemeral: true }).catch(() => {});
+            return;
+        }
+
+        // Tangani Tombol "Accept" untuk Rules
+        if (interaction.isButton()) {
+            try {
+                if (interaction.customId === 'accept_rules') {
+                    await interaction.deferReply({ flags: 64 });
+
+                    const guildId = interaction.guild.id;
+                    const member = interaction.member;
+
+                    const rulesRoleId = config[guildId]?.rulesRole;
+                    if (!rulesRoleId) {
+                        return interaction.editReply({
+                            content: 'Role untuk rules belum diatur! Silakan gunakan command /set-rules untuk mengatur ulang.'
+                        });
+                    }
+
+                    const rulesRole = interaction.guild.roles.cache.get(rulesRoleId);
+                    if (!rulesRole) {
+                        return interaction.editReply({
+                            content: 'Role untuk rules tidak ditemukan! Silakan gunakan command /set-rules untuk mengatur ulang.'
+                        });
+                    }
+
+                    if (member.roles.cache.has(rulesRoleId)) {
+                        return interaction.editReply({
+                            content: 'Kamu sudah menerima rules dan mendapatkan role!'
+                        });
+                    }
+
+                    if (!interaction.guild.members.me.permissions.has('ManageRoles')) {
+                        return interaction.editReply({
+                            content: 'Bot tidak punya permission untuk manage roles! Berikan permission Manage Roles ke bot.'
+                        });
+                    }
+
+                    const botHighestRole = interaction.guild.members.me.roles.highest;
+                    if (botHighestRole.comparePositionTo(rulesRole) <= 0) {
+                        return interaction.editReply({
+                            content: `Bot tidak bisa memberikan role **${rulesRole.name}** karena role bot lebih rendah dari role tersebut. Pindahkan role bot ke posisi lebih tinggi di daftar roles.`
+                        });
+                    }
+
+                    await member.roles.add(rulesRole);
+                    await interaction.editReply({
+                        content: `Selamat! Kamu telah menerima rules dan mendapatkan role ${rulesRole.name}!`
+                    });
+                }
+            } catch (error) {
+                console.error('Error handling button interaction:', error);
+                if (!interaction.replied && !interaction.deferred) {
+                    await interaction.reply({
+                        content: 'Terjadi error saat memproses tombol. Silakan coba lagi atau hubungi developer.',
+                        flags: 64
+                    }).catch(() => {});
+                } else if (interaction.deferred && !interaction.replied) {
+                    await interaction.editReply({
+                        content: 'Terjadi error saat memproses tombol. Silakan coba lagi atau hubungi developer.'
+                    }).catch(() => {});
+                }
             }
         }
     },
