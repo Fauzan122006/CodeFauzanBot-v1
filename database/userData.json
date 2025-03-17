@@ -10,5 +10,23 @@
     "activeTime": 277,
     "voiceTime": 0,
     "lastActive": 1742194424736
+  },
+  "1219307231787483217": {
+    "xp": 0,
+    "level": 0,
+    "messageCount": 0,
+    "achievements": [],
+    "activeTime": 0,
+    "voiceTime": 0,
+    "voiceJoinTime": 1742199960064
+  },
+  "836333707680809041": {
+    "xp": 0,
+    "level": 0,
+    "messageCount": 0,
+    "achievements": [],
+    "activeTime": 0,
+    "voiceTime": 0,
+    "voiceJoinTime": null
   }
 }

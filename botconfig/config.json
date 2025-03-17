@@ -1,5 +1,5 @@
 {
-  "clienttoken": "PUT_YOUR_TOKEN",
+  "clienttoken": "BOT_TOKEN",
   "Note_Token": "Put Your Bot Token Above (If using replit, make a secret 'clienttoken' and keep this empty)",
   "clientname": "CodeFauzan",
   "clientid": "1196407403881709589",
@@ -28,6 +28,7 @@
   "levelUpImage": "https://s6.gifyu.com/images/bbXYO.gif",
   "welcomeImage": "https://s6.gifyu.com/images/bbXYO.gif",
   "rolesImage": "https://example.com/roles-background.gif",
+  "rulesBanner": "https://s6.gifyu.com/images/bz2Gc.gif",
   "achievements": {
     "pro-typer": {
       "name": "Pro Typer",
@@ -333,6 +334,8 @@
     "levelChannel": "1015258349719277618",
     "achievementChannel": "1015258349719277618",
     "welcomeChannel": "997668979021721644",
-    "rolesChannel": "1015205691788640296"
+    "rolesChannel": "1015205691788640296",
+    "rulesChannel": "997672048463720448",
+    "rulesRole": "1015584843641397248"
   }
 }

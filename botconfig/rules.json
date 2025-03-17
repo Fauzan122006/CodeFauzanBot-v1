@@ -1,0 +1,68 @@
+{
+    "defaultRules": {
+        "categories": [
+            {
+                "title": "Welcome",
+                "content": "Welcome to **{guildName}**!\nThis is the beginning of this server."
+            },
+            {
+                "title": "A. Respect satu sama lain",
+                "content": "Tidak ada toleransi untuk tindakan pelecehan, diskriminasi, intimidasi, rasisme, mockery, doxxing, dan ujaran kebencian dalam bentuk apapun. Kita adalah satu komunitas dan karena itu, harus memperlakukan satu sama lain dengan hormat."
+            },
+            {
+                "title": "B. Tata Krama",
+                "content": "• Dilarang menggunakan kata atau frasa yang tidak senonoh, atau tidak pada tempatnya di text-channel atau voice-channel dalam bahasa apapun.\n• Dilarang melakukan tindakan diskriminasi terhadap member lain.\n• Gunakan bahasa yang sopan dan hindari bahasa kasar kecuali dalam konteks yang diperbolehkan (misalnya channel tertentu)."
+            },
+            {
+                "title": "C. Konten dan Perilaku",
+                "content": "• Dilarang mengirimkan konten NSFW (Not Safe For Work) seperti gambar, video, atau tautan tanpa izin dari admin.\n• Dilarang memposting iklan, promosi, atau tautan afiliasi tanpa persetujuan dari staf.\n• Dilarang mengirimkan spam, pesan berulang, atau mention massal tanpa alasan yang jelas.\n• Jaga privasi member lain; jangan meminta informasi pribadi seperti alamat atau nomor telepon."
+            },
+            {
+                "title": "D. Penggunaan Channel",
+                "content": "• Gunakan channel sesuai dengan fungsinya (misalnya #general untuk chat biasa, #bot untuk perintah bot).\n• Dilarang mengubah topik diskusi secara tiba-tiba di channel yang sudah memiliki tema tertentu.\n• Jika ada channel voice, pastikan suara tidak terlalu keras atau mengganggu member lain."
+            },
+            {
+                "title": "E. Staf dan Moderasi",
+                "content": "• Hormati keputusan staf dan admin; jika ada masalah, laporkan melalui DM atau channel khusus (misalnya #report).\n• Dilarang berdebat dengan staf di public channel; gunakan DM untuk diskusi pribadi.\n• Sanksi seperti mute, kick, atau ban dapat diberikan jika melanggar aturan, tergantung tingkat pelanggaran."
+            },
+            {
+                "title": "F. Keamanan dan Bot",
+                "content": "• Dilarang menggunakan bot atau script untuk mengganggu server (misalnya spam atau flood).\n• Laporkan bug atau perilaku mencurigakan kepada staf segera melalui channel #report.\n• Jangan membagikan token bot atau informasi sensitif lainnya di server."
+            }
+        ]
+    },
+    "guildSpecific": {
+        "997668978103164978": {
+            "categories": [
+                {
+                    "title": "Welcome",
+                    "content": "Welcome to **{guildName}**!\nThis is the beginning of this server."
+                },
+                {
+                    "title": "A. Respect satu sama lain",
+                    "content": "Tidak ada toleransi untuk tindakan pelecehan, diskriminasi, intimidasi, rasisme, mockery, doxxing, dan ujaran kebencian dalam bentuk apapun. Kita adalah satu komunitas dan karena itu, harus memperlakukan satu sama lain dengan hormat."
+                },
+                {
+                    "title": "B. Tata Krama",
+                    "content": "• Dilarang menggunakan kata atau frasa yang tidak senonoh, atau tidak pada tempatnya di text-channel atau voice-channel dalam bahasa apapun.\n• Dilarang melakukan tindakan diskriminasi terhadap member lain.\n• Gunakan bahasa yang sopan dan hindari bahasa kasar kecuali dalam konteks yang diperbolehkan (misalnya channel tertentu)."
+                },
+                {
+                    "title": "C. Konten dan Perilaku",
+                    "content": "• Dilarang mengirimkan konten NSFW (Not Safe For Work) seperti gambar, video, atau tautan tanpa izin dari admin.\n• Dilarang memposting iklan, promosi, atau tautan afiliasi tanpa persetujuan dari staf.\n• Dilarang mengirimkan spam, pesan berulang, atau mention massal tanpa alasan yang jelas.\n• Jaga privasi member lain; jangan meminta informasi pribadi seperti alamat atau nomor telepon."
+                },
+                {
+                    "title": "D. Penggunaan Channel",
+                    "content": "• Gunakan channel sesuai dengan fungsinya (misalnya #general untuk chat biasa, #bot untuk perintah bot).\n• Dilarang mengubah topik diskusi secara tiba-tiba di channel yang sudah memiliki tema tertentu.\n• Jika ada channel voice, pastikan suara tidak terlalu keras atau mengganggu member lain."
+                },
+                {
+                    "title": "E. Staf dan Moderasi",
+                    "content": "• Hormati keputusan staf dan admin; jika ada masalah, laporkan melalui DM atau channel khusus (misalnya #report).\n• Dilarang berdebat dengan staf di public channel; gunakan DM untuk diskusi pribadi.\n• Sanksi seperti mute, kick, atau ban dapat diberikan jika melanggar aturan, tergantung tingkat pelanggaran."
+                },
+                {
+                    "title": "F. Keamanan dan Bot",
+                    "content": "• Dilarang menggunakan bot atau script untuk mengganggu server (misalnya spam atau flood).\n• Laporkan bug atau perilaku mencurigakan kepada staf segera melalui channel #report.\n• Jangan membagikan token bot atau informasi sensitif lainnya di server."
+                }
+            ]
+        }
+    }
+}
