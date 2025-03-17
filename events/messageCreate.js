@@ -15,6 +15,17 @@ module.exports = {
         // Tambah message count
         userData[userId].messageCount = (userData[userId].messageCount || 0) + 1;
 
+        // Update active time
+        if (!userData[userId].lastActive) userData[userId].lastActive = Date.now();
+        const timeSinceLastActive = Math.floor((Date.now() - userData[userId].lastActive) / 1000);
+
+        if (timeSinceLastActive > 86400) {
+            userData[userId].activeTime = 0;
+        } else {
+            userData[userId].activeTime = (userData[userId].activeTime || 0) + timeSinceLastActive;
+        }
+        userData[userId].lastActive = Date.now();
+
         // Tambah XP (random 50-150 XP per pesan)
         const xpGain = Math.floor(Math.random() * 101) + 50;
         userData[userId].xp += xpGain;
@@ -35,8 +46,8 @@ module.exports = {
                 const nextLevelXP = getRequiredXP(userData[userId].level);
                 const rank = getRank(userData[userId].level);
 
-                // Buat gambar level up
-                const canvas = createCanvas(700, 250);
+                // Buat gambar level up dengan ukuran lebih kecil
+                const canvas = createCanvas(500, 180); // Ukuran baru
                 const ctx = canvas.getContext('2d');
 
                 // Load background dari config.json
@@ -49,12 +60,12 @@ module.exports = {
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
 
                 // Load profile picture user
-                const avatarUrl = user.displayAvatarURL({ extension: 'png', size: 128 });
+                const avatarUrl = user.displayAvatarURL({ extension: 'png', size: 96 }); // Kecilin avatar
                 const avatar = await loadImage(avatarUrl);
 
                 // Gambar profile picture dalam lingkaran
-                const avatarSize = 128;
-                const avatarX = 50;
+                const avatarSize = 96; // Kecilin avatar
+                const avatarX = 40;
                 const avatarY = (canvas.height - avatarSize) / 2;
                 ctx.save();
                 ctx.beginPath();
@@ -66,31 +77,40 @@ module.exports = {
 
                 // Tambah border lingkaran
                 ctx.strokeStyle = '#FFFFFF';
-                ctx.lineWidth = 4;
+                ctx.lineWidth = 3; // Kecilin border
                 ctx.beginPath();
                 ctx.arc(avatarX + avatarSize / 2, avatarY + avatarSize / 2, avatarSize / 2, 0, Math.PI * 2, true);
                 ctx.closePath();
                 ctx.stroke();
 
                 // Tambah teks level up
-                ctx.font = 'bold 36px Sans';
+                ctx.font = 'bold 28px Sans'; // Kecilin font
                 ctx.fillStyle = '#FFFFFF';
                 ctx.textAlign = 'left';
-                ctx.fillText(`Level Up! ${user.username}`, 200, canvas.height / 2 - 40);
+                ctx.fillText(`Level Up! ${user.username}`, 150, canvas.height / 2 - 30);
 
                 // Tambah teks level dan rank
-                ctx.font = '24px Sans';
+                ctx.font = '18px Sans'; // Kecilin font
                 ctx.fillStyle = '#FFFFFF';
-                ctx.fillText(`Level ${userData[userId].level}`, 200, canvas.height / 2);
-                ctx.fillText(`Rank #${rank}`, 200, canvas.height / 2 + 40);
+                ctx.fillText(`Level ${userData[userId].level}`, 150, canvas.height / 2 + 10);
+                ctx.fillText(`Rank #${rank}`, 150, canvas.height / 2 + 40);
 
                 // Tambah progress bar XP
+                const barWidth = 200; // Kecilin progress bar
+                const barHeight = 15; // Kecilin tinggi bar
+                const barX = 150;
+                const barY = canvas.height / 2 + 60;
                 const xpProgress = currentXP / nextLevelXP;
                 ctx.fillStyle = '#00BFFF';
-                ctx.fillRect(200, canvas.height / 2 + 70, xpProgress * 300, 20);
+                ctx.fillRect(barX, barY, xpProgress * barWidth, barHeight);
                 ctx.strokeStyle = '#FFFFFF';
-                ctx.strokeRect(200, canvas.height / 2 + 70, 300, 20);
-                ctx.fillText(`${currentXP}/${nextLevelXP} XP`, 200, canvas.height / 2 + 100);
+                ctx.strokeRect(barX, barY, barWidth, barHeight);
+
+                // Teks XP di kanan bar, warna putih, ukuran kecil
+                ctx.font = '10px Sans'; // Kecilin font
+                ctx.fillStyle = '#FFFFFF';
+                ctx.textAlign = 'right';
+                ctx.fillText(`${currentXP}/${nextLevelXP} XP`, barX + barWidth + 10, barY + 12); // Sesuaikan posisi
 
                 // Convert canvas ke buffer
                 const buffer = canvas.toBuffer('image/png');
@@ -119,22 +139,24 @@ module.exports = {
                         case 'chat-master':
                             if (userData[userId].messageCount >= 5000) unlocked = true;
                             break;
-                        case 'first-step':
-                            if (userData[userId].messageCount === 1) unlocked = true;
+                        case 'all-nighter':
+                            if (userData[userId].activeTime >= 86400) unlocked = true;
                             break;
-                        // Tambah logika untuk achievement lain (misalnya, voice time, active time)
+                        case 'voice-legend':
+                            if (userData[userId].voiceTime >= 36000) unlocked = true;
+                            break;
                     }
 
                     if (unlocked) {
                         userData[userId].achievements.push(key);
                         userData[userId].xp += achievement.xpReward;
 
-                        // Buat gambar achievement
-                        const canvas = createCanvas(600, 150); // Ukuran lebih kecil sesuai screenshot
+                        // Buat gambar achievement dengan ukuran lebih kecil
+                        const canvas = createCanvas(450, 120); // Ukuran baru
                         const ctx = canvas.getContext('2d');
 
-                        // Background polos (hitam seperti screenshot)
-                        ctx.fillStyle = '#2C2F33'; // Warna background Discord dark theme
+                        // Background polos
+                        ctx.fillStyle = '#2C2F33';
                         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
                         // Load ikon achievement
@@ -144,44 +166,45 @@ module.exports = {
                             icon = await loadImage(iconUrl);
                         } catch (error) {
                             console.error(`Gagal memuat ikon untuk achievement ${key}: ${error.message}`);
-                            icon = await loadImage('https://i.imgur.com/default-icon.png'); // Fallback ikon
+                            icon = await loadImage('https://i.imgur.com/default-icon.png');
                         }
 
                         // Gambar ikon achievement di kiri
-                        const iconSize = 64;
-                        const iconX = 20;
+                        const iconSize = 48; // Kecilin ikon
+                        const iconX = 15;
                         const iconY = (canvas.height - iconSize) / 2;
                         ctx.drawImage(icon, iconX, iconY, iconSize, iconSize);
 
-                        // Tambah teks
-                        ctx.textAlign = 'left';
-
                         // Teks "ACHIEVEMENT UNLOCKED!"
-                        ctx.font = 'bold 20px Sans';
-                        ctx.fillStyle = '#FFD700'; // Warna kuning seperti screenshot
-                        ctx.fillText('ACHIEVEMENT UNLOCKED!', iconX + iconSize + 20, 50);
+                        ctx.textAlign = 'left';
+                        ctx.font = 'bold 16px Sans'; // Kecilin font
+                        ctx.fillStyle = '#FFD700';
+                        ctx.fillText('ACHIEVEMENT UNLOCKED!', iconX + iconSize + 15, 40);
 
                         // Teks nama achievement
-                        ctx.font = 'bold 24px Sans';
+                        ctx.font = 'bold 18px Sans'; // Kecilin font
                         ctx.fillStyle = '#FFFFFF';
-                        ctx.fillText(achievement.name, iconX + iconSize + 20, 90);
+                        ctx.fillText(achievement.name, iconX + iconSize + 15, 70);
 
                         // Teks deskripsi achievement
-                        ctx.font = '16px Sans';
-                        ctx.fillStyle = '#B0B0B0'; // Abu-abu seperti screenshot
-                        ctx.fillText(achievement.description, iconX + iconSize + 20, 115);
+                        ctx.font = '12px Sans'; // Kecilin font
+                        ctx.fillStyle = '#B0B0B0';
+                        ctx.fillText(achievement.description, iconX + iconSize + 15, 90);
 
                         // Teks XP reward
-                        ctx.font = '16px Sans';
-                        ctx.fillStyle = '#00FF00'; // Hijau untuk XP
-                        ctx.fillText(`+${achievement.xpReward} XP`, iconX + iconSize + 20, 140);
+                        ctx.font = '12px Sans'; // Kecilin font
+                        ctx.fillStyle = '#00FF00';
+                        ctx.fillText(`+${achievement.xpReward} XP`, iconX + iconSize + 15, 110);
 
                         // Convert canvas ke buffer
                         const buffer = canvas.toBuffer('image/png');
                         const attachment = new AttachmentBuilder(buffer, { name: 'achievement-image.png' });
 
-                        // Kirim gambar
-                        await achievementChannel.send({ files: [attachment] });
+                        // Kirim pesan dengan mention user, lalu lampirkan gambar
+                        await achievementChannel.send({
+                            content: `Hey ${message.author.toString()}, ACHIEVEMENT UNLOCKED!`,
+                            files: [attachment]
+                        });
                     }
                 }
             }
