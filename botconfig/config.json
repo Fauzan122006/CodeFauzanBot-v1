@@ -1,5 +1,5 @@
 {
-  "clienttoken": "BOT_TOKEN",
+  "clienttoken": "PUT_YOUR_TOKEN",
   "Note_Token": "Put Your Bot Token Above (If using replit, make a secret 'clienttoken' and keep this empty)",
   "clientname": "CodeFauzan",
   "clientid": "1196407403881709589",
