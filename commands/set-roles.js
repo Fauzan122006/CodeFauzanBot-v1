@@ -11,13 +11,19 @@ module.exports = {
                 .setRequired(true))
         .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
     async execute(interaction) {
+        await interaction.deferReply({ ephemeral: true });
+
         const channel = interaction.options.getChannel('channel');
         const guildId = interaction.guildId;
+
+        if (!channel.permissionsFor(interaction.guild.members.me).has(['SendMessages', 'ViewChannel'])) {
+            return interaction.editReply({ content: 'Bot doesn\'t have permission to send messages in that channel!' });
+        }
 
         if (!config[guildId]) config[guildId] = {};
         config[guildId].rolesChannel = channel.id;
         saveConfig();
 
-        await interaction.reply(`Roles channel set to ${channel}!`);
+        await interaction.editReply(`Roles channel set to ${channel}!`);
     },
 };

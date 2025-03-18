@@ -17,16 +17,26 @@
     "messageCount": 0,
     "achievements": [],
     "activeTime": 0,
-    "voiceTime": 0,
-    "voiceJoinTime": 1742199960064
+    "voiceTime": 37678,
+    "voiceJoinTime": null
   },
   "836333707680809041": {
+    "xp": 60,
+    "level": 1,
+    "messageCount": 1,
+    "achievements": [],
+    "activeTime": 0,
+    "voiceTime": 31707,
+    "voiceJoinTime": null,
+    "lastActive": 1742222184223
+  },
+  "917778861469626428": {
     "xp": 0,
     "level": 0,
     "messageCount": 0,
     "achievements": [],
     "activeTime": 0,
     "voiceTime": 0,
-    "voiceJoinTime": null
+    "voiceJoinTime": 1742212906232
   }
 }
