@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, PermissionFlagsBits, EmbedBuilder, StringSelectMenuBuilder, ActionRowBuilder } = require('discord.js');
-const { config } = require('../utils/saveData');
+const { config, roleList } = require('../utils/saveData');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -7,19 +7,31 @@ module.exports = {
         .setDescription('Send the roles embed to the specified channel')
         .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
     async execute(interaction) {
+        await interaction.deferReply({ ephemeral: true });
+
         const guildId = interaction.guildId;
         const serverConfig = config[guildId] || {};
         const rolesChannelId = serverConfig.rolesChannel || config.defaultChannels.rolesChannel || interaction.guild.channels.cache.find(ch => ch.name === 'get-role')?.id;
         const rolesChannel = interaction.guild.channels.cache.get(rolesChannelId);
 
         if (!rolesChannel) {
-            await interaction.reply({ content: 'Roles channel not set! Please set it using /set-roles.', ephemeral: true });
+            await interaction.editReply({ content: 'Roles channel not set! Please set it using /set-roles.' });
+            return;
+        }
+
+        if (!rolesChannel.permissionsFor(interaction.guild.members.me).has(['SendMessages', 'ViewChannel'])) {
+            await interaction.editReply({ content: 'Bot doesn\'t have permission to send messages in the roles channel!' });
+            return;
+        }
+
+        if (!roleList || roleList.length === 0) {
+            await interaction.editReply({ content: 'No roles found! Please check botconfig/roleList.json.' });
             return;
         }
 
         // Kelompokkan roles berdasarkan kategori
         const rolesByCategory = {};
-        config.rolesList.forEach(role => {
+        roleList.forEach(role => {
             if (!rolesByCategory[role.category]) {
                 rolesByCategory[role.category] = [];
             }
@@ -34,7 +46,7 @@ module.exports = {
                 .setTitle(category)
                 .setDescription(`Silahkan pilih roles sesuai dengan keinginan kamu untuk mengakses channel yang tersedia dibawah sini!\n\n${rolesText}`)
                 .setColor(config.colorthemecode || '#00BFFF')
-                .setImage(config.categoryImages[category] || config.rolesImage || ''); // Pastikan pakai config root
+                .setImage(config.categoryImages[category] || config.rolesImage || '');
 
             // Buat select menu untuk kategori ini
             const selectMenu = new StringSelectMenuBuilder()
@@ -55,6 +67,6 @@ module.exports = {
             messages.push(message);
         }
 
-        await interaction.reply({ content: `Roles embed sent to ${rolesChannel}!`, ephemeral: true });
+        await interaction.editReply({ content: `Roles embed sent to ${rolesChannel}!` });
     },
 };

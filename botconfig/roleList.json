@@ -1,0 +1,262 @@
+[
+    {
+        "name": "Nintendo Switch",
+        "emoji": "🪼",
+        "category": "Games Catalog"
+    },
+    {
+        "name": "Pokemon Center",
+        "emoji": "🦊",
+        "category": "Games Catalog"
+    },
+    {
+        "name": "Hoyoverse Genshin, Starrail & Zenless Zone Zero",
+        "emoji": "☃️",
+        "category": "Games Catalog"
+    },
+    {
+        "name": "Wuthering Waves & Punishing: Gray Raven",
+        "emoji": "🪽",
+        "category": "Games Catalog"
+    },
+    {
+        "name": "RPG",
+        "emoji": "🎃",
+        "category": "Games Catalog"
+    },
+    {
+        "name": "Tri Holy Trinity Fate Grand Order, Arknight - Blue Archive",
+        "emoji": "☀️",
+        "category": "Games Catalog"
+    },
+    {
+        "name": "Pixel Game",
+        "emoji": "✨",
+        "category": "Games Catalog"
+    },
+    {
+        "name": "Guardian Tales",
+        "emoji": "🐉",
+        "category": "Games Catalog"
+    },
+    {
+        "name": "Toram Online",
+        "emoji": "🔮",
+        "category": "Games Catalog"
+    },
+    {
+        "name": "Zombie Game",
+        "emoji": "🧟",
+        "category": "Games Catalog"
+    },
+    {
+        "name": "TCG Marvel Snap - Yugioh - Pokemon - Duel Master",
+        "emoji": "🃏",
+        "category": "Games Catalog"
+    },
+    {
+        "name": "Minecraft",
+        "emoji": "🪵",
+        "category": "Games Catalog"
+    },
+    {
+        "name": "Roblox",
+        "emoji": "🍄",
+        "category": "Games Catalog"
+    },
+    {
+        "name": "Growtopia",
+        "emoji": "🔒",
+        "category": "Games Catalog"
+    },
+    {
+        "name": "Football EAFC - EFootball",
+        "emoji": "⚽",
+        "category": "Games Catalog"
+    },
+    {
+        "name": "Basketball",
+        "emoji": "🏀",
+        "category": "Games Catalog"
+    },
+    {
+        "name": "Fighting Tekken - Street Fighter - Anime Fighter - King of Fighters - Brawlhalla",
+        "emoji": "🥊",
+        "category": "Games Catalog"
+    },
+    {
+        "name": "Rockstar GTA",
+        "emoji": "⭐",
+        "category": "Games Catalog"
+    },
+    {
+        "name": "Supercell",
+        "emoji": "🌟",
+        "category": "Games Catalog"
+    },
+    {
+        "name": "Rhythm Games",
+        "emoji": "🎹",
+        "category": "Games Catalog"
+    },
+    {
+        "name": "MOBA Mobile Legend - Honor of Kings - Dota",
+        "emoji": "🧙‍♂️",
+        "category": "PC & Mobile Games Catalog"
+    },
+    {
+        "name": "Auto Battler Magic Chess - Team Fight Tactics",
+        "emoji": "🐧",
+        "category": "PC & Mobile Games Catalog"
+    },
+    {
+        "name": "FPS PC Valorant - CSGO2 - Marvel Rival - Fortnite - Apex - Point Blank",
+        "emoji": "🔫",
+        "category": "PC & Mobile Games Catalog"
+    },
+    {
+        "name": "Battle Royale Mobile Free Fire - PUBG - CODM - Bloodstrike",
+        "emoji": "🦺",
+        "category": "PC & Mobile Games Catalog"
+    },
+    {
+        "name": "Cosplay",
+        "emoji": "🌸",
+        "category": "Hobbies Catalog"
+    },
+    {
+        "name": "Fashion Outfit - Sneaker - Handbag - Parfume - Skincare - Makeup",
+        "emoji": "👠",
+        "category": "Hobbies Catalog"
+    },
+    {
+        "name": "Dance",
+        "emoji": "🪩",
+        "category": "Hobbies Catalog"
+    },
+    {
+        "name": "Collectibles",
+        "emoji": "🗽",
+        "category": "Hobbies Catalog"
+    },
+    {
+        "name": "Otomotif",
+        "emoji": "🚙",
+        "category": "Hobbies Catalog"
+    },
+    {
+        "name": "Watch Enthusiast",
+        "emoji": "⌚",
+        "category": "Hobbies Catalog"
+    },
+    {
+        "name": "Pet Lover",
+        "emoji": "🐈",
+        "category": "Hobbies Catalog"
+    },
+    {
+        "name": "Traveling",
+        "emoji": "🌄",
+        "category": "Hobbies Catalog"
+    },
+    {
+        "name": "Olahraga Atletik - Gym - Bela Diri",
+        "emoji": "💪",
+        "category": "Hobbies Catalog"
+    },
+    {
+        "name": "Kuliner",
+        "emoji": "🍔",
+        "category": "Hobbies Catalog"
+    },
+    {
+        "name": "Music",
+        "emoji": "🎸",
+        "category": "Hobbies Catalog"
+    },
+    {
+        "name": "Curhat & Percintaan",
+        "emoji": "💌",
+        "category": "Hobbies Catalog"
+    },
+    {
+        "name": "Investasi Economy - Crypto - Saham - Emas - Properti - UMKM",
+        "emoji": "🪙",
+        "category": "Hobbies Catalog"
+    },
+    {
+        "name": "Technology",
+        "emoji": "💻",
+        "category": "Hobbies Catalog"
+    },
+    {
+        "name": "Belajar",
+        "emoji": "🎒",
+        "category": "Hobbies Catalog"
+    },
+    {
+        "name": "Medical",
+        "emoji": "💉",
+        "category": "Hobbies Catalog"
+    },
+    {
+        "name": "Creator Camp",
+        "emoji": "📸",
+        "category": "Hobbies Catalog"
+    },
+    {
+        "name": "Lowongan Kerja",
+        "emoji": "👷",
+        "category": "Hobbies Catalog"
+    },
+    {
+        "name": "Anime",
+        "emoji": "👹",
+        "category": "Entertainment Catalog"
+    },
+    {
+        "name": "Horror",
+        "emoji": "👻",
+        "category": "Entertainment Catalog"
+    },
+    {
+        "name": "Comic Manga - Webtoon - Manhwa - Manhua - Novel",
+        "emoji": "✨",
+        "category": "Entertainment Catalog"
+    },
+    {
+        "name": "Idol JKT48 - KPOP - Vtuber - Japan Idol",
+        "emoji": "💃",
+        "category": "Entertainment Catalog"
+    },
+    {
+        "name": "Drama Series Drama Korea - Drama China",
+        "emoji": "💗",
+        "category": "Entertainment Catalog"
+    },
+    {
+        "name": "Movie",
+        "emoji": "🍿",
+        "category": "Entertainment Catalog"
+    },
+    {
+        "name": "Tokusatsu Ultraman - Kamen Rider - Super Sentai - Kaiju - DLL",
+        "emoji": "🦖",
+        "category": "Entertainment Catalog"
+    },
+    {
+        "name": "Racing F1 - MotoGP - NasCar",
+        "emoji": "🏎️",
+        "category": "Entertainment Catalog"
+    },
+    {
+        "name": "Fight Entertainment WWE - UFC",
+        "emoji": "🥊",
+        "category": "Entertainment Catalog"
+    },
+    {
+        "name": "Social Media",
+        "emoji": "🎉",
+        "category": "Notification Catalog"
+    }
+]

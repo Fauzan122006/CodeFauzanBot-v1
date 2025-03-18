@@ -1,10 +1,21 @@
 const fs = require('fs');
 const path = require('path');
-const { config } = require('../utils/saveData');
+const { config, roleList } = require('../utils/saveData');
 
 module.exports = {
     name: 'interactionCreate',
-    async execute(interaction, client) {
+    async execute(interaction) {
+        // Pastikan bot punya izin dasar
+        if (!interaction.guild.members.me.permissions.has(['SendMessages', 'ViewChannel'])) {
+            if (interaction.isCommand()) {
+                await interaction.reply({
+                    content: 'Bot tidak punya permission untuk mengirim pesan atau melihat channel! Berikan permission View Channels dan Send Messages ke bot.',
+                    ephemeral: true
+                }).catch(() => {});
+            }
+            return;
+        }
+
         // Tangani Slash Command
         if (interaction.isCommand()) {
             try {
@@ -20,11 +31,10 @@ module.exports = {
                 }
             } catch (error) {
                 console.error('Error handling slash command:', error);
-                // Hanya balas kalau interaksi belum diakui sama sekali
                 if (!interaction.replied && !interaction.deferred) {
                     await interaction.reply({
                         content: 'Terjadi error saat memproses command. Silakan coba lagi atau hubungi developer.',
-                        flags: 64
+                        ephemeral: true
                     }).catch(() => {});
                 } else if (interaction.deferred && !interaction.replied) {
                     await interaction.editReply({
@@ -40,10 +50,15 @@ module.exports = {
             try {
                 const customId = interaction.customId;
                 if (customId.startsWith('select-role-')) {
-                    await interaction.deferReply({ flags: 64 });
+                    await interaction.deferReply({ ephemeral: true });
+
+                    if (!roleList || roleList.length === 0) {
+                        await interaction.editReply({ content: 'Tidak ada role yang tersedia! Cek botconfig/roleList.json.' });
+                        return;
+                    }
 
                     const selectedRoleName = interaction.values[0];
-                    const roleData = config.rolesList.find(role => role.name === selectedRoleName);
+                    const roleData = roleList.find(role => role.name === selectedRoleName);
                     if (!roleData) {
                         await interaction.editReply({ content: 'Role tidak ditemukan di konfigurasi!' });
                         return;
@@ -92,7 +107,7 @@ module.exports = {
                 if (!interaction.replied && !interaction.deferred) {
                     await interaction.reply({
                         content: 'Terjadi error saat memproses select menu. Silakan coba lagi atau hubungi developer.',
-                        flags: 64
+                        ephemeral: true
                     }).catch(() => {});
                 } else if (interaction.deferred && !interaction.replied) {
                     await interaction.editReply({
@@ -107,7 +122,7 @@ module.exports = {
         if (interaction.isButton()) {
             try {
                 if (interaction.customId === 'accept_rules') {
-                    await interaction.deferReply({ flags: 64 });
+                    await interaction.deferReply({ ephemeral: true });
 
                     const guildId = interaction.guild.id;
                     const member = interaction.member;
@@ -155,7 +170,7 @@ module.exports = {
                 if (!interaction.replied && !interaction.deferred) {
                     await interaction.reply({
                         content: 'Terjadi error saat memproses tombol. Silakan coba lagi atau hubungi developer.',
-                        flags: 64
+                        ephemeral: true
                     }).catch(() => {});
                 } else if (interaction.deferred && !interaction.replied) {
                     await interaction.editReply({
