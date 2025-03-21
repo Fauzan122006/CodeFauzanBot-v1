@@ -1,245 +1,120 @@
-const { EmbedBuilder, AttachmentBuilder } = require('discord.js');
-const { config } = require('../utils/saveData');
-const { initUser, getRequiredXP, getRank, userData, saveData } = require('../utils/functions');
-const { createCanvas, loadImage } = require('@napi-rs/canvas');
+const { handleLevelUp } = require('../utils/levelUpHandler');
+const { handleAchievements } = require('../utils/achievementHandler');
+const { userData, initUser } = require('../utils/functions');
+const { config } = require('../utils/dataManager');
+const chalk = require('chalk'); // Import chalk untuk warna
+
+// Fungsi untuk log dengan timestamp dan warna
+const log = (module, message, level = 'info') => {
+    const timestamp = new Date().toISOString();
+    let coloredMessage;
+
+    switch (level.toLowerCase()) {
+        case 'success':
+            coloredMessage = chalk.cyan(`[${timestamp}] [${module}] ${message}`);
+            break;
+        case 'error':
+            coloredMessage = chalk.red(`[${timestamp}] [${module}] ${message}`);
+            break;
+        case 'warning':
+            coloredMessage = chalk.yellow(`[${timestamp}] [${module}] ${message}`);
+            break;
+        case 'info':
+        default:
+            coloredMessage = chalk.white(`[${timestamp}] [${module}] ${message}`);
+            break;
+    }
+
+    console.log(coloredMessage);
+};
+
+// Buat mapping command prefix ke slash command
+const commandMapping = {
+    'rank': 'rank',
+    'event-join': 'event-join',
+    'get-roles': 'get-roles',
+    'post-social': 'post-social',
+    'set-achievement': 'set-achievement',
+    'set-level': 'set-level',
+    'set-roles': 'set-roles',
+    'set-rules': 'set-rules',
+    'set-social': 'set-social',
+    'set-welcome': 'set-welcome',
+    'help': 'help',
+    'reset-achievement': 'reset-achievement'
+};
 
 module.exports = {
     name: 'messageCreate',
-    async execute(message) {
+    async execute(message, client) {
         if (message.author.bot) return;
 
-        try {
-            const userId = message.author.id;
-            const guildId = message.guild.id;
-            initUser(userId);
+        const userId = message.author.id;
+        const guild = message.guild;
 
-            // Tambah message count
-            userData[userId].messageCount = (userData[userId].messageCount || 0) + 1;
+        // Handle prefix command
+        const prefix = config.prefix || '..';
+        if (message.content.startsWith(prefix)) {
+            const args = message.content.slice(prefix.length).trim().split(/ +/);
+            const commandName = args.shift().toLowerCase();
 
-            // Update active time
-            if (!userData[userId].lastActive) userData[userId].lastActive = Date.now();
-            const timeSinceLastActive = Math.floor((Date.now() - userData[userId].lastActive) / 1000);
+            if (!commandMapping[commandName]) return; // Command tidak ditemukan
 
-            if (timeSinceLastActive > 86400) {
-                userData[userId].activeTime = 0;
-            } else {
-                userData[userId].activeTime = (userData[userId].activeTime || 0) + timeSinceLastActive;
+            const command = client.commands.get(commandMapping[commandName]);
+            if (!command) return;
+
+            try {
+                // Simulasi interaction untuk prefix command
+                const fakeInteraction = {
+                    user: message.author,
+                    guild: message.guild,
+                    channel: message.channel,
+                    client: client,
+                    options: {
+                        getUser: (key) => args[0] ? message.mentions.users.first() || message.guild.members.cache.get(args[0])?.user : null,
+                        getString: (key) => args[0] || null
+                    },
+                    deferReply: async () => {
+                        await message.channel.sendTyping();
+                    },
+                    editReply: async (options) => {
+                        await message.channel.send(options);
+                    },
+                    reply: async (options) => {
+                        await message.channel.send(options);
+                    }
+                };
+
+                await command.execute(fakeInteraction, client);
+                log('PrefixCommand', `Executed ${commandName} for user ${userId}`, 'success');
+            } catch (error) {
+                log('PrefixCommand', `Error executing ${commandName}: ${error.message}`, 'error');
+                await message.channel.send({ content: 'There was an error while executing this command!' });
             }
-            userData[userId].lastActive = Date.now();
-
-            // Tambah XP (random 50-150 XP per pesan)
-            const xpGain = Math.floor(Math.random() * 101) + 50;
-            userData[userId].xp += xpGain;
-
-            // Cek apakah user naik level
-            const requiredXP = getRequiredXP(userData[userId].level);
-            if (userData[userId].xp >= requiredXP) {
-                userData[userId].level += 1;
-                userData[userId].xp -= requiredXP;
-
-                // Ambil channel level dari config
-                const levelChannelId = config[guildId]?.levelChannel || config.defaultChannels.levelChannel || message.guild.channels.cache.find(ch => ch.name === 'levels')?.id;
-                const levelChannel = message.guild.channels.cache.get(levelChannelId);
-
-                if (levelChannel) {
-                    if (!levelChannel.permissionsFor(message.guild.members.me).has(['SendMessages', 'ViewChannel', 'SendMessageAttachments'])) {
-                        console.error(`Bot doesn't have permission to send messages in level channel: ${levelChannelId}`);
-                        return;
-                    }
-
-                    const user = message.author;
-                    const currentXP = userData[userId].xp;
-                    const nextLevelXP = getRequiredXP(userData[userId].level);
-                    const rank = getRank(userData[userId].level);
-
-                    // Buat gambar level up dengan ukuran lebih kecil
-                    const canvas = createCanvas(500, 180);
-                    const ctx = canvas.getContext('2d');
-
-                    // Load background dari config.json
-                    const backgroundUrl = config.levelUpImage || 'https://s6.gifyu.com/images/bbXYO.gif';
-                    let background;
-                    try {
-                        background = await loadImage(backgroundUrl);
-                    } catch (error) {
-                        console.error(`Failed to load level-up background image: ${error.message}`);
-                        return;
-                    }
-                    ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
-
-                    // Tambah efek gelap
-                    ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
-                    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-                    // Load profile picture user
-                    const avatarUrl = user.displayAvatarURL({ extension: 'png', size: 128 }); // Ubah size ke 128
-                    let avatar;
-                    try {
-                        avatar = await loadImage(avatarUrl);
-                    } catch (error) {
-                        console.error(`Failed to load user avatar for ${user.username}: ${error.message}`);
-                        return;
-                    }
-
-                    // Gambar profile picture dalam lingkaran
-                    const avatarSize = 96;
-                    const avatarX = 40;
-                    const avatarY = (canvas.height - avatarSize) / 2;
-                    ctx.save();
-                    ctx.beginPath();
-                    ctx.arc(avatarX + avatarSize / 2, avatarY + avatarSize / 2, avatarSize / 2, 0, Math.PI * 2, true);
-                    ctx.closePath();
-                    ctx.clip();
-                    ctx.drawImage(avatar, avatarX, avatarY, avatarSize, avatarSize);
-                    ctx.restore();
-
-                    // Tambah border lingkaran
-                    ctx.strokeStyle = '#FFFFFF';
-                    ctx.lineWidth = 3;
-                    ctx.beginPath();
-                    ctx.arc(avatarX + avatarSize / 2, avatarY + avatarSize / 2, avatarSize / 2, 0, Math.PI * 2, true);
-                    ctx.closePath();
-                    ctx.stroke();
-
-                    // Tambah teks level up
-                    ctx.font = 'bold 28px Sans';
-                    ctx.fillStyle = '#FFFFFF';
-                    ctx.textAlign = 'left';
-                    ctx.fillText(`Level Up! ${user.username}`, 150, canvas.height / 2 - 30);
-
-                    // Tambah teks level dan rank
-                    ctx.font = '18px Sans';
-                    ctx.fillStyle = '#FFFFFF';
-                    ctx.fillText(`Level ${userData[userId].level}`, 150, canvas.height / 2 + 10);
-                    ctx.fillText(`Rank #${rank}`, 150, canvas.height / 2 + 40);
-
-                    // Tambah progress bar XP
-                    const barWidth = 200;
-                    const barHeight = 15;
-                    const barX = 150;
-                    const barY = canvas.height / 2 + 60;
-                    const xpProgress = currentXP / nextLevelXP;
-                    ctx.fillStyle = '#00BFFF';
-                    ctx.fillRect(barX, barY, xpProgress * barWidth, barHeight);
-                    ctx.strokeStyle = '#FFFFFF';
-                    ctx.strokeRect(barX, barY, barWidth, barHeight);
-
-                    // Teks XP di kanan bar
-                    ctx.font = '10px Sans';
-                    ctx.fillStyle = '#FFFFFF';
-                    ctx.textAlign = 'right';
-                    ctx.fillText(`${currentXP}/${nextLevelXP} XP`, barX + barWidth + 10, barY + 12);
-
-                    // Convert canvas ke buffer
-                    const buffer = canvas.toBuffer('image/png');
-                    const attachment = new AttachmentBuilder(buffer, { name: 'level-up-image.png' });
-
-                    // Kirim gambar
-                    await levelChannel.send({ files: [attachment] });
-                } else {
-                    console.warn(`Level channel not found for guild: ${guildId}`);
-                }
-            }
-
-            // Cek achievement
-            if (!userData[userId].achievements) userData[userId].achievements = [];
-            const achievements = config.achievements || {};
-            const achievementChannelId = config[guildId]?.achievementChannel || config.defaultChannels.achievementChannel || message.guild.channels.cache.find(ch => ch.name === 'achievements')?.id;
-            const achievementChannel = message.guild.channels.cache.get(achievementChannelId);
-
-            if (achievementChannel) {
-                if (!achievementChannel.permissionsFor(message.guild.members.me).has(['SendMessages', 'ViewChannel', 'SendMessageAttachments'])) {
-                    console.error(`Bot doesn't have permission to send messages in achievement channel: ${achievementChannelId}`);
-                    return;
-                }
-
-                for (const [key, achievement] of Object.entries(achievements)) {
-                    if (!userData[userId].achievements.includes(key)) {
-                        let unlocked = false;
-
-                        switch (key) {
-                            case 'pro-typer':
-                                if (userData[userId].messageCount >= 1000) unlocked = true;
-                                break;
-                            case 'chat-master':
-                                if (userData[userId].messageCount >= 5000) unlocked = true;
-                                break;
-                            case 'all-nighter':
-                                if (userData[userId].activeTime >= 86400) unlocked = true;
-                                break;
-                            case 'voice-legend':
-                                if (userData[userId].voiceTime >= 36000) unlocked = true;
-                                break;
-                        }
-
-                        if (unlocked) {
-                            userData[userId].achievements.push(key);
-                            userData[userId].xp += achievement.xpReward;
-
-                            // Buat gambar achievement dengan ukuran lebih kecil
-                            const canvas = createCanvas(450, 120);
-                            const ctx = canvas.getContext('2d');
-
-                            // Background polos
-                            ctx.fillStyle = '#2C2F33';
-                            ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-                            // Load ikon achievement
-                            const iconUrl = achievement.icon || 'https://i.imgur.com/default-icon.png';
-                            let icon;
-                            try {
-                                icon = await loadImage(iconUrl);
-                            } catch (error) {
-                                console.error(`Gagal memuat ikon untuk achievement ${key}: ${error.message}`);
-                                icon = await loadImage('https://i.imgur.com/default-icon.png');
-                            }
-
-                            // Gambar ikon achievement di kiri
-                            const iconSize = 48;
-                            const iconX = 15;
-                            const iconY = (canvas.height - iconSize) / 2;
-                            ctx.drawImage(icon, iconX, iconY, iconSize, iconSize);
-
-                            // Teks "ACHIEVEMENT UNLOCKED!"
-                            ctx.textAlign = 'left';
-                            ctx.font = 'bold 16px Sans';
-                            ctx.fillStyle = '#FFD700';
-                            ctx.fillText('ACHIEVEMENT UNLOCKED!', iconX + iconSize + 15, 40);
-
-                            // Teks nama achievement
-                            ctx.font = 'bold 18px Sans';
-                            ctx.fillStyle = '#FFFFFF';
-                            ctx.fillText(achievement.name, iconX + iconSize + 15, 70);
-
-                            // Teks deskripsi achievement
-                            ctx.font = '12px Sans';
-                            ctx.fillStyle = '#B0B0B0';
-                            ctx.fillText(achievement.description, iconX + iconSize + 15, 90);
-
-                            // Teks XP reward
-                            ctx.font = '12px Sans';
-                            ctx.fillStyle = '#00FF00';
-                            ctx.fillText(`+${achievement.xpReward} XP`, iconX + iconSize + 15, 110);
-
-                            // Convert canvas ke buffer
-                            const buffer = canvas.toBuffer('image/png');
-                            const attachment = new AttachmentBuilder(buffer, { name: 'achievement-image.png' });
-
-                            // Kirim pesan dengan mention user, lalu lampirkan gambar
-                            await achievementChannel.send({
-                                content: `Hey ${message.author.toString()}, ACHIEVEMENT UNLOCKED!`,
-                                files: [attachment]
-                            });
-                        }
-                    }
-                }
-            } else {
-                console.warn(`Achievement channel not found for guild: ${guildId}`);
-            }
-
-            saveData();
-        } catch (error) {
-            console.error('Error in messageCreate:', error);
+            return; // Jangan lanjutkan ke logika XP kalau ini prefix command
         }
+
+        // Logika XP dan achievement
+        initUser(userId);
+
+        userData[userId].messageCount = (userData[userId].messageCount || 0) + 1;
+        const xpGain = Math.floor(Math.random() * 50) + 50; // 50-100 XP per pesan
+        userData[userId].xp = (userData[userId].xp || 0) + xpGain;
+        userData[userId].lastActive = Date.now();
+
+        log('MessageCreate', `Processing message from user ${userId} in guild ${guild.id}`);
+        log('MessageCreate', `User ${userId} sent a message. Message count: ${userData[userId].messageCount}`);
+        log('MessageCreate', `User ${userId} gained ${xpGain} XP. Total XP: ${userData[userId].xp}`);
+
+        try {
+            await handleLevelUp(userId, guild, message.author);
+            await handleAchievements(userId, guild, 'message');
+            await handleAchievements(userId, guild, 'level');
+        } catch (error) {
+            log('MessageCreate', `Error handling level up or achievements for user ${userId}: ${error.message}`, 'error');
+        }
+
+        // saveData() dihapus karena sudah ada interval di index.js
+        // log('MessageCreate', `Data saved for user ${userId}`, 'success');
     },
 };

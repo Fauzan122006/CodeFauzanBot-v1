@@ -1,35 +1,65 @@
 const { EmbedBuilder, AttachmentBuilder } = require('discord.js');
-const { config } = require('../utils/saveData');
-const { userData, saveData } = require('../utils/functions');
+const { config } = require('../utils/dataManager');
+const { userData } = require('../utils/functions');
 const { createCanvas, loadImage } = require('@napi-rs/canvas');
+const fs = require('fs');
+
+const achievementFile = fs.readFileSync('./botconfig/achievementList.json', 'utf8');
+const achievements = JSON.parse(achievementFile);
+
+const log = (module, message) => {
+    const timestamp = new Date().toISOString();
+    console.log(`[${timestamp}] [${module}] ${message}`);
+};
+
+function getAchievementImagePath(key) {
+    const imagePath = achievements[key]?.icon;
+    if (imagePath && fs.existsSync(imagePath)) {
+        return imagePath;
+    }
+    log('GuildMemberAdd', `Image not found for ${key} at ${imagePath}, using default.`);
+    return 'https://i.imgur.com/default-icon.png'; // Fallback URL
+}
 
 module.exports = {
     name: 'guildMemberAdd',
     async execute(member) {
         try {
-            console.log(`[GuildMemberAdd] User ${member.user.tag} joined guild ${member.guild.id}`);
+            log('GuildMemberAdd', `User ${member.user.tag} (${member.user.id}) joined guild ${member.guild.id}`);
 
             const guildId = member.guild.id;
             const userId = member.user.id;
             const serverConfig = config[guildId] || {};
             const welcomeChannelId = serverConfig.welcomeChannel || config.defaultChannels.welcomeChannel || member.guild.channels.cache.find(ch => ch.name === 'welcome')?.id;
-            const welcomeChannel = member.guild.channels.cache.get(welcomeChannelId);
+            let welcomeChannel = member.guild.channels.cache.get(welcomeChannelId);
 
             if (!welcomeChannel) {
-                console.log(`[GuildMemberAdd] Welcome channel not found for guild ${guildId}. Expected ID: ${welcomeChannelId}`);
+                log('GuildMemberAdd', `Welcome channel not found for guild ${guildId}. Expected ID: ${welcomeChannelId}`);
                 return;
             }
 
-            console.log(`[GuildMemberAdd] Found welcome channel: ${welcomeChannel.name} (${welcomeChannelId})`);
+            // Coba fetch channel kalau gak ada di cache
+            try {
+                welcomeChannel = await member.guild.channels.fetch(welcomeChannelId);
+            } catch (error) {
+                log('GuildMemberAdd', `Failed to fetch welcome channel ${welcomeChannelId}: ${error.message}`);
+                return;
+            }
 
-            // Cek izin bot di channel
+            if (!welcomeChannel) {
+                log('GuildMemberAdd', `Welcome channel not found after fetch for guild ${guildId}. Expected ID: ${welcomeChannelId}`);
+                return;
+            }
+
+            log('GuildMemberAdd', `Found welcome channel: ${welcomeChannel.name} (${welcomeChannelId})`);
+
             const botMember = member.guild.members.me;
-            if (!welcomeChannel.permissionsFor(botMember).has(['SendMessages', 'ViewChannel'])) {
-                console.log(`[GuildMemberAdd] Bot does not have permission to send messages or view channel ${welcomeChannel.name} (${welcomeChannelId})`);
+            if (!welcomeChannel.permissionsFor(botMember)?.has(['SendMessages', 'ViewChannel'])) {
+                log('GuildMemberAdd', `Bot lacks permissions (SendMessages, ViewChannel) for channel ${welcomeChannel.name} (${welcomeChannelId})`);
                 return;
             }
 
-            // Inisialisasi user data
+            // Inisialisasi data user
             if (!userData[userId]) {
                 userData[userId] = {
                     xp: 0,
@@ -38,42 +68,46 @@ module.exports = {
                     achievements: [],
                     activeTime: 0,
                     voiceTime: 0,
-                    lastActive: Date.now()
+                    lastActive: Date.now(),
+                    joinDate: Date.now(),
+                    reactionCount: 0,
+                    memeCount: 0,
+                    supportMessages: 0,
+                    gameTime: 0,
+                    eventCount: 0,
+                    isBooster: false
                 };
+                log('GuildMemberAdd', `Initialized user data for ${userId}`);
             }
 
-            // Buat canvas untuk gambar welcome
+            // Buat gambar welcome
             const canvas = createCanvas(700, 250);
             const ctx = canvas.getContext('2d');
 
-            // Load background gambar
             const backgroundUrl = config.welcomeImage || 'https://s6.gifyu.com/images/bbXYO.gif';
-            console.log(`[GuildMemberAdd] Loading welcome image from URL: ${backgroundUrl}`);
+            log('GuildMemberAdd', `Loading welcome image from URL: ${backgroundUrl}`);
             let background;
             try {
                 background = await loadImage(backgroundUrl);
             } catch (error) {
-                console.error(`[GuildMemberAdd] Failed to load welcome image: ${error.message}`);
-                background = await loadImage('https://via.placeholder.com/700x250'); // Fallback image
+                log('GuildMemberAdd', `Failed to load welcome image: ${error.message}`);
+                background = await loadImage('https://via.placeholder.com/700x250');
             }
             ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
 
-            // Tambah efek gelap
             ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            // Load profile picture user
             const avatarUrl = member.user.displayAvatarURL({ extension: 'png', size: 128 });
-            console.log(`[GuildMemberAdd] Loading avatar from URL: ${avatarUrl}`);
+            log('GuildMemberAdd', `Loading avatar from URL: ${avatarUrl}`);
             let avatar;
             try {
                 avatar = await loadImage(avatarUrl);
             } catch (error) {
-                console.error(`[GuildMemberAdd] Failed to load avatar: ${error.message}`);
-                avatar = await loadImage('https://via.placeholder.com/128'); // Fallback avatar
+                log('GuildMemberAdd', `Failed to load avatar: ${error.message}`);
+                avatar = await loadImage('https://via.placeholder.com/128');
             }
 
-            // Gambar profile picture dalam lingkaran
             const avatarSize = 128;
             const avatarX = 50;
             const avatarY = (canvas.height - avatarSize) / 2;
@@ -85,7 +119,6 @@ module.exports = {
             ctx.drawImage(avatar, avatarX, avatarY, avatarSize, avatarSize);
             ctx.restore();
 
-            // Tambah border lingkaran
             ctx.strokeStyle = '#FFFFFF';
             ctx.lineWidth = 4;
             ctx.beginPath();
@@ -93,100 +126,26 @@ module.exports = {
             ctx.closePath();
             ctx.stroke();
 
-            // Tambah teks selamat datang
             ctx.font = 'bold 36px Sans';
             ctx.fillStyle = '#FFFFFF';
             ctx.textAlign = 'left';
             ctx.fillText(`Welcome ${member.user.username}!`, 200, canvas.height / 2 - 20);
 
-            // Tambah teks member count
             ctx.font = '24px Sans';
             ctx.fillStyle = '#FFFFFF';
             ctx.fillText(`Member #${member.guild.memberCount}`, 200, canvas.height / 2 + 20);
 
-            // Convert canvas ke buffer
             const buffer = canvas.toBuffer('image/png');
             const attachment = new AttachmentBuilder(buffer, { name: 'welcome-image.png' });
 
-            // Kirim pesan dengan mention user dan server, lalu lampirkan gambar
-            console.log(`[GuildMemberAdd] Sending welcome message to channel ${welcomeChannel.name}`);
+            log('GuildMemberAdd', `Sending welcome message to channel ${welcomeChannel.name} (${welcomeChannelId})`);
             await welcomeChannel.send({
                 content: `Hey ${member.toString()}, selamat datang di **${member.guild.name}**!`,
                 files: [attachment]
             });
-
-            // Cek achievement "First Step"
-            if (!userData[userId].achievements) userData[userId].achievements = [];
-            const achievements = config.achievements || {};
-            const achievementChannelId = config[guildId]?.achievementChannel || config.defaultChannels.achievementChannel || member.guild.channels.cache.find(ch => ch.name === 'achievements')?.id;
-            const achievementChannel = member.guild.channels.cache.get(achievementChannelId);
-
-            if (achievementChannel) {
-                console.log(`[GuildMemberAdd] Found achievement channel: ${achievementChannel.name} (${achievementChannelId})`);
-                const achievement = achievements['first-step'];
-                if (achievement && !userData[userId].achievements.includes('first-step')) {
-                    userData[userId].achievements.push('first-step');
-                    userData[userId].xp += achievement.xpReward;
-
-                    // Buat gambar achievement
-                    const canvas = createCanvas(600, 150);
-                    const ctx = canvas.getContext('2d');
-
-                    // Background polos
-                    ctx.fillStyle = '#2C2F33';
-                    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-                    // Load ikon achievement
-                    const iconUrl = achievement.icon || 'https://i.imgur.com/default-icon.png';
-                    console.log(`[GuildMemberAdd] Loading achievement icon from URL: ${iconUrl}`);
-                    let icon;
-                    try {
-                        icon = await loadImage(iconUrl);
-                    } catch (error) {
-                        console.error(`[GuildMemberAdd] Failed to load achievement icon: ${error.message}`);
-                        icon = await loadImage('https://i.imgur.com/default-icon.png');
-                    }
-
-                    // Gambar ikon achievement di kiri
-                    const iconSize = 64;
-                    const iconX = 20;
-                    const iconY = (canvas.height - iconSize) / 2;
-                    ctx.drawImage(icon, iconX, iconY, iconSize, iconSize);
-
-                    // Teks "ACHIEVEMENT UNLOCKED!" tanpa nama user di canvas
-                    ctx.textAlign = 'left';
-                    ctx.font = 'bold 20px Sans';
-                    ctx.fillStyle = '#FFD700';
-                    ctx.fillText('ACHIEVEMENT UNLOCKED!', iconX + iconSize + 20, 50);
-
-                    // Teks nama achievement
-                    ctx.font = 'bold 24px Sans';
-                    ctx.fillStyle = '#FFFFFF';
-                    ctx.fillText(achievement.name, iconX + iconSize + 20, 90);
-
-                    // Teks deskripsi achievement
-                    ctx.font = '16px Sans';
-                    ctx.fillStyle = '#B0B0B0';
-                    ctx.fillText(achievement.description, iconX + iconSize + 20, 115);
-
-                    // Convert canvas ke buffer
-                    const buffer = canvas.toBuffer('image/png');
-                    const attachment = new AttachmentBuilder(buffer, { name: 'achievement-image.png' });
-
-                    // Kirim pesan dengan mention user, lalu lampirkan gambar
-                    console.log(`[GuildMemberAdd] Sending achievement message to channel ${achievementChannel.name}`);
-                    await achievementChannel.send({
-                        content: `Hey ${member.toString()}, ACHIEVEMENT UNLOCKED!`,
-                        files: [attachment]
-                    });
-                }
-            } else {
-                console.log(`[GuildMemberAdd] Achievement channel not found for guild ${guildId}. Expected ID: ${achievementChannelId}`);
-            }
-
-            saveData();
+            log('GuildMemberAdd', `Welcome message sent for user ${userId} in guild ${guildId}`);
         } catch (error) {
-            console.error('[GuildMemberAdd] Error in guildMemberAdd event:', error);
+            log('GuildMemberAdd', `Error in guildMemberAdd event for user ${member.user.id}: ${error.message}`);
         }
     },
 };

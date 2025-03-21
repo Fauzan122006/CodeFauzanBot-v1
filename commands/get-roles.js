@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, PermissionFlagsBits, EmbedBuilder, StringSelectMenuBuilder, ActionRowBuilder } = require('discord.js');
-const { config, roleList } = require('../utils/saveData');
+const { config, roleList } = require('../utils/dataManager');
 
 module.exports = {
     data: new SlashCommandBuilder()

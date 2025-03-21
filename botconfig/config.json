@@ -1,5 +1,5 @@
 {
-  "clienttoken": "TOKEN_BOT",
+  "clienttoken": "BOT_TOKEN",
   "Note_Token": "Put Your Bot Token Above (If using replit, make a secret 'clienttoken' and keep this empty)",
   "clientname": "CodeFauzan",
   "clientid": "1196407403881709589",
@@ -30,7 +30,7 @@
   "rolesImage": "https://example.com/roles-background.gif",
   "rulesBanner": "https://s6.gifyu.com/images/bz2Gc.gif",
   "lastYouTubeVideoId": "R6wFMjABpjU",
-  "youtubeApiKey": "AIzaSyDEddtqagFjxKAswkn5jrMAFo5DX5BGeiQ",
+  "youtubeApiKey": "YT_API_KEY",
   "youtubeChannelId": "UCUlSBRbY5sRo-9b9N8ewkWQ",
   "997668978103164978": {
     "levelChannel": "1015258349719277618",
@@ -40,38 +40,6 @@
     "rulesChannel": "997672048463720448",
     "rulesRole": "1015584843641397248",
     "socialChannel": "997672317134053467"
-  },
-  "achievements": {
-    "pro-typer": {
-      "name": "Pro Typer",
-      "description": "Send 1000 messages",
-      "xpReward": 50,
-      "icon": "https://i.imgur.com/t5tuYA4.png"
-    },
-    "all-nighter": {
-      "name": "All Nighter",
-      "description": "Be active for 24 hours",
-      "xpReward": 100,
-      "icon": "https://i.imgur.com/DqhZQkD.png"
-    },
-    "chat-master": {
-      "name": "Chat Master",
-      "description": "Send 5000 messages",
-      "xpReward": 200,
-      "icon": "https://i.imgur.com/sdFvPZ4.png"
-    },
-    "voice-legend": {
-      "name": "Voice Legend",
-      "description": "Spend 10 hours in voice chat",
-      "xpReward": 150,
-      "icon": "https://i.imgur.com/dv5jVFt.png"
-    },
-    "first-step": {
-      "name": "First Step",
-      "description": "Join the server",
-      "xpReward": 25,
-      "icon": "https://i.imgur.com/JHFhAYg.png"
-    }
   },
   "categoryImages": {
     "Games Catalog": "https://s6.gifyu.com/images/bbXYP.gif",

@@ -1,4 +1,4 @@
-const { config } = require('../utils/saveData');
+const { config } = require('../utils/dataManager');
 const fs = require('fs');
 const path = require('path');
 

@@ -1,99 +1,92 @@
 const { SlashCommandBuilder, AttachmentBuilder } = require('discord.js');
-const { config } = require('../utils/saveData');
-const { userData, getRequiredXP, getRank } = require('../utils/functions');
 const { createCanvas, loadImage } = require('@napi-rs/canvas');
+const { userData, initUser, getRequiredXP, getRank } = require('../utils/functions');
 
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('rank')
-        .setDescription('Check your current level, rank, and XP.'),
-    async execute(interaction) {
-        await interaction.deferReply();
+        .setDescription('Check your rank or someone else\'s rank.')
+        .addUserOption(option =>
+            option.setName('user')
+                .setDescription('The user to check the rank for.')
+                .setRequired(false)),
+    async execute(interaction, client) {
+        try {
+            await interaction.deferReply();
 
-        const userId = interaction.user.id;
-        const guildId = interaction.guild.id;
+            const targetUser = interaction.options.getUser('user') || interaction.user;
+            const userId = targetUser.id;
 
-        // Inisialisasi user data kalau belum ada
-        if (!userData[userId]) {
-            userData[userId] = {
-                xp: 0,
-                level: 0,
-                messageCount: 0,
-                achievements: [],
-                activeTime: 0,
-                voiceTime: 0,
-                lastActive: Date.now()
-            };
+            initUser(userId);
+
+            // Pastikan data diambil dengan benar
+            const userLevel = userData[userId]?.level || 1;
+            const userXP = userData[userId]?.xp || 0;
+            const requiredXP = getRequiredXP(userLevel);
+            const rank = getRank(userId); // Pakai getRank berdasarkan XP
+
+            console.log(`[RankCommand] User ${userId} - Level: ${userLevel}, XP: ${userXP}, Required XP: ${requiredXP}, Rank: ${rank}`);
+
+            const canvas = createCanvas(500, 180);
+            const ctx = canvas.getContext('2d');
+
+            const background = await loadImage('https://s6.gifyu.com/images/bbXYO.gif');
+            ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
+
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            const avatar = await loadImage(targetUser.displayAvatarURL({ extension: 'png', size: 128 }));
+            const avatarSize = 96;
+            const avatarX = 40;
+            const avatarY = (canvas.height - avatarSize) / 2;
+            ctx.save();
+            ctx.beginPath();
+            ctx.arc(avatarX + avatarSize / 2, avatarY + avatarSize / 2, avatarSize / 2, 0, Math.PI * 2, true);
+            ctx.closePath();
+            ctx.clip();
+            ctx.drawImage(avatar, avatarX, avatarY, avatarSize, avatarSize);
+            ctx.restore();
+
+            ctx.strokeStyle = '#FFFFFF';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.arc(avatarX + avatarSize / 2, avatarY + avatarSize / 2, avatarSize / 2, 0, Math.PI * 2, true);
+            ctx.closePath();
+            ctx.stroke();
+
+            ctx.font = 'bold 28px Sans';
+            ctx.fillStyle = '#FFFFFF';
+            ctx.textAlign = 'left';
+            ctx.fillText(`${targetUser.username}'s Rank`, 150, canvas.height / 2 - 30);
+
+            ctx.font = '18px Sans';
+            ctx.fillStyle = '#FFFFFF';
+            ctx.fillText(`Level ${userLevel}`, 150, canvas.height / 2 + 10);
+            ctx.fillText(`Rank #${rank}`, 150, canvas.height / 2 + 40);
+
+            const barWidth = 200;
+            const barHeight = 15;
+            const barX = 150;
+            const barY = canvas.height / 2 + 60;
+            const xpProgress = Math.min(userXP / requiredXP, 1);
+            ctx.fillStyle = '#00BFFF';
+            ctx.fillRect(barX, barY, xpProgress * barWidth, barHeight);
+            ctx.strokeStyle = '#FFFFFF';
+            ctx.strokeRect(barX, barY, barWidth, barHeight);
+
+            ctx.font = '10px Sans';
+            ctx.fillStyle = '#FFFFFF';
+            ctx.textAlign = 'right';
+            ctx.fillText(`${userXP}/${requiredXP} XP`, barX + barWidth + 10, barY + 12);
+
+            const buffer = canvas.toBuffer('image/png');
+            const attachment = new AttachmentBuilder(buffer, { name: 'rank-image.png' });
+
+            await interaction.editReply({ files: [attachment] });
+        } catch (error) {
+            console.error('[RankCommand] Error in rank command:', error);
+            await interaction.editReply({ content: 'There was an error while fetching your rank.', ephemeral: true });
         }
-
-        const user = interaction.user;
-        const currentXP = userData[userId].xp;
-        const currentLevel = userData[userId].level;
-        const nextLevelXP = getRequiredXP(currentLevel);
-        const rank = getRank(userData[userId].level);
-
-        // Buat gambar rank
-        const canvas = createCanvas(700, 250);
-        const ctx = canvas.getContext('2d');
-
-        // Load background dari config.json
-        const backgroundUrl = config.levelUpImage || 'https://s6.gifyu.com/images/bbXYO.gif';
-        const background = await loadImage(backgroundUrl);
-        ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
-
-        // Tambah efek gelap
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-        // Load profile picture user
-        const avatarUrl = user.displayAvatarURL({ extension: 'png', size: 128 });
-        const avatar = await loadImage(avatarUrl);
-
-        // Gambar profile picture dalam lingkaran
-        const avatarSize = 128;
-        const avatarX = 50;
-        const avatarY = (canvas.height - avatarSize) / 2;
-        ctx.save();
-        ctx.beginPath();
-        ctx.arc(avatarX + avatarSize / 2, avatarY + avatarSize / 2, avatarSize / 2, 0, Math.PI * 2, true);
-        ctx.closePath();
-        ctx.clip();
-        ctx.drawImage(avatar, avatarX, avatarY, avatarSize, avatarSize);
-        ctx.restore();
-
-        // Tambah border lingkaran
-        ctx.strokeStyle = '#FFFFFF';
-        ctx.lineWidth = 4;
-        ctx.beginPath();
-        ctx.arc(avatarX + avatarSize / 2, avatarY + avatarSize / 2, avatarSize / 2, 0, Math.PI * 2, true);
-        ctx.closePath();
-        ctx.stroke();
-
-        // Tambah teks rank
-        ctx.font = 'bold 36px Sans';
-        ctx.fillStyle = '#FFFFFF';
-        ctx.textAlign = 'left';
-        ctx.fillText(`${user.username}'s Rank`, 200, canvas.height / 2 - 40);
-
-        // Tambah teks level dan rank
-        ctx.font = '24px Sans';
-        ctx.fillStyle = '#FFFFFF';
-        ctx.fillText(`Level ${currentLevel}`, 200, canvas.height / 2);
-        ctx.fillText(`Rank #${rank}`, 200, canvas.height / 2 + 40);
-
-        // Tambah progress bar XP
-        const xpProgress = currentXP / nextLevelXP;
-        ctx.fillStyle = '#00BFFF';
-        ctx.fillRect(200, canvas.height / 2 + 70, xpProgress * 300, 20);
-        ctx.strokeStyle = '#FFFFFF';
-        ctx.strokeRect(200, canvas.height / 2 + 70, 300, 20);
-        ctx.fillText(`${currentXP}/${nextLevelXP} XP`, 200, canvas.height / 2 + 100);
-
-        // Convert canvas ke buffer
-        const buffer = canvas.toBuffer('image/png');
-        const attachment = new AttachmentBuilder(buffer, { name: 'rank-image.png' });
-
-        // Kirim gambar
-        await interaction.editReply({ files: [attachment] });
     },
 };
