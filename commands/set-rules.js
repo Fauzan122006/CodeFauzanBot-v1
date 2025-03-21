@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, PermissionFlagsBits, ActionRowBuilder, ButtonBuilder, ButtonStyle, AttachmentBuilder, EmbedBuilder } = require('discord.js');
-const { config, saveConfig } = require('../utils/saveData');
+const { config, saveConfig } = require('../utils/dataManager');
 const fs = require('fs');
 const path = require('path');
 
