@@ -1,4 +1,4 @@
-const { userData } = require('../utils/functions');
+const { userData } = require('../utils/userDataHandler');
 
 const log = (module, message) => {
     const timestamp = new Date().toISOString();

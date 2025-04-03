@@ -2,24 +2,22 @@ const { Client, IntentsBitField, REST, Routes, Collection, EmbedBuilder } = requ
 const fs = require('fs');
 const path = require('path');
 const fetch = require('node-fetch');
-const chalk = require('chalk'); // Import chalk untuk warna
+const chalk = require('chalk');
 global.fetch = fetch;
-const { config, saveConfig, loadData } = require('./utils/dataManager');
-const { saveData } = require('./utils/functions');
-
-loadData();
+const { config, saveConfig } = require('./utils/dataManager');
+const { saveData } = require('./utils/userDataHandler');
 
 const codefauzan = `
- _____           _         ______                         
-/  __ \         | |        |  ___|                        
-| /  \/ ___   __| | ___    | |_ __ _ _   _ ______ _ _ __  
-| |    / _ \ / _  |/ _ \   |  _/ _  | | | |_  / _  | '_ \ 
-| \__/\ (_) | (_| |  __/   | || (_| | |_| |/ / (_| | | | |
- \____/\___/ \__,_|\___|   \_| \__,_|\__,_/___\__,_|_| |_|
+---
+
+/ ** \ | | | \_**|  
+| / \/ **\_ **| | **_ | |_ ** \_ \_ _ **\_\_** _ _ \_\_  
+| | / _ \ / _ |/ _ \ | _/ _ | | | |_ / _ | '\_ \
+| \__/\ (_) | (_| | \_\_/ | || (_| | |_| |/ / (_| | | | |
+\_**\_/\_**/ \__,_|\_**| \_| \__,_|\__,_/\_**\__,_|_| |_|
 
 `;
 
-// Fungsi untuk log dengan timestamp dan warna
 const log = (module, message, level = 'info') => {
     const timestamp = new Date().toISOString();
     let coloredMessage;
@@ -43,12 +41,10 @@ const log = (module, message, level = 'info') => {
     console.log(coloredMessage);
 };
 
-// Log awal
 log('Index', codefauzan);
 log('Index', 'Starting bot initialization...');
 log('Index', 'Token yang digunakan: [HIDDEN]');
 
-// Inisialisasi bot dengan intents yang dibutuhkan
 log('Index', 'Initializing Discord client...');
 const client = new Client({
     intents: [
@@ -62,10 +58,8 @@ const client = new Client({
     ]
 });
 
-// Collection untuk menyimpan command
 client.commands = new Collection();
 
-// Load semua command dari folder commands
 log('Index', 'Loading commands...');
 const commandsPath = path.join(__dirname, 'commands');
 log('Index', `Commands path: ${commandsPath}`);
@@ -92,7 +86,6 @@ for (const file of commandFiles) {
     }
 }
 
-// Load semua event dari folder events
 log('Index', 'Loading events...');
 const eventsPath = path.join(__dirname, 'events');
 log('Index', `Events path: ${eventsPath}`);
@@ -122,7 +115,6 @@ for (const file of eventFiles) {
     }
 }
 
-// Registrasi slash commands saat bot siap
 log('Index', 'Setting up client ready event...');
 client.once('ready', async () => {
     log('Index', `Bot is ready as ${client.user.tag}`, 'success');
@@ -131,6 +123,12 @@ client.once('ready', async () => {
     try {
         log('Index', 'Registering application commands...');
         const rest = new REST({ version: '10' }).setToken(config.clienttoken);
+
+        // Hapus semua perintah lama (global commands)
+        await rest.put(Routes.applicationCommands(config.clientid), { body: [] });
+        log('Index', 'Successfully cleared all application commands.', 'success');
+
+        // Daftarkan ulang perintah baru
         await rest.put(
             Routes.applicationCommands(config.clientid),
             { body: commands }
@@ -140,40 +138,33 @@ client.once('ready', async () => {
         log('Index', `Error registering application commands: ${error.message}`, 'error');
     }
 
-    // Interval untuk cek update YouTube (setiap 5 menit)
     log('Index', 'Starting YouTube update check interval (every 5 minutes)...');
     setInterval(() => checkYouTubeUpdates(client), 300000);
     checkYouTubeUpdates(client);
 
-    // Interval untuk saveData (setiap 5 menit)
     log('Index', 'Starting user data save interval (every 5 minutes)...');
     setInterval(() => {
         saveData();
         log('Index', 'UserData saved successfully', 'success');
-    }, 300000); // 5 menit
+    }, 300000);
 });
 
-// Fungsi cek update YouTube
 async function checkYouTubeUpdates(client) {
     log('YouTubeUpdate', 'Checking YouTube updates...');
     const youtubeApiKey = config.youtubeApiKey;
-    const channelId = config.youtubeChannelId;
 
     if (!youtubeApiKey || youtubeApiKey === 'YOUR_YOUTUBE_API_KEY') {
-        log('YouTubeUpdate', 'Error: youtubeApiKey is missing or not set in botconfig/config.json. Please set a valid API key.', 'error');
-        return;
-    }
-    if (!channelId || channelId === 'YOUR_YOUTUBE_CHANNEL_ID') {
-        log('YouTubeUpdate', 'Error: youtubeChannelId is missing or not set in botconfig/config.json. Please set a valid Channel ID.', 'error');
+        log('YouTubeUpdate', 'Error: youtubeApiKey is missing or not set in botconfig/config.json.', 'error');
         return;
     }
 
     const guilds = Object.keys(config).filter(key => key.match(/^\d+$/));
     for (const guildId of guilds) {
         const socialChannelId = config[guildId]?.socialChannel;
+        const channelId = config[guildId]?.youtubeChannelId;
 
-        if (!socialChannelId) {
-            log('YouTubeUpdate', `Social channel not set for guild: ${guildId}`);
+        if (!socialChannelId || !channelId) {
+            log('YouTubeUpdate', `Social channel or YouTube channel ID not set for guild: ${guildId}`);
             continue;
         }
 
@@ -226,16 +217,17 @@ async function checkYouTubeUpdates(client) {
                 log('YouTubeUpdate', `No thumbnail found for video: ${videoLink}`, 'warning');
             }
 
-            if (!config.lastYouTubeVideoId || config.lastYouTubeVideoId !== videoId) {
+            if (!config[guildId]) config[guildId] = {};
+            if (!config[guildId].lastYouTubeVideoId || config[guildId].lastYouTubeVideoId !== videoId) {
                 const embed = new EmbedBuilder()
-                    .setTitle('🎥 New YouTube Video!')
-                    .setDescription(`Hey @everyone, a new video just dropped! Check it out!\n\n**${videoTitle}**\n${videoLink}`)
-                    .setColor('#00BFFF')
+                    .setTitle('🎥 Video YouTube Baru!')
+                    .setDescription(`Hai @everyone, video baru telah diunggah! Cek sekarang!\n\n**${videoTitle}**\n${videoLink}`)
+                    .setColor(config.colorthemecode || '#00BFFF')
                     .setThumbnail(thumbnail)
                     .setTimestamp();
 
                 await socialChannel.send({ embeds: [embed] });
-                config.lastYouTubeVideoId = videoId;
+                config[guildId].lastYouTubeVideoId = videoId;
                 saveConfig();
                 log('YouTubeUpdate', `Posted new YouTube video in guild ${guildId}: ${videoLink}`, 'success');
             } else {
@@ -247,7 +239,6 @@ async function checkYouTubeUpdates(client) {
     }
 }
 
-// Cek token sebelum login
 if (!config.clienttoken || config.clienttoken === "YOUR_BOT_TOKEN") {
     log('Index', "Error: Bot token is missing or not set in botconfig/config.json. Please set a valid token.", 'error');
     process.exit(1);
@@ -259,7 +250,6 @@ client.login(config.clienttoken).catch(error => {
     process.exit(1);
 });
 
-// Handle unhandled errors dan warnings
 process.on('unhandledRejection', (reason, promise) => {
     log('Index', `Unhandled Rejection at: ${promise} reason: ${reason}`, 'error');
 });
@@ -268,7 +258,6 @@ process.on('uncaughtException', (error) => {
     log('Index', `Uncaught Exception: ${error.message}`, 'error');
 });
 
-// Handle DeprecationWarning
 process.on('warning', (warning) => {
     if (warning.name === 'DeprecationWarning') {
         log('Index', `DeprecationWarning: ${warning.message}`, 'warning');
@@ -276,3 +265,5 @@ process.on('warning', (warning) => {
         log('Index', `Warning: ${warning.message}`, 'warning');
     }
 });
+
+require('./dashboard');

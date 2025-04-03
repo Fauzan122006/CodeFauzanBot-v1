@@ -1,22 +1,22 @@
 const fs = require('fs');
 const path = require('path');
 
-// Path untuk semua file JSON
 const configPath = path.join(__dirname, '../botconfig/config.json');
 const roleListPath = path.join(__dirname, '../botconfig/roleList.json');
 const userDataPath = path.join(__dirname, '../database/userData.json');
 const achievementListPath = path.join(__dirname, '../botconfig/achievementList.json');
 const rulesPath = path.join(__dirname, '../botconfig/rules.json');
+const serverListPath = path.join(__dirname, '../botconfig/serverList.json'); // Tambah path untuk serverList.json
 
 let config = {};
-let roleList = [];
+let roleList = { guilds: {} };
 let userData = {};
 let achievementList = {};
 let rules = {};
+let serverList = {}; // Tambah variabel untuk serverList
 
-// Fungsi untuk load semua data
 const loadData = () => {
-    // Pengecekan untuk config.json
+    // Load config.json
     if (fs.existsSync(configPath)) {
         const data = fs.readFileSync(configPath);
         if (data.length > 0) {
@@ -36,7 +36,7 @@ const loadData = () => {
         process.exit(1);
     }
 
-    // Pengecekan untuk roleList.json
+    // Load roleList.json
     if (fs.existsSync(roleListPath)) {
         const data = fs.readFileSync(roleListPath);
         if (data.length > 0) {
@@ -48,15 +48,15 @@ const loadData = () => {
                 process.exit(1);
             }
         } else {
-            console.warn('Warning: roleList.json is empty. Initializing as empty array.');
-            roleList = [];
+            console.warn('Warning: roleList.json is empty. Initializing as empty object.');
+            roleList = { guilds: {} };
         }
     } else {
-        console.warn('Warning: roleList.json not found. Creating empty array.');
-        roleList = [];
+        console.warn('Warning: roleList.json not found. Creating empty object.');
+        roleList = { guilds: {} };
     }
 
-    // Pengecekan untuk userData.json
+    // Load userData.json
     if (fs.existsSync(userDataPath)) {
         const data = fs.readFileSync(userDataPath);
         if (data.length > 0) {
@@ -76,7 +76,7 @@ const loadData = () => {
         userData = {};
     }
 
-    // Pengecekan untuk achievementList.json
+    // Load achievementList.json
     if (fs.existsSync(achievementListPath)) {
         const data = fs.readFileSync(achievementListPath);
         if (data.length > 0) {
@@ -96,7 +96,7 @@ const loadData = () => {
         achievementList = {};
     }
 
-    // Pengecekan untuk rules.json
+    // Load rules.json
     if (fs.existsSync(rulesPath)) {
         const data = fs.readFileSync(rulesPath);
         if (data.length > 0) {
@@ -115,13 +115,29 @@ const loadData = () => {
         console.warn('Warning: rules.json not found. Creating empty object.');
         rules = {};
     }
+
+    // Load serverList.json
+    if (fs.existsSync(serverListPath)) {
+        const data = fs.readFileSync(serverListPath);
+        if (data.length > 0) {
+            try {
+                serverList = JSON.parse(data);
+                console.log('[DataManager] Loaded serverList.json');
+            } catch (e) {
+                console.error('Error parsing serverList.json:', e);
+                process.exit(1);
+            }
+        } else {
+            console.warn('Warning: serverList.json is empty. Initializing as empty object.');
+            serverList = {};
+        }
+    } else {
+        console.warn('Warning: serverList.json not found. Creating empty object.');
+        serverList = {};
+    }
 };
 
-// Load data saat module di-import
 loadData();
-
-// Debug: Pastikan loadData adalah fungsi
-console.log('[DataManager] Type of loadData:', typeof loadData);
 
 function saveConfig() {
     try {
@@ -150,14 +166,55 @@ function saveData() {
     }
 }
 
+function saveAchievementList() {
+    try {
+        fs.writeFileSync(achievementListPath, JSON.stringify(achievementList, null, 2));
+        console.log('AchievementList saved successfully.');
+    } catch (error) {
+        console.error('Error saving achievementList:', error);
+    }
+}
+
+function saveRules() {
+    try {
+        fs.writeFileSync(rulesPath, JSON.stringify(rules, null, 2));
+        console.log('Rules saved successfully.');
+    } catch (error) {
+        console.error('Error saving rules:', error);
+    }
+}
+
+function saveServerList() {
+    try {
+        fs.writeFileSync(serverListPath, JSON.stringify(serverList, null, 2));
+        console.log('ServerList saved successfully.');
+    } catch (error) {
+        console.error('Error saving serverList:', error);
+    }
+}
+
+// Fungsi untuk memastikan serverList[guildId] selalu ada
+function ensureGuildConfig(guildId) {
+    if (!serverList[guildId]) {
+        serverList[guildId] = {};
+        saveServerList();
+        console.log(`[DataManager] Initialized config for guild: ${guildId}`);
+    }
+}
+
 module.exports = {
     config,
     roleList,
     userData,
     achievementList,
     rules,
+    serverList, // Tambah serverList ke export
     saveConfig,
     saveRoleList,
     saveData,
-    loadData // Tambah loadData ke export
+    saveAchievementList,
+    saveRules,
+    saveServerList, // Tambah saveServerList ke export
+    loadData,
+    ensureGuildConfig
 };

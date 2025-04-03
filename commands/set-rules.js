@@ -1,21 +1,32 @@
-const { SlashCommandBuilder, PermissionFlagsBits, ActionRowBuilder, ButtonBuilder, ButtonStyle, AttachmentBuilder, EmbedBuilder } = require('discord.js');
-const { config, saveConfig } = require('../utils/dataManager');
-const fs = require('fs');
-const path = require('path');
+const { SlashCommandBuilder, PermissionFlagsBits, ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder } = require('discord.js');
+const { config, saveConfig, rules, saveRules } = require('../utils/dataManager');
 
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('set-rules')
-        .setDescription('Mengatur pesan rules di channel tertentu.')
+        .setDescription('Set the rules message for the server.')
         .addChannelOption(option =>
             option.setName('channel')
-                .setDescription('Channel tempat pesan rules akan dikirim.')
+                .setDescription('The channel to send the rules message.')
                 .setRequired(true))
         .addRoleOption(option =>
-            option.setName('role')
-                .setDescription('Role yang akan diberikan setelah user menerima rules.')
+            option.setName('role1')
+                .setDescription('The first role to give after accepting rules.')
                 .setRequired(true))
+        .addStringOption(option =>
+            option.setName('rules')
+                .setDescription('The rules as text (e.g., "Rule 1: Be nice 😊\\nRule 2: No spamming 🚫")')
+                .setRequired(true))
+        .addRoleOption(option =>
+            option.setName('role2')
+                .setDescription('The second role to give after accepting rules (optional).')
+                .setRequired(false))
+        .addStringOption(option =>
+            option.setName('image')
+                .setDescription('URL of an image to display in the rules embed (optional).')
+                .setRequired(false))
         .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
+
     async execute(interaction) {
         if (interaction.deferred || interaction.replied) {
             console.log('Interaksi sudah diakui, melanjutkan proses...');
@@ -30,65 +41,68 @@ module.exports = {
         }
 
         const rulesChannel = interaction.options.getChannel('channel');
-        const rulesRole = interaction.options.getRole('role');
+        const rulesRole1 = interaction.options.getRole('role1');
+        const rulesRole2 = interaction.options.getRole('role2');
+        const rulesInput = interaction.options.getString('rules');
+        const imageUrl = interaction.options.getString('image');
 
-        const botMember = interaction.guild.members.me;
-        if (!rulesChannel.permissionsFor(botMember).has(['SendMessages', 'ViewChannel'])) {
-            return interaction.editReply({
-                content: 'Saya tidak punya izin untuk mengirim pesan atau melihat channel tersebut!'
+        if (!rulesChannel.permissionsFor(interaction.guild.members.me).has(['SendMessages', 'ViewChannel'])) {
+            return interaction.editReply({ content: 'I don\'t have permission to send messages or view that channel!' });
+        }
+
+        if (imageUrl) {
+            const urlPattern = /^(https?:\/\/.*\.(?:png|jpg|jpeg|gif|webp))/i;
+            if (!urlPattern.test(imageUrl)) {
+                return interaction.editReply({ content: 'URL gambar tidak valid! Pastikan URL mengarah ke gambar (png, jpg, jpeg, gif, atau webp).' });
+            }
+        }
+
+        const guildRules = [];
+        const ruleLines = rulesInput.split('\n');
+
+        for (const line of ruleLines) {
+            const trimmedLine = line.trim();
+            if (!trimmedLine) continue;
+
+            const [title, ...contentParts] = trimmedLine.split(':');
+            if (!title || !contentParts.length) {
+                return interaction.editReply({ content: 'Format aturan salah! Gunakan format "Rule 1: Isi aturan" untuk setiap baris.' });
+            }
+
+            const content = contentParts.join(':').trim();
+            if (!content) {
+                return interaction.editReply({ content: `Aturan "${title}" tidak boleh kosong!` });
+            }
+
+            guildRules.push({
+                title: title.trim(),
+                content: content
             });
+        }
+
+        if (guildRules.length === 0) {
+            return interaction.editReply({ content: 'Kamu harus memasukkan setidaknya satu aturan!' });
         }
 
         const guildId = interaction.guild.id;
-        console.log('Guild ID:', guildId);
         if (!config[guildId]) config[guildId] = {};
         config[guildId].rulesChannel = rulesChannel.id;
-        config[guildId].rulesRole = rulesRole.id;
+        config[guildId].rulesRole1 = rulesRole1.id;
+        config[guildId].rulesRole2 = rulesRole2 ? rulesRole2.id : null;
         saveConfig();
 
-        const rulesBannerUrl = config.rulesBanner || 'https://s6.gifyu.com/images/bbXrB.md.gif';
-        let bannerAttachment;
-        try {
-            bannerAttachment = new AttachmentBuilder(rulesBannerUrl, { name: 'rules-banner.gif' });
-        } catch (error) {
-            console.error('Gagal memproses URL GIF:', error.message);
-            return interaction.editReply({
-                content: 'Gagal memuat banner GIF. Pastikan URL di config.json valid.'
-            });
-        }
-
-        const rulesPath = 'D:\\Project\\CodeFauzanBot-v1\\botconfig\\rules.json';
-        console.log('Rules file path:', rulesPath);
-        let rulesData;
-        try {
-            const rawData = fs.readFileSync(rulesPath, 'utf8');
-            console.log('Raw data read:', rawData.substring(0, 100) + '...');
-            rulesData = JSON.parse(rawData);
-            console.log('Rules data parsed - defaultRules:', rulesData.defaultRules ? 'Exists' : 'Missing');
-            console.log('Rules data parsed - guildSpecific:', rulesData.guildSpecific ? 'Exists' : 'Missing');
-            console.log('Rules data parsed - guildSpecific[guildId]:', rulesData.guildSpecific ? rulesData.guildSpecific[guildId] : 'N/A');
-        } catch (error) {
-            console.error('Gagal membaca rules.json:', error.message);
-            return interaction.editReply({
-                content: 'Terjadi kesalahan saat membaca file rules. Silakan periksa file botconfig/rules.json: ' + error.message
-            });
-        }
-
-        const guildRules = rulesData.guildSpecific[guildId]?.categories || rulesData.defaultRules.categories;
-        if (!guildRules || guildRules.length === 0) {
-            console.error('GuildRules kosong atau tidak ditemukan:', guildRules);
-            console.error('Debug - rulesData.defaultRules:', rulesData.defaultRules);
-            console.error('Debug - rulesData.guildSpecific[guildId]:', rulesData.guildSpecific[guildId]);
-            return interaction.editReply({
-                content: 'Tidak ada rules yang ditemukan. Pastikan file botconfig/rules.json berisi data kategori yang valid di defaultRules atau guildSpecific.'
-            });
-        }
-        console.log('GuildRules:', guildRules);
+        if (!rules.guildSpecific) rules.guildSpecific = {};
+        rules.guildSpecific[guildId] = { categories: guildRules };
+        saveRules();
 
         const embeds = [];
         let currentEmbed = new EmbedBuilder()
-            .setColor('#00BFFF')
+            .setColor(config.colorthemecode || '#00BFFF')
             .setTitle('📜 Server Rules');
+
+        if (imageUrl) {
+            currentEmbed.setImage(imageUrl);
+        }
 
         let totalLength = 0;
         for (const category of guildRules) {
@@ -99,7 +113,7 @@ module.exports = {
             if (totalLength + fieldLength > 6000 || currentEmbed.data.fields?.length >= 25) {
                 embeds.push(currentEmbed);
                 currentEmbed = new EmbedBuilder()
-                    .setColor('#00BFFF')
+                    .setColor(config.colorthemecode || '#00BFFF')
                     .setTitle('📜 Server Rules (Continued)');
                 totalLength = 0;
             }
@@ -107,54 +121,28 @@ module.exports = {
             const truncatedContent = content.length > 1000 ? content.substring(0, 997) + '...' : content;
             currentEmbed.addFields({ name: title, value: truncatedContent });
             totalLength += fieldLength;
-            console.log(`Added field: ${title}, Length: ${fieldLength}`);
         }
 
         if (currentEmbed.data.fields?.length > 0) {
             embeds.push(currentEmbed);
         }
-        console.log('Embeds generated:', embeds.length);
-
-        try {
-            await rulesChannel.send({ files: [bannerAttachment] });
-            console.log('Banner GIF berhasil dikirim');
-        } catch (error) {
-            console.error('Gagal mengirim banner:', error.message);
-            return interaction.editReply({
-                content: 'Gagal mengirim banner GIF ke channel.'
-            });
-        }
-
-        if (embeds.length === 0) {
-            console.error('Tidak ada embed untuk dikirim');
-            return interaction.editReply({
-                content: 'Tidak ada rules untuk dikirim. Periksa file rules.json.'
-            });
-        }
 
         for (let i = 0; i < embeds.length; i++) {
             const isLastEmbed = i === embeds.length - 1;
-            try {
-                await rulesChannel.send({
-                    embeds: [embeds[i]],
-                    components: isLastEmbed ? [new ActionRowBuilder().addComponents(
-                        new ButtonBuilder()
-                            .setCustomId('accept_rules')
-                            .setLabel('Accept')
-                            .setStyle(ButtonStyle.Success)
-                    )] : undefined
-                });
-                console.log(`Embed ${i + 1} berhasil dikirim`);
-            } catch (error) {
-                console.error(`Gagal mengirim embed ${i + 1}:`, error.message);
-                return interaction.editReply({
-                    content: `Gagal mengirim salah satu bagian rules: ${error.message}`
-                });
-            }
+            await rulesChannel.send({
+                embeds: [embeds[i]],
+                components: isLastEmbed ? [new ActionRowBuilder().addComponents(
+                    new ButtonBuilder()
+                        .setCustomId('accept_rules')
+                        .setLabel('Accept')
+                        .setStyle(ButtonStyle.Success)
+                )] : undefined
+            });
         }
 
-        await interaction.editReply({
-            content: `Pesan rules berhasil diatur di ${rulesChannel}! Role ${rulesRole} akan diberikan setelah user menekan tombol Accept.`
-        });
+        const roleMessage = rulesRole2 
+            ? `Role ${rulesRole1} and ${rulesRole2} will be given after users press Accept.`
+            : `Role ${rulesRole1} will be given after users press Accept.`;
+        await interaction.editReply({ content: `Rules message set in ${rulesChannel}! ${roleMessage}` });
     },
 };

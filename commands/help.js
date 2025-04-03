@@ -1,4 +1,5 @@
 const { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
+const config = require('../botconfig/config.json');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -7,17 +8,18 @@ module.exports = {
     async execute(interaction, client) {
         // Gunakan client dari argumen, bukan interaction.client
         const commands = client.commands;
+        const prefix = config.prefix;
 
         const embed = new EmbedBuilder()
             .setTitle('📜 Daftar Command CodeFauzanBot')
-            .setDescription('Berikut adalah semua command yang tersedia. Kamu bisa pakai slash command (`/`) atau prefix (`..`).')
+            .setDescription('Berikut adalah semua command yang tersedia. Kamu bisa pakai slash command (`/`) atau prefix (\`${prefix}\`).')
             .setColor('#00BFFF')
             .setTimestamp()
             .setFooter({ text: '© @codefauzan' });
 
         commands.forEach(command => {
             embed.addFields({
-                name: `/${command.data.name} (atau ..${command.data.name})`,
+                name: `/${command.data.name} (atau ${prefix}${command.data.name})`,
                 value: command.data.description || 'Tidak ada deskripsi.',
                 inline: false
             });

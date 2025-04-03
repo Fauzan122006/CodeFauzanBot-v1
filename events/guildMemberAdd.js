@@ -1,6 +1,6 @@
 const { EmbedBuilder, AttachmentBuilder } = require('discord.js');
 const { config } = require('../utils/dataManager');
-const { userData } = require('../utils/functions');
+const { userData } = require('../utils/userDataHandler');
 const { createCanvas, loadImage } = require('@napi-rs/canvas');
 const fs = require('fs');
 

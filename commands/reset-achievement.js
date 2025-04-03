@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, EmbedBuilder, PermissionsBitField } = require('discord.js');
-const { userData, saveData } = require('../utils/functions');
+const { userData, saveData } = require('../utils/userDataHandler');
 const chalk = require('chalk'); // Import chalk untuk warna
 
 // Fungsi untuk log dengan timestamp dan warna

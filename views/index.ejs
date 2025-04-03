@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>CodeFauzanBot Dashboard</title>
+</head>
+
+<body>
+    <h1>CodeFauzanBot Dashboard</h1>
+    <h2>Server Configuration</h2>
+    <% Object.keys(config).filter(key=> key.match(/^\d+$/)).forEach(guildId => { %>
+        <form action="/update-config" method="POST">
+            <h3>Guild ID: <%= guildId %>
+            </h3>
+            <input type="hidden" name="guildId" value="<%= guildId %>">
+            <label>Welcome Channel: <input type="text" name="welcomeChannel"
+                    value="<%= config[guildId].welcomeChannel || '' %>"></label><br>
+            <label>Level Channel: <input type="text" name="levelChannel"
+                    value="<%= config[guildId].levelChannel || '' %>"></label><br>
+            <label>Achievement Channel: <input type="text" name="achievementChannel"
+                    value="<%= config[guildId].achievementChannel || '' %>"></label><br>
+            <label>Roles Channel: <input type="text" name="rolesChannel"
+                    value="<%= config[guildId].rolesChannel || '' %>"></label><br>
+            <label>Rules Channel: <input type="text" name="rulesChannel"
+                    value="<%= config[guildId].rulesChannel || '' %>"></label><br>
+            <label>Social Channel: <input type="text" name="socialChannel"
+                    value="<%= config[guildId].socialChannel || '' %>"></label><br>
+            <label>YouTube Channel ID: <input type="text" name="youtubeChannelId"
+                    value="<%= config[guildId].youtubeChannelId || '' %>"></label><br>
+            <button type="submit">Save</button>
+        </form>
+        <% }) %>
+</body>
+
+</html>

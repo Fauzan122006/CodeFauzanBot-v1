@@ -3,156 +3,297 @@
         "name": "Pro Typer",
         "description": "Send 1000 messages",
         "xpReward": 150,
-        "icon": "https://i.imgur.com/t5tuYA4.png"
+        "icon": "https://i.imgur.com/t5tuYA4.png",
+        "condition": {
+            "type": "threshold",
+            "key": "messageCount",
+            "value": 1000
+        }
     },
     "all-nighter": {
         "name": "All Nighter",
         "description": "Be active for 24 hours",
         "xpReward": 100,
-        "icon": "https://i.imgur.com/DqhZQkD.png"
+        "icon": "https://i.imgur.com/DqhZQkD.png",
+        "condition": {
+            "type": "threshold",
+            "key": "activeTime",
+            "value": 86400,
+            "unit": "seconds"
+        }
     },
     "chat-master": {
         "name": "Chat Master",
         "description": "Send 5000 messages",
         "xpReward": 200,
-        "icon": "https://i.imgur.com/sdFvPZ4.png"
+        "icon": "https://i.imgur.com/sdFvPZ4.png",
+        "condition": {
+            "type": "threshold",
+            "key": "messageCount",
+            "value": 5000
+        }
     },
     "voice-legend": {
         "name": "Voice Legend",
         "description": "Spend 10 hours in voice chat",
         "xpReward": 150,
-        "icon": "https://i.imgur.com/dv5jVFt.png"
+        "icon": "https://i.imgur.com/dv5jVFt.png",
+        "condition": {
+            "type": "threshold",
+            "key": "voiceTime",
+            "value": 36000,
+            "unit": "seconds"
+        }
     },
     "first-step": {
         "name": "First Step",
         "description": "Send your first message in the server!",
         "xpReward": 100,
-        "icon": "asset/achievement/first-step.png"
+        "icon": "asset/achievement/first-step.png",
+        "condition": {
+            "type": "threshold",
+            "key": "messageCount",
+            "value": 1
+        }
     },
     "chat-rookie": {
         "name": "Chat Rookie",
         "description": "Send 100 messages in the server.",
         "xpReward": 250,
-        "icon": "asset/achievement/chat-rookie.png"
+        "icon": "asset/achievement/chat-rookie.png",
+        "condition": {
+            "type": "threshold",
+            "key": "messageCount",
+            "value": 100
+        }
     },
     "social-butterfly": {
         "name": "Social Butterfly",
         "description": "Send 500 messages in the server.",
         "xpReward": 500,
-        "icon": "asset/achievement/social-butterfly.png"
+        "icon": "asset/achievement/social-butterfly.png",
+        "condition": {
+            "type": "threshold",
+            "key": "messageCount",
+            "value": 500
+        }
     },
     "message-master": {
         "name": "Message Master",
         "description": "Send 10,000 messages in the server.",
         "xpReward": 2000,
-        "icon": "asset/achievement/message-master.png"
+        "icon": "asset/achievement/message-master.png",
+        "condition": {
+            "type": "threshold",
+            "key": "messageCount",
+            "value": 10000
+        }
     },
     "voice-starter": {
         "name": "Voice Starter",
         "description": "Join a voice channel for the first time.",
         "xpReward": 100,
-        "icon": "asset/achievement/voice-starter.png"
+        "icon": "asset/achievement/voice-starter.png",
+        "condition": {
+            "type": "threshold",
+            "key": "voiceTime",
+            "value": 1,
+            "unit": "seconds"
+        }
     },
     "voice-enthusiast": {
         "name": "Voice Enthusiast",
         "description": "Spend 10 hours in voice channels.",
         "xpReward": 500,
-        "icon": "asset/achievement/voice-enthusiast.png"
+        "icon": "asset/achievement/voice-enthusiast.png",
+        "condition": {
+            "type": "threshold",
+            "key": "voiceTime",
+            "value": 36000,
+            "unit": "seconds"
+        }
     },
     "voice-king": {
         "name": "Voice King",
         "description": "Spend 100 hours in voice channels.",
         "xpReward": 1500,
-        "icon": "asset/achievement/voice-king.png"
+        "icon": "asset/achievement/voice-king.png",
+        "condition": {
+            "type": "threshold",
+            "key": "voiceTime",
+            "value": 360000,
+            "unit": "seconds"
+        }
     },
     "stay-awhile-and-listen": {
         "name": "Stay Awhile and Listen",
         "description": "Spend 3 hours in voice channels.",
         "xpReward": 300,
-        "icon": "asset/achievement/stay-awhile-and-listen.png"
+        "icon": "asset/achievement/stay-awhile-and-listen.png",
+        "condition": {
+            "type": "threshold",
+            "key": "voiceTime",
+            "value": 10800,
+            "unit": "seconds"
+        }
     },
     "true-star": {
         "name": "True Star",
         "description": "Add 100 reactions to messages in the server.",
         "xpReward": 300,
-        "icon": "asset/achievement/true-star.png"
+        "icon": "asset/achievement/true-star.png",
+        "condition": {
+            "type": "threshold",
+            "key": "reactionsGiven",
+            "value": 100
+        }
     },
     "night-owl": {
         "name": "Night Owl",
         "description": "Be active in the server between 12 AM and 5 AM.",
         "xpReward": 200,
-        "icon": "asset/achievement/night-owl.png"
+        "icon": "asset/achievement/night-owl.png",
+        "condition": {
+            "type": "timeRange",
+            "key": "lastActive",
+            "startHour": 0,
+            "endHour": 5
+        }
     },
     "early-bird": {
         "name": "Early Bird",
         "description": "Be active in the server between 5 AM and 8 AM.",
         "xpReward": 200,
-        "icon": "asset/achievement/early-bird.png"
+        "icon": "asset/achievement/early-bird.png",
+        "condition": {
+            "type": "timeRange",
+            "key": "lastActive",
+            "startHour": 5,
+            "endHour": 8
+        }
     },
     "level-up": {
         "name": "Level Up!",
         "description": "Reach level 10 in the server.",
         "xpReward": 500,
-        "icon": "asset/achievement/level-up.png"
+        "icon": "asset/achievement/level-up.png",
+        "condition": {
+            "type": "threshold",
+            "key": "level",
+            "value": 10
+        }
     },
     "level-pro": {
         "name": "Level Pro",
         "description": "Reach level 50 in the server.",
         "xpReward": 1500,
-        "icon": "asset/achievement/level-pro.png"
+        "icon": "asset/achievement/level-pro.png",
+        "condition": {
+            "type": "threshold",
+            "key": "level",
+            "value": 50
+        }
     },
     "level-legend": {
         "name": "Level Legend",
         "description": "Reach level 100 in the server.",
         "xpReward": 3000,
-        "icon": "asset/achievement/level-legend.png"
+        "icon": "asset/achievement/level-legend.png",
+        "condition": {
+            "type": "threshold",
+            "key": "level",
+            "value": 100
+        }
     },
     "reaction-king": {
         "name": "Reaction King",
         "description": "Add 100 reactions to messages in the server.",
         "xpReward": 300,
-        "icon": "asset/achievement/reaction-king.png"
+        "icon": "asset/achievement/reaction-king.png",
+        "condition": {
+            "type": "threshold",
+            "key": "reactionCount",
+            "value": 100
+        }
     },
     "event-joiner": {
         "name": "Event Joiner",
         "description": "Join your first event in the server.",
         "xpReward": 200,
-        "icon": "asset/achievement/event-joiner.png"
+        "icon": "asset/achievement/event-joiner.png",
+        "condition": {
+            "type": "threshold",
+            "key": "eventCount",
+            "value": 1
+        }
     },
     "event-master": {
         "name": "Event Master",
         "description": "Join 10 events in the server.",
         "xpReward": 1000,
-        "icon": "asset/achievement/event-master.png"
+        "icon": "asset/achievement/event-master.png",
+        "condition": {
+            "type": "threshold",
+            "key": "eventCount",
+            "value": 10
+        }
     },
     "meme-lord": {
         "name": "Meme Lord",
         "description": "Send 50 memes in the #meme channel.",
         "xpReward": 500,
-        "icon": "asset/achievement/meme-lord.png"
+        "icon": "asset/achievement/meme-lord.png",
+        "condition": {
+            "type": "threshold",
+            "key": "memeCount",
+            "value": 50
+        }
     },
     "helper": {
         "name": "Helper",
         "description": "Send 10 messages in the #support channel.",
         "xpReward": 300,
-        "icon": "asset/achievement/helper.png"
+        "icon": "asset/achievement/helper.png",
+        "condition": {
+            "type": "threshold",
+            "key": "supportMessages",
+            "value": 10
+        }
     },
     "gamer": {
         "name": "Gamer",
         "description": "Play games in the server for 5 hours.",
         "xpReward": 400,
-        "icon": "asset/achievement/gamer.png"
+        "icon": "asset/achievement/gamer.png",
+        "condition": {
+            "type": "threshold",
+            "key": "gameTime",
+            "value": 18000,
+            "unit": "seconds"
+        }
     },
     "server-booster": {
         "name": "Server Booster",
         "description": "Boost the server for the first time.",
         "xpReward": 1000,
-        "icon": "asset/achievement/server-booster.png"
+        "icon": "asset/achievement/server-booster.png",
+        "condition": {
+            "type": "boolean",
+            "key": "isBooster",
+            "value": true
+        }
     },
     "anniversary": {
         "name": "Anniversary",
         "description": "Stay in the server for 1 year.",
         "xpReward": 2000,
-        "icon": "asset/achievement/anniversary.png"
+        "icon": "asset/achievement/anniversary.png",
+        "condition": {
+            "type": "threshold",
+            "key": "joinDate",
+            "value": 31536000000,
+            "unit": "milliseconds",
+            "comparison": "timeElapsed"
+        }
     }
 }

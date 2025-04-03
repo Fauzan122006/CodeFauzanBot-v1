@@ -1,10 +1,9 @@
 const { EmbedBuilder } = require('discord.js');
-const { userData, getRequiredXP, getRank } = require('./functions');
+const { userData, initUser, saveData } = require('../utils/userDataHandler');
 const { config } = require('./dataManager');
 const { createLevelUpImage } = require('./levelImage');
-const chalk = require('chalk'); // Import chalk untuk warna
+const chalk = require('chalk');
 
-// Fungsi untuk log dengan timestamp dan warna
 const log = (module, message, level = 'info') => {
     const timestamp = new Date().toISOString();
     let coloredMessage;
@@ -28,12 +27,17 @@ const log = (module, message, level = 'info') => {
     console.log(coloredMessage);
 };
 
+function getRequiredXP(level) {
+    return (level * 100) + 1000;
+}
+
 async function handleLevelUp(userId, guild, member) {
     log('LevelUpHandler', `Starting level up check for user ${userId}`);
 
-    const user = userData[userId];
+    const guildId = guild.id;
+    const user = userData[userId]?.guilds?.[guildId];
     if (!user) {
-        log('LevelUpHandler', `User data not found for user ${userId}`, 'error');
+        log('LevelUpHandler', `User data not found for user ${userId} in guild ${guildId}`, 'error');
         return;
     }
 
@@ -44,17 +48,16 @@ async function handleLevelUp(userId, guild, member) {
     log('LevelUpHandler', `User ${userId} - Level: ${level}, XP: ${xp}, Required XP: ${requiredXP}`);
 
     if (xp < requiredXP) {
-        return; // Belum cukup XP untuk level up
+        return;
     }
 
-    // Level up
     level += 1;
     user.level = level;
     user.xp = xp - requiredXP;
+    user.coins += 100; // Bonus coins saat level up
 
-    const rank = getRank(userId);
+    const rank = getRank(userId, guildId);
 
-    const guildId = guild.id;
     const levelUpChannelId = config[guildId]?.levelChannel || config.defaultChannels?.levelChannel || guild.channels.cache.find(ch => ch.name === '✨〢・level-up')?.id;
 
     if (!levelUpChannelId) {
@@ -78,20 +81,17 @@ async function handleLevelUp(userId, guild, member) {
         return;
     }
 
-    // Cek apakah channel punya method permissionsFor
     if (!levelUpChannel.permissionsFor || typeof levelUpChannel.permissionsFor !== 'function') {
         log('LevelUpHandler', `Channel ${levelUpChannelId} does not have permissionsFor method. Channel type: ${levelUpChannel?.type}`, 'error');
         return;
     }
 
-    // Cek permission
     if (!levelUpChannel.permissionsFor(guild.members.me)?.has(['SendMessages', 'ViewChannel'])) {
         log('LevelUpHandler', `Bot lacks permissions (SendMessages, ViewChannel) for channel ${levelUpChannel.name} (${levelUpChannelId})`, 'error');
         return;
     }
 
     try {
-        // Cek apakah member valid, kalau gak valid, fetch ulang
         let fetchedMember = member;
         if (!fetchedMember || !fetchedMember.user || !fetchedMember.user.displayAvatarURL) {
             log('LevelUpHandler', `Invalid member data for user ${userId}, attempting to fetch...`, 'warning');
@@ -99,10 +99,9 @@ async function handleLevelUp(userId, guild, member) {
                 fetchedMember = await guild.members.fetch(userId);
             } catch (error) {
                 log('LevelUpHandler', `Failed to fetch member ${userId}: ${error.message}`, 'error');
-                // Kirim pesan level up tanpa gambar
                 const embed = new EmbedBuilder()
                     .setTitle('LEVEL UP!')
-                    .setDescription(`<@${userId}> has reached **Level ${level}**! 🎉\nRank: #${rank}`)
+                    .setDescription(`<@${userId}> has reached **Level ${level}**! 🎉\nRank: #${rank}\n+100 Coins`)
                     .setColor(config.colorthemecode || '#00FF00');
 
                 await levelUpChannel.send({ embeds: [embed] });
@@ -111,13 +110,11 @@ async function handleLevelUp(userId, guild, member) {
             }
         }
 
-        // Cek ulang setelah fetch
         if (!fetchedMember || !fetchedMember.user || !fetchedMember.user.displayAvatarURL) {
             log('LevelUpHandler', `Invalid member or user data for user ${userId} after fetch. Cannot generate level up image.`, 'error');
-            // Kirim pesan level up tanpa gambar
             const embed = new EmbedBuilder()
                 .setTitle('LEVEL UP!')
-                .setDescription(`<@${userId}> has reached **Level ${level}**! 🎉\nRank: #${rank}`)
+                .setDescription(`<@${userId}> has reached **Level ${level}**! 🎉\nRank: #${rank}\n+100 Coins`)
                 .setColor(config.colorthemecode || '#00FF00');
 
             await levelUpChannel.send({ embeds: [embed] });
@@ -125,12 +122,11 @@ async function handleLevelUp(userId, guild, member) {
             return;
         }
 
-        // Buat gambar level up
         const levelUpImage = await createLevelUpImage(fetchedMember.user, level, user.xp, rank);
 
         const embed = new EmbedBuilder()
             .setTitle('LEVEL UP!')
-            .setDescription(`<@${userId}> has reached **Level ${level}**! 🎉\nRank: #${rank}`)
+            .setDescription(`<@${userId}> has reached **Level ${level}**! 🎉\nRank: #${rank}\n+100 Coins`)
             .setColor(config.colorthemecode || '#00FF00')
             .setImage('attachment://level-up-image.png');
 
@@ -141,4 +137,4 @@ async function handleLevelUp(userId, guild, member) {
     }
 }
 
-module.exports = { handleLevelUp };
+module.exports = {getRequiredXP, handleLevelUp };

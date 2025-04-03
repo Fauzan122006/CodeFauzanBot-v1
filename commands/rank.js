@@ -1,6 +1,7 @@
 const { SlashCommandBuilder, AttachmentBuilder } = require('discord.js');
 const { createCanvas, loadImage } = require('@napi-rs/canvas');
-const { userData, initUser, getRequiredXP, getRank } = require('../utils/functions');
+const { userData, initUser } = require('../utils/userDataHandler');
+const { getRequiredXP } = require('../utils/levelUpHandler');
 
 module.exports = {
     data: new SlashCommandBuilder()
