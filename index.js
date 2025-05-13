@@ -93,7 +93,7 @@ client.once('ready', async () => {
 
     client.user.setPresence({
         activities: [{
-            name: 'Configure me at the dashboard!',
+            name: 'Configure me at codefauzanbot-v1-production.up.railway.app',
             type: ActivityType.Playing
         }],
         status: 'online'
