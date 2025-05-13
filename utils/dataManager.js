@@ -16,7 +16,7 @@ let rules = {};
 let serverList = {};
 
 const loadData = () => {
-    // Load config.json sebagai dasar
+    // Coba load config.json jika ada, jika tidak gunakan env langsung
     if (fs.existsSync(configPath)) {
         const data = fs.readFileSync(configPath);
         if (data.length > 0) {
@@ -25,19 +25,16 @@ const loadData = () => {
                 console.log('[DataManager] Loaded config.json');
             } catch (e) {
                 console.error('Error parsing config.json:', e);
-                process.exit(1);
             }
         } else {
-            console.error('Error: config.json is empty.');
-            process.exit(1);
+            console.warn('Warning: config.json is empty.');
         }
     } else {
-        console.error('Error: config.json not found in botconfig folder.');
-        process.exit(1);
+        console.warn('Warning: config.json not found in botconfig folder. Using environment variables.');
     }
 
-    // Override dengan environment variables jika di production (Railway)
-    if (process.env.NODE_ENV === 'production') {
+    // Gunakan environment variables sebagai sumber utama jika di production atau sebagai override
+    if (process.env.NODE_ENV === 'production' || !fs.existsSync(configPath)) {
         config.clienttoken = process.env.CLIENT_TOKEN || config.clienttoken || '';
         config.Note_Token = process.env.NOTE_TOKEN || config.Note_Token || 'Put Your Bot Token Above (If using replit, make a secret "clienttoken" and keep this empty)';
         config.clientname = process.env.CLIENT_NAME || config.clientname || 'CodeFauzan [TEST]';
@@ -79,7 +76,7 @@ const loadData = () => {
         config['997668978103164978'] = {
             welcomeChannel: process.env.SERVER_997668978103164978_WELCOME_CHANNEL || config['997668978103164978']?.welcomeChannel || '997668979021721644'
         };
-        console.log('[DataManager] Overridden config with environment variables');
+        console.log('[DataManager] Config set from environment variables.');
     }
 
     // Load file lain tetap seperti semula
