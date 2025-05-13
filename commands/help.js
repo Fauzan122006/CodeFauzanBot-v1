@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
-const config = require('../botconfig/config.json');
+const { config } = require('../utils/dataManager');
 
 module.exports = {
     data: new SlashCommandBuilder()
