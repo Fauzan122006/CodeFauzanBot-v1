@@ -7196,5 +7196,37 @@
     "gameTime": 0,
     "eventCount": 0,
     "isBooster": false
+  },
+  "970324258985213982": {
+    "xp": 0,
+    "level": 0,
+    "messageCount": 0,
+    "achievements": [],
+    "activeTime": 0,
+    "voiceTime": 0,
+    "lastActive": 1747128722088,
+    "joinDate": 1747128722088,
+    "reactionCount": 0,
+    "memeCount": 0,
+    "supportMessages": 0,
+    "gameTime": 0,
+    "eventCount": 0,
+    "isBooster": false
+  },
+  "619486641618157609": {
+    "xp": 0,
+    "level": 0,
+    "messageCount": 0,
+    "achievements": [],
+    "activeTime": 0,
+    "voiceTime": 0,
+    "lastActive": 1747128804427,
+    "joinDate": 1747128804427,
+    "reactionCount": 0,
+    "memeCount": 0,
+    "supportMessages": 0,
+    "gameTime": 0,
+    "eventCount": 0,
+    "isBooster": false
   }
 }
