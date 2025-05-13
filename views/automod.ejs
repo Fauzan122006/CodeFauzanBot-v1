@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Automod Settings - <%= guild.name %>
+    </title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Poppins", sans-serif;
+            background: linear-gradient(135deg, #1e2124 0%, #2c2f33 100%);
+            color: #ffffff;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 250px;
+            background: #2f3136;
+            padding: 20px;
+            border-right: 1px solid #36393f;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .sidebar h2 {
+            font-size: 22px;
+            margin-bottom: 20px;
+            color: #b9bbbe;
+            font-weight: 600;
+        }
+
+        .sidebar ul {
+            list-style: none;
+        }
+
+        .sidebar ul li {
+            margin-bottom: 10px;
+        }
+
+        .sidebar ul li a {
+            color: #b9bbbe;
+            text-decoration: none;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar ul li a:hover,
+        .sidebar ul li a.active {
+            background: linear-gradient(90deg, #5865f2, #7289da);
+            color: #ffffff;
+            transform: translateX(5px);
+        }
+
+        .sidebar ul li a i {
+            margin-right: 10px;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 40px;
+            background: transparent;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            background: linear-gradient(90deg, #5865f2, #7289da);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .back {
+            color: #5865f2;
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .back:hover {
+            color: #7289da;
+            text-decoration: underline;
+        }
+
+        .toggle-main {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .toggle-main label {
+            font-size: 16px;
+            font-weight: 500;
+            color: #ffffff;
+        }
+
+        .toggle-main .toggle-switch {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .toggle-main .toggle-switch input[type="checkbox"] {
+            display: none;
+        }
+
+        .toggle-main .toggle-switch label {
+            width: 50px;
+            height: 24px;
+            background: #40444b;
+            border-radius: 12px;
+            position: relative;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .toggle-main .toggle-switch label::after {
+            content: "";
+            width: 20px;
+            height: 20px;
+            background: #ffffff;
+            border-radius: 50%;
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            transition: transform 0.3s ease;
+        }
+
+        .toggle-main .toggle-switch input[type="checkbox"]:checked+label {
+            background: #5865f2;
+        }
+
+        .toggle-main .toggle-switch input[type="checkbox"]:checked+label::after {
+            transform: translateX(26px);
+        }
+
+        .automod-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .automod-card {
+            background: #2f3136;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .automod-card-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .automod-card-header i {
+            font-size: 20px;
+            color: #5865f2;
+        }
+
+        .automod-card-header h3 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .automod-card p {
+            font-size: 14px;
+            color: #b9bbbe;
+        }
+
+        .toggle-switch {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .toggle-switch input[type="checkbox"] {
+            display: none;
+        }
+
+        .toggle-switch label {
+            width: 50px;
+            height: 24px;
+            background: #40444b;
+            border-radius: 12px;
+            position: relative;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .toggle-switch label::after {
+            content: "";
+            width: 20px;
+            height: 20px;
+            background: #ffffff;
+            border-radius: 50%;
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            transition: transform 0.3s ease;
+        }
+
+        .toggle-switch input[type="checkbox"]:checked+label {
+            background: #5865f2;
+        }
+
+        .toggle-switch input[type="checkbox"]:checked+label::after {
+            transform: translateX(26px);
+        }
+
+        .edit-button {
+            padding: 10px;
+            background: #5865f2;
+            color: #ffffff;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .edit-button:hover {
+            background: #4752c4;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(88, 101, 242, 0.3);
+        }
+
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                border-right: none;
+                border-bottom: 1px solid #36393f;
+            }
+
+            .main-content {
+                padding: 20px;
+            }
+
+            .automod-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Sidebar -->
+    <%- include('template/sidebar', { guild: guild, currentPage: 'automod' }) %>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="header">
+                <a href="/dashboard/<%= guild.id %>" class="back">← Back to Dashboard</a>
+                <h1>Automod Settings - <%= guild.name %>
+                </h1>
+            </div>
+
+            <!-- Toggle Utama untuk Enable/Disable Semua Automod -->
+            <div class="toggle-main">
+                <label>Enable Automod</label>
+                <form method="POST" action="/dashboard/<%= guild.id %>/automod/toggle/all">
+                    <div class="toggle-switch">
+                        <input type="checkbox" id="automodEnabled" name="automodEnabled"
+                            <%=config.automod.enabled? 'checked' : '' %>>
+                        <label for="automodEnabled"></label>
+                    </div>
+                    <button type="submit" style="display: none"></button>
+                </form>
+            </div>
+
+            <div class="automod-grid">
+                <!-- Anti Spam Card -->
+                <div class="automod-card">
+                    <div class="automod-card-header">
+                        <i class="fas fa-comment-slash"></i>
+                        <h3>Anti Spam</h3>
+                    </div>
+                    <p>
+                        Prevent from sending <%= config.automod.antiSpam.messages || 5 %>
+                            messages in less than <%= config.automod.antiSpam.seconds || 5 %>
+                                seconds.
+                    </p>
+                    <form method="POST" action="/dashboard/<%= guild.id %>/automod/toggle/antiSpam">
+                        <div class="toggle-switch">
+                            <input type="checkbox" id="antiSpamEnabled" name="antiSpamEnabled"
+                                <%=config.automod.antiSpam.enabled ? 'checked' : '' %>>
+                            <label for="antiSpamEnabled"></label>
+                        </div>
+                        <button type="submit" style="display: none"></button>
+                    </form>
+                    <a href="/dashboard/<%= guild.id %>/automod/edit/antiSpam" class="edit-button">Edit Rule</a>
+                </div>
+
+                <!-- Anti Invite Card -->
+                <div class="automod-card">
+                    <div class="automod-card-header">
+                        <i class="fas fa-envelope"></i>
+                        <h3>Anti Invite</h3>
+                    </div>
+                    <p>Prevent from sending Discord invitations.</p>
+                    <form method="POST" action="/dashboard/<%= guild.id %>/automod/toggle/antiInvite">
+                        <div class="toggle-switch">
+                            <input type="checkbox" id="antiInviteEnabled" name="antiInviteEnabled"
+                                <%=config.automod.antiInvite.enabled ? 'checked' : '' %>>
+                            <label for="antiInviteEnabled"></label>
+                        </div>
+                        <button type="submit" style="display: none"></button>
+                    </form>
+                    <a href="/dashboard/<%= guild.id %>/automod/edit/antiInvite" class="edit-button">Edit Rule</a>
+                </div>
+
+                <!-- Anti Links Card -->
+                <div class="automod-card">
+                    <div class="automod-card-header">
+                        <i class="fas fa-link"></i>
+                        <h3>Anti Links</h3>
+                    </div>
+                    <p>Prevent from sending links.</p>
+                    <form method="POST" action="/dashboard/<%= guild.id %>/automod/toggle/antiLinks">
+                        <div class="toggle-switch">
+                            <input type="checkbox" id="antiLinksEnabled" name="antiLinksEnabled"
+                                <%=config.automod.antiLinks.enabled ? 'checked' : '' %>>
+                            <label for="antiLinksEnabled"></label>
+                        </div>
+                        <button type="submit" style="display: none"></button>
+                    </form>
+                    <a href="/dashboard/<%= guild.id %>/automod/edit/antiLinks" class="edit-button">Edit Rule</a>
+                </div>
+
+                <!-- Mentions Spam Card -->
+                <div class="automod-card">
+                    <div class="automod-card-header">
+                        <i class="fas fa-at"></i>
+                        <h3>Mentions Spam</h3>
+                    </div>
+                    <p>Prevent from sending messages with too many mentions.</p>
+                    <form method="POST" action="/dashboard/<%= guild.id %>/automod/toggle/mentionsSpam">
+                        <div class="toggle-switch">
+                            <input type="checkbox" id="mentionsSpamEnabled" name="mentionsSpamEnabled"
+                                <%=config.automod.mentionsSpam.enabled ? 'checked' : '' %>>
+                            <label for="mentionsSpamEnabled"></label>
+                        </div>
+                        <button type="submit" style="display: none"></button>
+                    </form>
+                    <a href="/dashboard/<%= guild.id %>/automod/edit/mentionsSpam" class="edit-button">Edit Rule</a>
+                </div>
+
+                <!-- Caps Spam Card -->
+                <div class="automod-card">
+                    <div class="automod-card-header">
+                        <i class="fas fa-font"></i>
+                        <h3>Capitals Spam</h3>
+                    </div>
+                    <p>Prevent from sending messages with only capital letters.</p>
+                    <form method="POST" action="/dashboard/<%= guild.id %>/automod/toggle/capsSpam">
+                        <div class="toggle-switch">
+                            <input type="checkbox" id="capsSpamEnabled" name="capsSpamEnabled"
+                                <%=config.automod.capsSpam.enabled ? 'checked' : '' %>>
+                            <label for="capsSpamEnabled"></label>
+                        </div>
+                        <button type="submit" style="display: none"></button>
+                    </form>
+                    <a href="/dashboard/<%= guild.id %>/automod/edit/capsSpam" class="edit-button">Edit Rule</a>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            // Auto-submit form saat toggle diubah
+            document
+                .querySelectorAll('.toggle-switch input[type="checkbox"]')
+                .forEach((checkbox) => {
+                    checkbox.addEventListener("change", () => {
+                        checkbox.closest("form").submit();
+                    });
+                });
+        </script>
+</body>
+
+</html>

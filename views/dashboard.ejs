@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CodeFauzanBot - Dashboard</title>
+    <!-- Font Awesome untuk ikon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts untuk font modern -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Whitney (mirip Discord) -->
+    <style>
+        @font-face {
+            font-family: 'Whitney';
+            src: url('https://cdn.jsdelivr.net/npm/@discordapp/font@1.0.0/Whitney-Book.woff2') format('woff2');
+            font-weight: 400;
+            font-style: normal;
+        }
+
+        @font-face {
+            font-family: 'Whitney';
+            src: url('https://cdn.jsdelivr.net/npm/@discordapp/font@1.0.0/Whitney-Medium.woff2') format('woff2');
+            font-weight: 500;
+            font-style: normal;
+        }
+
+        @font-face {
+            font-family: 'Whitney';
+            src: url('https://cdn.jsdelivr.net/npm/@discordapp/font@1.0.0/Whitney-Semibold.woff2') format('woff2');
+            font-weight: 600;
+            font-style: normal;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #1e2124 0%, #2c2f33 100%);
+            color: #ffffff;
+            margin: 0;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 250px;
+            background: #2f3136;
+            padding: 20px;
+            border-right: 1px solid #36393f;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .sidebar h2 {
+            font-size: 22px;
+            margin-bottom: 20px;
+            color: #b9bbbe;
+            font-weight: 600;
+        }
+
+        .sidebar ul {
+            list-style: none;
+        }
+
+        .sidebar ul li {
+            margin-bottom: 10px;
+        }
+
+        .sidebar ul li a {
+            color: #b9bbbe;
+            text-decoration: none;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar ul li a:hover,
+        .sidebar ul li a.active {
+            background: linear-gradient(90deg, #5865f2, #7289da);
+            color: #ffffff;
+            transform: translateX(5px);
+        }
+
+        .sidebar ul li a i {
+            margin-right: 10px;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 40px;
+            background: transparent;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .header .server-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .header .server-info img {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+        }
+
+        .header .server-info span {
+            font-size: 28px;
+            font-weight: 700;
+            background: linear-gradient(90deg, #5865f2, #7289da);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header .actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .header .actions a {
+            padding: 12px 24px;
+            background: linear-gradient(90deg, #5865f2, #7289da);
+            color: #ffffff;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .header .actions a:hover {
+            background: linear-gradient(90deg, #4752c4, #5865f2);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(88, 101, 242, 0.3);
+        }
+
+        .header .actions .premium {
+            background: linear-gradient(90deg, #f1c40f, #f7dc6f);
+            color: #1e2124;
+        }
+
+        .header .actions .premium:hover {
+            background: linear-gradient(90deg, #e2b60d, #f1c40f);
+            box-shadow: 0 5px 15px rgba(241, 196, 15, 0.3);
+        }
+
+        /* Statistik Section */
+        .stats-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: #2f3136;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .stat-header h3 {
+            font-size: 16px;
+            font-weight: 500;
+            color: #b9bbbe;
+            text-transform: uppercase;
+        }
+
+        .stat-header i {
+            font-size: 24px;
+            color: #5865f2;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        .stat-subvalue {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 12px;
+            color: #43b581;
+        }
+
+        .stat-subvalue i {
+            font-size: 12px;
+        }
+
+        .plugin-section {
+            margin-bottom: 30px;
+        }
+
+        .plugin-section h2 {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #b9bbbe;
+        }
+
+        .plugin-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .plugin {
+            background: #2f3136;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            transition: transform 0.3s ease;
+        }
+
+        .plugin:hover {
+            transform: translateY(-5px);
+        }
+
+        .plugin-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .plugin-header i {
+            font-size: 24px;
+            color: #5865f2;
+        }
+
+        .plugin-header h3 {
+            font-size: 18px;
+            font-weight: 500;
+            color: #ffffff;
+        }
+
+        .plugin p {
+            font-size: 14px;
+            color: #b9bbbe;
+            margin-bottom: 10px;
+        }
+
+        .plugin .status {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .plugin .status span {
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .plugin .status span.active {
+            background: #43b581;
+        }
+
+        .plugin .status span.inactive {
+            background: #ff5555;
+        }
+
+        .plugin a {
+            padding: 12px 24px;
+            background: linear-gradient(90deg, #5865f2, #7289da);
+            color: #ffffff;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .plugin a:hover {
+            background: linear-gradient(90deg, #4752c4, #5865f2);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(88, 101, 242, 0.3);
+        }
+
+        /* Responsivitas */
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                border-right: none;
+                border-bottom: 1px solid #36393f;
+            }
+
+            .main-content {
+                padding: 20px;
+            }
+
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            .header .actions {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            .plugin-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-section {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Sidebar -->
+    <%- include('template/sidebar', { guild: guild, currentPage: 'dashboard' }) %>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="header">
+                <div class="server-info">
+                    <img src="<%= guild.iconURL() || 'https://cdn.discordapp.com/embed/avatars/0.png' %>"
+                        alt="Server Icon">
+                    <span>
+                        <%= guild.name %>
+                    </span>
+                </div>
+                <div class="actions">
+                    <a href="/servers">Back to Servers</a>
+                    <a href="#" class="premium">Upgrade to Premium <i class="fas fa-crown"></i></a>
+                </div>
+            </div>
+
+            <!-- Statistics Section -->
+            <div class="stats-section">
+                <!-- Running Servers -->
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <h3>Running Servers</h3>
+                        <i class="fas fa-server"></i>
+                    </div>
+                    <div class="stat-value">
+                        <%= botGuildCount %>
+                    </div>
+                    <div class="stat-subvalue">
+                        <i class="fas fa-plus-circle"></i>
+                        <%= newGuildsLast30Minutes %> new servers manage in last 30 minutes
+                    </div>
+                </div>
+
+                <!-- Registered Users -->
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <h3>Registered Users</h3>
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="stat-value">
+                        <%= totalMembers %>
+                    </div>
+                    <div class="stat-subvalue">
+                        <i class="fas fa-user-check"></i>
+                        <%= membersLast24Hours %> logged in last 24 hours
+                    </div>
+                </div>
+
+                <!-- Currently Online -->
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <h3>Currently Online</h3>
+                        <i class="fas fa-smile"></i>
+                    </div>
+                    <div class="stat-value">
+                        <%= onlineMembers %>
+                    </div>
+                    <div class="stat-subvalue">
+                        <i class="fas fa-user-check"></i>
+                        <%= onlineLast30Minutes %> logged in last 30 minutes
+                    </div>
+                </div>
+
+                <!-- Banned Users -->
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <h3>Banned Users</h3>
+                        <i class="fas fa-ban"></i>
+                    </div>
+                    <div class="stat-value">
+                        <%= bannedMembers %>
+                    </div>
+                    <div class="stat-subvalue">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <%= bannedLast24Hours %> banned in last 24 hours
+                    </div>
+                </div>
+            </div>
+
+            <div class="plugin-section">
+                <h2>Essentials</h2>
+                <div class="plugin-grid">
+                    <div class="plugin">
+                        <div class="plugin-header">
+                            <i class="fas fa-handshake"></i>
+                            <h3>Welcome</h3>
+                        </div>
+                        <p>Send a welcome message to new members.</p>
+                        <div class="status">
+                            <span class="<%= serverConfig.welcome?.enabled ? 'active' : 'inactive' %>">
+                                <%= serverConfig.welcome?.enabled ? 'Active' : 'Inactive' %>
+                            </span>
+                        </div>
+                        <a href="/dashboard/<%= guild.id %>/welcome">Configure</a>
+                    </div>
+                    <div class="plugin">
+                        <div class="plugin-header">
+                            <i class="fas fa-book"></i>
+                            <h3>Rules</h3>
+                        </div>
+                        <p>Display server rules with an accept button.</p>
+                        <div class="status">
+                            <span class="<%= serverConfig.rules?.enabled ? 'active' : 'inactive' %>">
+                                <%= serverConfig.rules?.enabled ? 'Active' : 'Inactive' %>
+                            </span>
+                        </div>
+                        <a href="/dashboard/<%= guild.id %>/rules">Configure</a>
+                    </div>
+                    <div class="plugin">
+                        <div class="plugin-header">
+                            <i class="fas fa-users"></i>
+                            <h3>Roles</h3>
+                        </div>
+                        <p>Allow members to select roles from categories.</p>
+                        <div class="status">
+                            <span class="<%= serverConfig.roles?.enabled ? 'active' : 'inactive' %>">
+                                <%= serverConfig.roles?.enabled ? 'Active' : 'Inactive' %>
+                            </span>
+                        </div>
+                        <a href="/dashboard/<%= guild.id %>/roles">Configure</a>
+                    </div>
+                    <div class="plugin">
+                        <div class="plugin-header">
+                            <i class="fas fa-id-card"></i>
+                            <h3>Rank Card</h3>
+                        </div>
+                        <p>Customize the rank card for members.</p>
+                        <div class="status">
+                            <span class="active">Active</span>
+                        </div>
+                        <a href="/dashboard/<%= guild.id %>/rankcard">Configure</a>
+                    </div>
+
+                    <div class="plugin">
+                        <div class="plugin-header">
+                            <i class="fas fa-trophy"></i>
+                            <h3>Levels</h3>
+                        </div>
+                        <p>Give your members XP and Levels when they send messages.</p>
+                        <div class="status">
+                            <span class="<%= serverConfig.levels?.enabled ? 'active' : 'inactive' %>">
+                                <%= serverConfig.levels?.enabled ? 'Active' : 'Inactive' %>
+                            </span>
+                        </div>
+                        <a href="/dashboard/<%= guild.id %>/levels">Configure</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section Modules -->
+            <div class="plugin-section">
+                <h2>Modules</h2>
+                <div class="plugin-grid">
+                    <div class="plugin">
+                        <div class="plugin-header">
+                            <i class="fas fa-user-plus"></i>
+                            <h3>Auto Roles</h3>
+                        </div>
+                        <p>Automatically give roles to members and bots when they join the server.</p>
+                        <div class="status">
+                            <span class="<%= serverConfig.autoRoles?.enabled ? 'active' : 'inactive' %>">
+                                <%= serverConfig.autoRoles?.enabled ? 'Active' : 'Inactive' %>
+                            </span>
+                        </div>
+                        <a href="/dashboard/<%= guild.id %>/autoroles">Configure</a>
+                    </div>
+
+                    <div class="plugin">
+                        <div class="plugin-header">
+                            <i class="fas fa-shield-alt"></i>
+                            <h3>Automod</h3>
+                        </div>
+                        <p>Protect your server with automated moderation rules.</p>
+                        <div class="status">
+                            <span class="<%= serverConfig.automod?.enabled ? 'active' : 'inactive' %>">
+                                <%= serverConfig.automod?.enabled ? 'Active' : 'Inactive' %>
+                            </span>
+                        </div>
+                        <a href="/dashboard/<%= guild.id %>/automod">Configure</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+</body>
+
+</html>

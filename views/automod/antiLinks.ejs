@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Anti Link - <%= guild.name %>
+    </title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Choices.js CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #1e2124 0%, #2c2f33 100%);
+            color: #ffffff;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 250px;
+            background: #2f3136;
+            padding: 20px;
+            border-right: 1px solid #36393f;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .sidebar h2 {
+            font-size: 22px;
+            margin-bottom: 20px;
+            color: #b9bbbe;
+            font-weight: 600;
+        }
+
+        .sidebar ul {
+            list-style: none;
+        }
+
+        .sidebar ul li {
+            margin-bottom: 10px;
+        }
+
+        .sidebar ul li a {
+            color: #b9bbbe;
+            text-decoration: none;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar ul li a:hover,
+        .sidebar ul li a.active {
+            background: linear-gradient(90deg, #5865f2, #7289da);
+            color: #ffffff;
+            transform: translateX(5px);
+        }
+
+        .sidebar ul li a i {
+            margin-right: 10px;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 40px;
+            background: transparent;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            background: linear-gradient(90deg, #5865f2, #7289da);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .back {
+            color: #5865f2;
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .back:hover {
+            color: #7289da;
+            text-decoration: underline;
+        }
+
+        .form-container {
+            background: #2c2f33;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            border: 1px solid #5865f2;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group h2 {
+            font-size: 24px;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 5px;
+        }
+
+        .form-group .description {
+            font-size: 14px;
+            color: #b9bbbe;
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: #ffffff;
+        }
+
+        .form-group p {
+            font-size: 12px;
+            color: #b9bbbe;
+            margin-bottom: 10px;
+        }
+
+        .timeout-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .counter {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .counter button {
+            width: 30px;
+            height: 30px;
+            background: #5865f2;
+            border: none;
+            border-radius: 5px;
+            color: #ffffff;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .counter button:hover {
+            background: #4752c4;
+        }
+
+        .counter input[type="number"] {
+            width: 60px;
+            padding: 8px;
+            border: none;
+            border-radius: 5px;
+            background: #36393f;
+            color: #ffffff;
+            font-size: 14px;
+            text-align: center;
+        }
+
+        .counter input[type="number"]:focus {
+            background: #40444b;
+            outline: none;
+        }
+
+        .timeout-group select {
+            width: 120px;
+            padding: 8px;
+            border: none;
+            border-radius: 5px;
+            background: #36393f;
+            color: #ffffff;
+            font-size: 14px;
+            appearance: none;
+            background: #36393f url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIHZpZXdCb3g9IjAgMCA1NiAxNiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTQgNkw4IDEwTDEyIDYiIHN0cm9rZT0iI2I5YmJiZSIgc3Ryb2tlLXdpZHRoPSIxLjUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPgo8L3N2Zz4K') no-repeat right 10px center;
+            padding-right: 30px;
+        }
+
+        .timeout-group select:focus {
+            background: #40444b;
+            outline: none;
+        }
+
+        .punishment-select {
+            width: 150px;
+            padding: 8px;
+            border: none;
+            border-radius: 5px;
+            background: #36393f;
+            color: #ffffff;
+            font-size: 14px;
+            appearance: none;
+            background: #36393f url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIHZpZXdCb3g9IjAgMCA1NiAxNiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTQgNkw4IDEwTDEyIDYiIHN0cm9rZT0iI2I5YmJiZSIgc3Ryb2tlLXdpZHRoPSIxLjUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPgo8L3N2Zz4K') no-repeat right 10px center;
+            padding-right: 30px;
+        }
+
+        .punishment-select:focus {
+            background: #40444b;
+            outline: none;
+        }
+
+        .form-group .note {
+            font-size: 12px;
+            color: #ff8c00;
+            margin-top: 5px;
+        }
+
+        /* Styling untuk Links Whitelist */
+        .links-whitelist {
+            width: 100%;
+            padding: 8px;
+            border: none;
+            border-radius: 5px;
+            background: #36393f;
+            color: #ffffff;
+            font-size: 14px;
+        }
+
+        .links-whitelist:focus {
+            background: #40444b;
+            outline: none;
+        }
+
+        /* Choices.js Custom Styling */
+        .choices {
+            margin-bottom: 0;
+        }
+
+        .choices__inner {
+            background: #36393f;
+            border: 1px solid #5865f2;
+            border-radius: 5px;
+            padding: 5px;
+            min-height: 40px;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .choices__list--multiple .choices__item {
+            background: #5865f2;
+            border: none;
+            border-radius: 5px;
+            font-size: 12px;
+            padding: 5px 10px;
+            margin: 2px;
+        }
+
+        .choices__list--multiple .choices__item--selectable {
+            padding-right: 20px;
+        }
+
+        .choices__list--multiple .choices__button {
+            border-left: none;
+            margin-left: 5px;
+            color: #ffffff;
+        }
+
+        /* Styling untuk dropdown (tertutup dan terbuka) */
+        .choices__list--dropdown,
+        .choices__list--dropdown.is-active {
+            background: #2c2f33 !important;
+            /* Warna hitam sesuai tema */
+            border: 1px solid #5865f2 !important;
+            border-radius: 5px;
+        }
+
+        .choices__list--dropdown .choices__item,
+        .choices__list--dropdown.is-active .choices__item {
+            color: #ffffff !important;
+            /* Teks putih agar terlihat */
+            padding: 8px;
+        }
+
+        .choices__list--dropdown .choices__item--selectable.is-highlighted,
+        .choices__list--dropdown.is-active .choices__item--selectable.is-highlighted {
+            background: #5865f2 !important;
+            /* Warna highlight saat hover */
+        }
+
+        .choices__input {
+            background: transparent;
+            color: #ffffff;
+            border: none;
+        }
+
+        .choices__input:focus {
+            outline: none;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            flex: 1;
+        }
+
+        .save-button {
+            background: #43b581;
+            color: #ffffff;
+        }
+
+        .save-button:hover {
+            background: #3aa672;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(67, 181, 129, 0.3);
+        }
+
+        .discard-button {
+            background: #ff5555;
+            color: #ffffff;
+        }
+
+        .discard-button:hover {
+            background: #ff7777;
+            box-shadow: 0 5px 15px rgba(255, 85, 85, 0.3);
+        }
+
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                border-right: none;
+                border-bottom: 1px solid #36393f;
+            }
+
+            .main-content {
+                padding: 20px;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Sidebar -->
+    <%- include('../template/sidebar', { guild: guild, currentPage: 'automod' }) %>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="header">
+                <a href="/dashboard/<%= guild.id %>/automod" class="back">← Back to Automod</a>
+                <h1>Edit Anti Links - <%= guild.name %>
+                </h1>
+            </div>
+
+            <div class="form-container">
+                <form method="POST" action="/dashboard/<%= guild.id %>/automod/edit/antiLinks">
+                    <!-- Anti Links Settings -->
+                    <div class="form-group">
+                        <h2>Anti Links</h2>
+                        <p class="description">Prevent users from sending links.</p>
+                    </div>
+
+                    <!-- Punishment for Anti Links -->
+                    <div class="form-group">
+                        <label>Punishment</label>
+                        <p>The punishment to apply when the rule is triggered.</p>
+                        <select class="punishment-select" name="punishmentType">
+                            <option value="timeout" <%=(config?.antiLinks?.punishmentType || 'timeout' )==='timeout'
+                                ? 'selected' : '' %>>Timeout</option>
+                            <option value="warn" <%=(config?.antiLinks?.punishmentType || 'timeout' )==='warn'
+                                ? 'selected' : '' %>>Warn</option>
+                            <option value="kick" <%=(config?.antiLinks?.punishmentType || 'timeout' )==='kick'
+                                ? 'selected' : '' %>>Kick</option>
+                            <option value="ban" <%=(config?.antiLinks?.punishmentType || 'timeout' )==='ban'
+                                ? 'selected' : '' %>>Ban</option>
+                        </select>
+                        <div class="timeout-group">
+                            <div class="counter">
+                                <button type="button" onclick="updateCounter('antiLinksTimeoutDuration', -1)">-</button>
+                                <input type="number" name="antiLinksTimeoutDuration" id="antiLinksTimeoutDuration"
+                                    value="<%= config?.antiLinks?.timeout?.duration || 60 %>" min="1">
+                                <button type="button" onclick="updateCounter('antiLinksTimeoutDuration', 1)">+</button>
+                            </div>
+                            <select name="antiLinksTimeoutUnit">
+                                <option value="seconds" <%=(config?.antiLinks?.timeout?.unit || 'seconds' )==='seconds'
+                                    ? 'selected' : '' %>>Seconds</option>
+                                <option value="minutes" <%=(config?.antiLinks?.timeout?.unit || 'seconds' )==='minutes'
+                                    ? 'selected' : '' %>>Minutes</option>
+                                <option value="hours" <%=(config?.antiLinks?.timeout?.unit || 'seconds' )==='hours'
+                                    ? 'selected' : '' %>>Hours</option>
+                                <option value="days" <%=(config?.antiLinks?.timeout?.unit || 'seconds' )==='days'
+                                    ? 'selected' : '' %>>Days</option>
+                            </select>
+                        </div>
+                        <p class="note">Messages are always blocked.</p>
+                    </div>
+
+                    <!-- Channels Whitelist for Anti Links -->
+                    <div class="form-group">
+                        <label>Channels Whitelist</label>
+                        <p>The channels ignored by the rule.</p>
+                        <select name="antiLinksChannelWhitelist" class="channel-whitelist" multiple>
+                            <% channels.forEach(channel=> { %>
+                                <option value="<%= channel.id %>"
+                                    <%=config?.antiLinks?.channelWhitelist?.includes(channel.id) ? 'selected' : '' %>>
+                                    <%= channel.name %>
+                                </option>
+                                <% }) %>
+                        </select>
+                    </div>
+
+                    <!-- Roles Whitelist for Anti Links -->
+                    <div class="form-group">
+                        <label>Roles Whitelist</label>
+                        <p>The roles ignored by the rule.</p>
+                        <select name="antiLinksRoleWhitelist" class="role-whitelist" multiple>
+                            <% roles.forEach(role=> { %>
+                                <option value="<%= role.id %>" <%=config?.antiLinks?.roleWhitelist?.includes(role.id)
+                                    ? 'selected' : '' %>><%= role.name %>
+                                </option>
+                                <% }) %>
+                        </select>
+                        <p class="note">Members with the Administrator or Manage Server permissions are always ignored.
+                        </p>
+                    </div>
+
+                    <!-- Links Whitelist for Anti Links -->
+                    <div class="form-group">
+                        <label>Links Whitelist</label>
+                        <p>The links that are ignored by the rule. Use * for partial matching (e.g., *.youtube.com).</p>
+                        <textarea name="antiLinksLinksWhitelist" class="links-whitelist" rows="3"
+                            placeholder="Enter links (one per line, e.g., *.youtube.com, *.github.com)"><%= config?.antiLinks?.linksWhitelist?.join('\n') || '' %></textarea>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="action-buttons">
+                        <button type="submit" class="save-button">Save Changes</button>
+                        <button type="button" class="discard-button"
+                            onclick="window.location.href='/dashboard/<%= guild.id %>/automod'">Discard</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Choices.js JS -->
+        <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+        <script>
+            // Counter functionality
+            function updateCounter(inputId, delta) {
+                const input = document.getElementById(inputId);
+                let value = parseInt(input.value) || 0;
+                value = Math.max(1, value + delta);
+                input.value = value;
+            }
+
+            // Initialize Choices.js for channel whitelist
+            const channelWhitelist = new Choices('.channel-whitelist', {
+                removeItemButton: true,
+                placeholderValue: 'Select channels...',
+                noChoicesText: 'No channels available',
+                itemSelectText: '',
+            });
+
+            // Initialize Choices.js for role whitelist
+            const roleWhitelist = new Choices('.role-whitelist', {
+                removeItemButton: true,
+                placeholderValue: 'Select roles...',
+                noChoicesText: 'No roles available',
+                itemSelectText: '',
+            });
+        </script>
+</body>
+
+</html>

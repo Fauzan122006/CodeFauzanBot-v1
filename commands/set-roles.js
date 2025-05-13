@@ -1,38 +1,69 @@
-const { SlashCommandBuilder, PermissionFlagsBits, ChannelType } = require('discord.js');
-const { config, saveConfig } = require('../utils/dataManager');
+const { SlashCommandBuilder, PermissionFlagsBits, EmbedBuilder, StringSelectMenuBuilder, StringSelectMenuOptionBuilder, ActionRowBuilder } = require('discord.js');
+const { serverList, saveServerList } = require('../utils/dataManager');
 
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('set-roles')
-        .setDescription('Atur channel untuk embed daftar peran')
+        .setDescription('Set the roles message for the server.')
         .addChannelOption(option =>
             option.setName('channel')
-                .setDescription('Channel untuk mengirim embed daftar peran')
+                .setDescription('The channel to send the roles message.')
                 .setRequired(true))
         .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
+
     async execute(interaction) {
-        await interaction.deferReply({ flags: 64 });
+        await interaction.deferReply();
 
         const channel = interaction.options.getChannel('channel');
-        const guildId = interaction.guildId;
-
-        // Cek apakah channel-nya text channel
-        if (channel.type !== ChannelType.GuildText) {
-            await interaction.editReply({ content: 'Channel yang dipilih bukan text channel! Silakan pilih text channel.' });
-            return;
+        if (!channel.isTextBased() || channel.isThread()) {
+            return interaction.editReply({ content: 'Please select a text channel!' });
         }
 
-        // Cek izin bot di channel
-        if (!channel.permissionsFor(interaction.guild.members.me).has(['SendMessages', 'ViewChannel', 'EmbedLinks'])) {
-            await interaction.editReply({ content: 'Bot tidak memiliki izin untuk mengirim pesan atau embed di channel tersebut! Pastikan bot punya izin SendMessages, ViewChannel, dan EmbedLinks.' });
-            return;
+        if (!channel.permissionsFor(interaction.guild.members.me).has(['SendMessages', 'ViewChannel'])) {
+            return interaction.editReply({ content: 'I don\'t have permission to send messages or view that channel!' });
         }
 
-        // Simpan channel ke config
-        if (!config[guildId]) config[guildId] = {};
-        config[guildId].rolesChannel = channel.id;
-        saveConfig();
+        const guildId = interaction.guild.id;
+        if (!serverList[guildId]) serverList[guildId] = {};
+        serverList[guildId].roles = {
+            enabled: true,
+            channel: channel.id,
+            categories: serverList[guildId].roles?.categories || []
+        };
+        saveServerList();
 
-        await interaction.editReply({ content: `Channel untuk daftar peran telah diatur ke ${channel}!` });
+        const categories = serverList[guildId].roles.categories || [];
+        if (categories.length === 0) {
+            return interaction.editReply({ content: 'No role categories defined. Please set up categories in the dashboard.' });
+        }
+
+        for (const category of categories) {
+            const embed = new EmbedBuilder()
+                .setTitle(category.name)
+                .setColor('#00BFFF');
+
+            if (category.image) {
+                embed.setImage(category.image);
+            }
+
+            const options = category.roles.map(roleName => 
+                new StringSelectMenuOptionBuilder()
+                    .setLabel(roleName)
+                    .setValue(roleName)
+            );
+
+            if (options.length === 0) continue;
+
+            const selectMenu = new StringSelectMenuBuilder()
+                .setCustomId(`select-role-${category.name}`)
+                .setPlaceholder(`Select a role from ${category.name}`)
+                .addOptions(options);
+
+            const row = new ActionRowBuilder().addComponents(selectMenu);
+
+            await channel.send({ embeds: [embed], components: [row] });
+        }
+
+        await interaction.editReply({ content: `Roles message set in ${channel}!` });
     },
 };

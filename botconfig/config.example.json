@@ -1,0 +1,51 @@
+{
+    "clienttoken": "BOTTOKEN",
+    "Note_Token": "Put Your Bot Token Above (If using replit, make a secret 'clienttoken' and keep this empty)",
+    "clientname": "CodeFauzan [TEST]",
+    "clientsecret": "CLIENT_SECRET",
+    "clientid": "CLIENT_ID",
+    "callbackurl": "http://localhost:3000/auth/discord/callback",
+    "sessionsecret": "your-very-long-and-random-session-secret-1234567890",
+    "TestingServerID": "997668978103164978",
+    "clientavatar": "",
+    "prefix": "!!",
+    "developerID": [
+      "836333707680809041"
+    ],
+    "spotifyClientId": "",
+    "spotifyClientSecret": "",
+    "spotifyRefreshToken": "",
+    "colorthemecode": "00BFFF",
+    "randomMessages_Cooldown": [
+      "Wait Dont Spam...",
+      "Spaming Isn't Cool....",
+      "Never Gonna Let You Down",
+      "Hold ur horses....",
+      "Are you wild?"
+    ],
+    "NOTE": "IF YOU DONT PUT STUFF HERE IT WILL THROW ERRS",
+    "topgg": "",
+    "defaultChannels": {
+      "welcomeChannel": "",
+      "levelChannel": "",
+      "achievementChannel": "",
+      "rolesChannel": ""
+    },
+    "levelUpImage": "https://s6.gifyu.com/images/bbXYO.gif",
+    "welcomeImage": "https://s6.gifyu.com/images/bbXYO.gif",
+    "rolesImage": "https://example.com/roles-background.gif",
+    "rulesBanner": "https://s6.gifyu.com/images/bz2Gc.gif",
+    "lastYouTubeVideoId": "R6wFMjABpjU",
+    "youtubeApiKey": "YOUTUBE_API_KEY",
+    "youtubeChannelId": "YOUTUBE_CHANNEL_ID",
+    "categoryImages": {
+      "Games Catalog": "https://s6.gifyu.com/images/bbXYP.gif",
+      "PC & Mobile Games Catalog": "https://s6.gifyu.com/images/bbXru.md.gif",
+      "Hobbies Catalog": "https://s6.gifyu.com/images/bbXrf.gif",
+      "Entertainment Catalog": "https://s6.gifyu.com/images/bbXrB.md.gif",
+      "Notification Catalog": "https://s6.gifyu.com/images/bbXtb.gif"
+    },
+    "997668978103164978": {
+      "welcomeChannel": "CHANNEL_ID"
+    }
+  }

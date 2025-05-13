@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CodeFauzanBot - Auto Roles Settings</title>
+    <!-- Font Awesome untuk ikon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts untuk font modern -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Whitney (mirip Discord) -->
+    <style>
+        @font-face {
+            font-family: 'Whitney';
+            src: url('https://cdn.jsdelivr.net/npm/@discordapp/font@1.0.0/Whitney-Book.woff2') format('woff2');
+            font-weight: 400;
+            font-style: normal;
+        }
+
+        @font-face {
+            font-family: 'Whitney';
+            src: url('https://cdn.jsdelivr.net/npm/@discordapp/font@1.0.0/Whitney-Medium.woff2') format('woff2');
+            font-weight: 500;
+            font-style: normal;
+        }
+
+        @font-face {
+            font-family: 'Whitney';
+            src: url('https://cdn.jsdelivr.net/npm/@discordapp/font@1.0.0/Whitney-Semibold.woff2') format('woff2');
+            font-weight: 600;
+            font-style: normal;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #1e2124 0%, #2c2f33 100%);
+            color: #ffffff;
+            margin: 0;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 250px;
+            background: #2f3136;
+            padding: 20px;
+            border-right: 1px solid #36393f;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .sidebar h2 {
+            font-size: 22px;
+            margin-bottom: 20px;
+            color: #b9bbbe;
+            font-weight: 600;
+        }
+
+        .sidebar ul {
+            list-style: none;
+        }
+
+        .sidebar ul li {
+            margin-bottom: 10px;
+        }
+
+        .sidebar ul li a {
+            color: #b9bbbe;
+            text-decoration: none;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar ul li a:hover,
+        .sidebar ul li a.active {
+            background: linear-gradient(90deg, #5865f2, #7289da);
+            color: #ffffff;
+            transform: translateX(5px);
+        }
+
+        .sidebar ul li a i {
+            margin-right: 10px;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 40px;
+            background: transparent;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            background: linear-gradient(90deg, #5865f2, #7289da);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .back {
+            color: #5865f2;
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .back:hover {
+            color: #7289da;
+            text-decoration: underline;
+        }
+
+        .content-container {
+            display: flex;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+
+        .form-container {
+            background: #2f3136;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+            flex: 1;
+            min-width: 300px;
+            transition: transform 0.3s ease;
+        }
+
+        .form-container:hover {
+            transform: translateY(-5px);
+        }
+
+        .preview-container {
+            background: #2f3136;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+            flex: 1;
+            min-width: 300px;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.3s ease;
+        }
+
+        .preview-container:hover {
+            transform: translateY(-5px);
+        }
+
+        .preview-container h3 {
+            font-size: 18px;
+            font-weight: 500;
+            margin-bottom: 20px;
+            color: #b9bbbe;
+            text-align: center;
+        }
+
+        .preview-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .preview-content p {
+            font-size: 14px;
+            color: #b9bbbe;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: #b9bbbe;
+        }
+
+        .form-group input[type="checkbox"] {
+            width: auto;
+            margin-right: 10px;
+            accent-color: #5865f2;
+        }
+
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            background: #36393f;
+            color: #ffffff;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .form-group select:focus {
+            background: #40444b;
+            box-shadow: 0 0 0 2px #5865f2;
+            outline: none;
+        }
+
+        .form-group select {
+            appearance: none;
+            background: #36393f url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIHZpZXdCb3g9IjAgMCA1NiAxNiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTQgNkw4IDEwTDEyIDYiIHN0cm9rZT0iI2I5YmJiZSIgc3Ryb2tlLXdpZHRoPSIxLjUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPgo8L3N2Zz4K') no-repeat right 10px center;
+            padding-right: 30px;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        button {
+            padding: 12px 24px;
+            background: linear-gradient(90deg, #5865f2, #7289da);
+            color: #ffffff;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        button:hover {
+            background: linear-gradient(90deg, #4752c4, #5865f2);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(88, 101, 242, 0.3);
+        }
+
+        button i {
+            font-size: 16px;
+        }
+
+        button.danger {
+            background: linear-gradient(90deg, #ff5555, #ff7777);
+        }
+
+        button.danger:hover {
+            background: linear-gradient(90deg, #ff7777, #ff9999);
+            box-shadow: 0 5px 15px rgba(255, 85, 85, 0.3);
+        }
+
+        /* Responsivitas */
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                border-right: none;
+                border-bottom: 1px solid #36393f;
+            }
+
+            .main-content {
+                padding: 20px;
+            }
+
+            .content-container {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Sidebar -->
+    <%- include('template/sidebar', { guild: guild, currentPage: 'autoroles' }) %>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="header">
+                <a href="/dashboard/<%= guild.id %>" class="back">← Back to Dashboard</a>
+                <h1>Auto Roles Settings - <%= guild.name %>
+                </h1>
+            </div>
+
+            <div class="content-container">
+                <!-- Form Container -->
+                <div class="form-container">
+                    <form method="POST" action="/dashboard/<%= guild.id %>/autoroles" id="autoRolesForm">
+                        <!-- Enable Auto Roles -->
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" name="enabled" <%=config.enabled ? 'checked' : '' %>>
+                                Enable Auto Roles
+                            </label>
+                        </div>
+
+                        <!-- Join Role -->
+                        <div class="form-group">
+                            <label for="joinRole">Join Role (The role to give to new members)</label>
+                            <select name="joinRole" id="joinRole">
+                                <option value="">None</option>
+                                <% guild.roles.cache .filter(role=> !role.managed && role.name !== '@everyone')
+                                    .sort((a, b) => b.position - a.position)
+                                    .forEach(role => { %>
+                                    <option value="<%= role.id %>" <%=config.joinRole===role.id ? 'selected' : '' %>><%=
+                                            role.name %>
+                                    </option>
+                                    <% }) %>
+                            </select>
+                        </div>
+
+                        <!-- Bot Role -->
+                        <div class="form-group">
+                            <label for="botRole">Bot Role (The role to give to new bots)</label>
+                            <select name="botRole" id="botRole">
+                                <option value="">None</option>
+                                <% guild.roles.cache .filter(role=> !role.managed && role.name !== '@everyone')
+                                    .sort((a, b) => b.position - a.position)
+                                    .forEach(role => { %>
+                                    <option value="<%= role.id %>" <%=config.botRole===role.id ? 'selected' : '' %>><%=
+                                            role.name %>
+                                    </option>
+                                    <% }) %>
+                            </select>
+                        </div>
+
+                        <!-- Tombol Aksi -->
+                        <div class="action-buttons">
+                            <button type="submit">
+                                <i class="fas fa-save"></i> Save
+                            </button>
+                            <button type="button" class="danger"
+                                onclick="window.location.href='/dashboard/<%= guild.id %>'">
+                                <i class="fas fa-times"></i> Discard
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Preview Container -->
+                <div class="preview-container">
+                    <h3>Auto Roles Preview</h3>
+                    <div class="preview-content">
+                        <p>This feature will automatically assign the selected roles to new members and bots when they
+                            join
+                            the server.</p>
+                        <p><strong>Join Role:</strong>
+                            <%= guild.roles.cache.get(config.joinRole)?.name || 'None' %>
+                        </p>
+                        <p><strong>Bot Role:</strong>
+                            <%= guild.roles.cache.get(config.botRole)?.name || 'None' %>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+</body>
+
+</html>

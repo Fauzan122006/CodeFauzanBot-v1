@@ -1,13 +1,651 @@
 {
-    "997668978103164978": {
-        "levelChannel": "1015258349719277618",
-        "achievementChannel": "1015258349719277618",
-        "welcomeChannel": "997668979021721644",
-        "rolesChannel": "1015205691788640296",
-        "rulesChannel": "1002847565865304134",
-        "rulesRole": "1015584843641397248",
-        "socialChannel": "997672317134053467",
-        "rulesRole1": "1015584843641397248",
-        "rulesRole2": null
+  "997668978103164978": {
+    "welcome": {
+      "enabled": true,
+      "channel": "997668979021721644",
+      "messageType": "text",
+      "font": "Anime Ace 2.0 BB",
+      "title": "Welcome to {server}",
+      "subtitle": "You are member #{server_member_count}.",
+      "welcomeText": "Hey {user}, selamat datang di {server}!\r\n\r\n silahkan baca rules di ⁠<#997672048463720448>\r\n pilih role di ⁠<#1015205691788640296>\r\n dan intro diri di <#1015250939931807756>\r\n\r\nSemoga betah yaa 😊",
+      "backgroundImage": "https://discordhome.com/user_upload/backgrounds/1240background.jpg",
+      "backgroundColor": "#000000",
+      "overlayOpacity": 0.5,
+      "embedColor": "#5865f2",
+      "welcomeTextColor": "#ffffff",
+      "welcomeNeonColor": "#ffffff",
+      "memberTextColor": "#ffffff"
+    },
+    "rules": {
+      "enabled": true,
+      "channel": "1196429910626025472",
+      "html": "<p>Welcome to YT : FauzanEditz!</p><p>This is the beginning of this server.</p><p>&nbsp;A. Respect satu sama lain</p><p>Tidak ada toleransi untuk tindakan pelecehan, diskriminasi, intimidasi, rasisme, mockery, doxxing, dan ujaran kebencian dalam bentuk apapun. Kita adalah satu komunitas dan karena itu, harus memperlakukan satu sama lain dengan hormat.</p><p>&nbsp;B. Tata Krama</p><p>• Dilarang menggunakan kata atau frasa yang tidak senonoh, atau tidak pada tempatnya di text-channel atau voice-channel dalam bahasa apapun.</p><p>• Dilarang melakukan tindakan diskriminasi terhadap member lain.</p><p>• Gunakan bahasa yang sopan dan hindari bahasa kasar kecuali dalam konteks yang diperbolehkan (misalnya channel tertentu).</p><p>&nbsp;C. Konten dan Perilaku</p><p>• Dilarang mengirimkan konten NSFW (Not Safe For Work) seperti gambar, video, atau tautan tanpa izin dari admin.</p><p>• Dilarang memposting iklan, promosi, atau tautan afiliasi tanpa persetujuan dari staf.</p><p>• Dilarang mengirimkan spam, pesan berulang, atau mention massal tanpa alasan yang jelas.</p><p>• Jaga privasi member lain; jangan meminta informasi pribadi seperti alamat atau nomor telepon.</p><p>&nbsp;D. Penggunaan Channel</p><p>• Gunakan channel sesuai dengan fungsinya (misalnya #general untuk chat biasa, #bot untuk perintah bot).</p><p>• Dilarang mengubah topik diskusi secara tiba-tiba di channel yang sudah memiliki tema tertentu.</p><p>• Jika ada channel voice, pastikan suara tidak terlalu keras atau mengganggu member lain.</p><p>&nbsp;E. Staf dan Moderasi</p><p>• Hormati keputusan staf dan admin; jika ada masalah, laporkan melalui DM atau channel khusus (misalnya #report).</p><p>• Dilarang berdebat dengan staf di public channel; gunakan DM untuk diskusi pribadi.</p><p>• Sanksi seperti mute, kick, atau ban dapat diberikan jika melanggar aturan, tergantung tingkat pelanggaran.</p><p>&nbsp;F. Keamanan dan Bot</p><p>• Dilarang menggunakan bot atau script untuk mengganggu server (misalnya spam atau flood).</p><p>• Laporkan bug atau perilaku mencurigakan kepada staf segera melalui channel #report.</p><p>• Jangan membagikan token bot atau informasi sensitif lainnya di server.</p>",
+      "markdown": "Welcome to YT : FauzanEditz!\n\nThis is the beginning of this server.\n\nA. Respect satu sama lain\n\nTidak ada toleransi untuk tindakan pelecehan, diskriminasi, intimidasi, rasisme, mockery, doxxing, dan ujaran kebencian dalam bentuk apapun. Kita adalah satu komunitas dan karena itu, harus memperlakukan satu sama lain dengan hormat.\n\nB. Tata Krama\n\n• Dilarang menggunakan kata atau frasa yang tidak senonoh, atau tidak pada tempatnya di text-channel atau voice-channel dalam bahasa apapun.\n\n• Dilarang melakukan tindakan diskriminasi terhadap member lain.\n\n• Gunakan bahasa yang sopan dan hindari bahasa kasar kecuali dalam konteks yang diperbolehkan (misalnya channel tertentu).\n\nC. Konten dan Perilaku\n\n• Dilarang mengirimkan konten NSFW (Not Safe For Work) seperti gambar, video, atau tautan tanpa izin dari admin.\n\n• Dilarang memposting iklan, promosi, atau tautan afiliasi tanpa persetujuan dari staf.\n\n• Dilarang mengirimkan spam, pesan berulang, atau mention massal tanpa alasan yang jelas.\n\n• Jaga privasi member lain; jangan meminta informasi pribadi seperti alamat atau nomor telepon.\n\nD. Penggunaan Channel\n\n• Gunakan channel sesuai dengan fungsinya (misalnya #general untuk chat biasa, #bot untuk perintah bot).\n\n• Dilarang mengubah topik diskusi secara tiba-tiba di channel yang sudah memiliki tema tertentu.\n\n• Jika ada channel voice, pastikan suara tidak terlalu keras atau mengganggu member lain.\n\nE. Staf dan Moderasi\n\n• Hormati keputusan staf dan admin; jika ada masalah, laporkan melalui DM atau channel khusus (misalnya #report).\n\n• Dilarang berdebat dengan staf di public channel; gunakan DM untuk diskusi pribadi.\n\n• Sanksi seperti mute, kick, atau ban dapat diberikan jika melanggar aturan, tergantung tingkat pelanggaran.\n\nF. Keamanan dan Bot\n\n• Dilarang menggunakan bot atau script untuk mengganggu server (misalnya spam atau flood).\n\n• Laporkan bug atau perilaku mencurigakan kepada staf segera melalui channel #report.\n\n• Jangan membagikan token bot atau informasi sensitif lainnya di server.",
+      "image": "https://media.discordapp.net/attachments/997672048463720448/1351153896705359903/rules-banner.gif?ex=67f1bb60&is=67f069e0&hm=982f9997d71d577c3591bc6b9134ac7a98a09b5182b4b09e17ab54f2930280be&=&width=850&height=300",
+      "embedColor": "#0084ff",
+      "buttonColor": "#58f387",
+      "role1": "1015584843641397248",
+      "role2": null
+    },
+    "roles": {
+      "enabled": true,
+      "channel": "1002847565865304134",
+      "categories": [
+        {
+          "name": "Games Catalog",
+          "image": "https://s6.gifyu.com/images/bbXYP.gif",
+          "roles": [
+            {
+              "name": "Nintendo Switch",
+              "emoji": "🎮"
+            },
+            {
+              "name": "Pokemon Center",
+              "emoji": "🐾"
+            },
+            {
+              "name": "Hoyoverse Genshin, Starrail & Zenless Zone Zero",
+              "emoji": "⚔️"
+            },
+            {
+              "name": "Wuthering Waves & Punishing: Gray Raven",
+              "emoji": "🌊"
+            },
+            {
+              "name": "RPG",
+              "emoji": "🧙‍♂️"
+            },
+            {
+              "name": "Tri Holy Trinity Fate Grand Order, Arknight - Blue Archive",
+              "emoji": "🏆"
+            },
+            {
+              "name": "Pixel Game",
+              "emoji": "🕹️"
+            },
+            {
+              "name": "Guardian Tales",
+              "emoji": "🛡️"
+            },
+            {
+              "name": "Toram Online",
+              "emoji": "🗡️ "
+            },
+            {
+              "name": "Zombie Game",
+              "emoji": "🧟‍♂️"
+            },
+            {
+              "name": "TCG Marvel Snap - Yugioh - Pokemon - Duel Master",
+              "emoji": "🎴 "
+            },
+            {
+              "name": "Minecraft",
+              "emoji": "🧱"
+            },
+            {
+              "name": "Roblox",
+              "emoji": "🧊 "
+            },
+            {
+              "name": "Growtopia",
+              "emoji": "🌱 "
+            },
+            {
+              "name": "Football EAFC - EFootball",
+              "emoji": "⚽ "
+            },
+            {
+              "name": "Basketball",
+              "emoji": "🏀 "
+            },
+            {
+              "name": "Fighting Tekken - Street Fighter - Anime Fighter - King of Fighters - Brawlhalla",
+              "emoji": "👊"
+            },
+            {
+              "name": "Rockstar GTA",
+              "emoji": "🚗"
+            },
+            {
+              "name": "Supercell",
+              "emoji": "👑 "
+            },
+            {
+              "name": "Rhythm Games",
+              "emoji": "🎵"
+            }
+          ]
+        },
+        {
+          "name": "PC & Mobile Games Catalog",
+          "image": "https://s6.gifyu.com/images/bbXru.md.gif",
+          "roles": [
+            {
+              "name": "MOBA Mobile Legend - Honor of Kings - Dota",
+              "emoji": "🏰"
+            },
+            {
+              "name": "Auto Battler Magic Chess - Team Fight Tactics",
+              "emoji": "♟️"
+            },
+            {
+              "name": "FPS PC Valorant - CSGO2 - Marvel Rival - Fortnite - Apex - Point Blank",
+              "emoji": "🎯"
+            },
+            {
+              "name": "Battle Royale Mobile Free Fire - PUBG - CODM - Bloodstrike",
+              "emoji": "🪂"
+            }
+          ]
+        },
+        {
+          "name": "Hobbies Catalog",
+          "image": "https://s6.gifyu.com/images/bbXrf.gif",
+          "roles": [
+            {
+              "name": "Cosplay",
+              "emoji": "🎭"
+            },
+            {
+              "name": "Fashion Outfit - Sneaker - Handbag - Parfume - Skincare - Makeup",
+              "emoji": "👗"
+            },
+            {
+              "name": "Dance",
+              "emoji": "💃 "
+            },
+            {
+              "name": "Collectibles",
+              "emoji": "🏺"
+            },
+            {
+              "name": "Otomotif",
+              "emoji": "🏎️"
+            },
+            {
+              "name": "Watch Enthusiast",
+              "emoji": "⌚"
+            },
+            {
+              "name": "Pet Lover",
+              "emoji": "🐾 "
+            },
+            {
+              "name": "Traveling",
+              "emoji": "✈️"
+            },
+            {
+              "name": "Olahraga Atletik - Gym - Bela Diri",
+              "emoji": "🏋️"
+            },
+            {
+              "name": "Kuliner",
+              "emoji": "👨‍🍳"
+            },
+            {
+              "name": "Music",
+              "emoji": "🎸 "
+            },
+            {
+              "name": "Curhat & Percintaan",
+              "emoji": "❤️"
+            },
+            {
+              "name": "Investasi Economy - Crypto - Saham - Emas - Properti - UMKM",
+              "emoji": "📈 "
+            },
+            {
+              "name": "Technology",
+              "emoji": "📱"
+            },
+            {
+              "name": "Belajar",
+              "emoji": "📚"
+            },
+            {
+              "name": "Medical",
+              "emoji": "🩺 "
+            },
+            {
+              "name": "Creator Camp",
+              "emoji": "🎬 "
+            },
+            {
+              "name": "Lowongan Kerja",
+              "emoji": "💼 "
+            }
+          ]
+        },
+        {
+          "name": "Entertainment Catalog",
+          "image": "https://s6.gifyu.com/images/bbXrB.md.gif",
+          "roles": [
+            {
+              "name": "Anime",
+              "emoji": "🌟"
+            },
+            {
+              "name": "Horror",
+              "emoji": "🌑 "
+            },
+            {
+              "name": "Comic Manga - Webtoon - Manhwa - Manhua - Novel",
+              "emoji": "📖"
+            },
+            {
+              "name": "Idol JKT48 - KPOP - Vtuber - Japan Idol",
+              "emoji": "🎤"
+            },
+            {
+              "name": "Drama Series Drama Korea - Drama China",
+              "emoji": "🎬"
+            },
+            {
+              "name": "Movie",
+              "emoji": "🎞️"
+            },
+            {
+              "name": "Tokusatsu Ultraman - Kamen Rider - Super Sentai - Kaiju - DLL",
+              "emoji": "🦹‍♂️"
+            },
+            {
+              "name": "Racing F1 - MotoGP - NasCar",
+              "emoji": "🏁"
+            },
+            {
+              "name": "Fight Entertainment WWE - UFC",
+              "emoji": "🥋"
+            }
+          ]
+        },
+        {
+          "name": "Notification Catalog",
+          "image": "https://s6.gifyu.com/images/bbXtb.gif",
+          "roles": [
+            {
+              "name": "Social Media",
+              "emoji": "📱"
+            },
+            {
+              "name": "Free Games & DLC",
+              "emoji": "🚨"
+            }
+          ]
+        }
+      ],
+      "embedColor": "#5865f2"
+    },
+    "rankCard": {
+      "font": "Default",
+      "mainColor": "#ffffff",
+      "backgroundColor": "#000000",
+      "overlayOpacity": 0.5,
+      "backgroundImage": "https://i.pinimg.com/736x/bd/cb/91/bdcb91416a78b7d61f71b4496c4e1f90.jpg"
+    },
+    "achievements": {
+      "pro-typer": {
+        "enabled": false
+      },
+      "all-nighter": {
+        "enabled": false
+      },
+      "chat-master": {
+        "enabled": false
+      },
+      "voice-legend": {
+        "enabled": false
+      },
+      "first-step": {
+        "enabled": false
+      },
+      "chat-rookie": {
+        "enabled": false
+      },
+      "social-butterfly": {
+        "enabled": false
+      },
+      "message-master": {
+        "enabled": false
+      },
+      "voice-starter": {
+        "enabled": false
+      },
+      "voice-enthusiast": {
+        "enabled": false
+      },
+      "voice-king": {
+        "enabled": false
+      },
+      "stay-awhile-and-listen": {
+        "enabled": false
+      },
+      "true-star": {
+        "enabled": false
+      },
+      "night-owl": {
+        "enabled": false
+      },
+      "early-bird": {
+        "enabled": false
+      },
+      "level-up": {
+        "enabled": false
+      },
+      "level-pro": {
+        "enabled": false
+      },
+      "level-legend": {
+        "enabled": false
+      },
+      "reaction-king": {
+        "enabled": false
+      },
+      "event-joiner": {
+        "enabled": false
+      },
+      "event-master": {
+        "enabled": false
+      },
+      "meme-lord": {
+        "enabled": false
+      },
+      "helper": {
+        "enabled": false
+      },
+      "gamer": {
+        "enabled": false
+      },
+      "server-booster": {
+        "enabled": false
+      },
+      "anniversary": {
+        "enabled": false
+      }
+    },
+    "achievementChannel": null,
+    "automod": {
+      "enabled": true,
+      "antiSpam": {
+        "enabled": false,
+        "messages": 5,
+        "seconds": 5,
+        "timeout": {
+          "duration": 60,
+          "unit": "seconds"
+        },
+        "channelWhitelist": [],
+        "roleWhitelist": []
+      },
+      "antiInvite": {
+        "enabled": true,
+        "timeout": {
+          "duration": 60,
+          "unit": "seconds"
+        },
+        "channelWhitelist": [],
+        "roleWhitelist": []
+      },
+      "antiLinks": {
+        "enabled": false,
+        "timeout": {
+          "duration": 60,
+          "unit": "seconds"
+        },
+        "channelWhitelist": [],
+        "roleWhitelist": []
+      },
+      "mentionsSpam": {
+        "enabled": false,
+        "maxMentions": 5,
+        "timeout": {
+          "duration": 60,
+          "unit": "seconds"
+        },
+        "channelWhitelist": [],
+        "roleWhitelist": []
+      },
+      "capsSpam": {
+        "enabled": false,
+        "timeout": {
+          "duration": 60,
+          "unit": "seconds"
+        },
+        "channelWhitelist": [],
+        "roleWhitelist": []
+      }
     }
+  },
+  "1091907908150767718": {
+    "welcome": {
+      "enabled": true,
+      "channel": "1092013005417488424",
+      "messageType": "text",
+      "message": "Hey {user}, selamat datang di {server}! 😄 \r\n\r\nsemoga betah yaa",
+      "image": "https://4kwallpapers.com/images/walls/thumbs_2t/21604.jpg",
+      "welcomeTextColor": "#ffffff",
+      "welcomeNeonColor": "#009dff",
+      "memberTextColor": "#009dff"
+    },
+    "roles": {
+      "enabled": false,
+      "channel": "",
+      "embedColor": "#5865f2",
+      "categories": []
+    },
+    "rankCard": {
+      "font": "Default",
+      "mainColor": "#FFFFFF",
+      "backgroundColor": "#000000",
+      "overlayOpacity": 0.5,
+      "backgroundImage": ""
+    }
+  },
+  "836334166877929542": {
+    "welcome": {
+      "enabled": true,
+      "channel": "989402214969798686",
+      "messageType": "embed",
+      "font": "Anime Ace 2.0 BB",
+      "title": "Welcome to {server}",
+      "subtitle": "You are member #{server_member_count}",
+      "welcomeText": "Hey {user}, selamat datang di {server}!",
+      "backgroundImage": "",
+      "backgroundColor": "#000000",
+      "overlayOpacity": 0.5,
+      "embedColor": "#5865f2",
+      "welcomeTextColor": "#ffffff",
+      "welcomeNeonColor": "#ffffff",
+      "memberTextColor": "#ffffff"
+    },
+    "roles": {
+      "enabled": false,
+      "channel": "",
+      "embedColor": "#5865f2",
+      "categories": []
+    },
+    "autoRoles": {
+      "enabled": true,
+      "joinRole": "1000429996160057515",
+      "botRole": "988028786115215410"
+    },
+    "rankCard": {
+      "font": "Anime Ace 2.0 BB",
+      "mainColor": "#ffffff",
+      "backgroundColor": "#000000",
+      "overlayOpacity": 0.5,
+      "backgroundImage": "https://minhtuanmobile.com/uploads/blog/one-piece-tam-dung-cu-soc-lon-cho-fan-anime-241014102510.jpg"
+    },
+    "automod": {
+      "enabled": true,
+      "antiSpam": {
+        "enabled": true,
+        "messages": 5,
+        "seconds": 5,
+        "timeout": {
+          "duration": 2,
+          "unit": "minutes"
+        },
+        "channelWhitelist": [],
+        "roleWhitelist": []
+      },
+      "antiInvite": {
+        "enabled": false,
+        "timeout": {
+          "duration": 1,
+          "unit": "hours"
+        },
+        "channelWhitelist": [],
+        "roleWhitelist": []
+      },
+      "antiLinks": {
+        "enabled": false,
+        "timeout": {
+          "duration": 1,
+          "unit": "hours"
+        },
+        "channelWhitelist": [],
+        "roleWhitelist": []
+      },
+      "mentionsSpam": {
+        "enabled": true,
+        "maxMentions": 5,
+        "timeout": {
+          "duration": 1,
+          "unit": "hours"
+        },
+        "channelWhitelist": [],
+        "roleWhitelist": []
+      },
+      "capsSpam": {
+        "enabled": true,
+        "timeout": {
+          "duration": 1,
+          "unit": "hours"
+        },
+        "channelWhitelist": [],
+        "roleWhitelist": []
+      }
+    },
+    "levels": {
+      "enabled": true,
+      "xpRate": 1,
+      "noExtraXPForPro": false,
+      "levelChannel": "1000449800518520873",
+      "levelMessage": "GG [player], kamu baru saja naik ke level [level]!",
+      "roleRewardType": "stack",
+      "removeRoleOnXPLoss": false,
+      "roleRewards": [],
+      "noXPRolesMode": "allowAll",
+      "noXPRoles": [],
+      "noXPChannelsMode": "allowAll",
+      "noXPChannels": [],
+      "commands": {
+        "giveXP": {
+          "enabled": true
+        },
+        "levels": {
+          "enabled": true
+        },
+        "rank": {
+          "enabled": true
+        },
+        "removeXP": {
+          "enabled": true
+        }
+      }
+    },
+    "achievements": {
+      "pro-typer": {
+        "enabled": true
+      },
+      "all-nighter": {
+        "enabled": true
+      },
+      "chat-master": {
+        "enabled": true
+      },
+      "voice-legend": {
+        "enabled": true
+      },
+      "first-step": {
+        "enabled": true
+      },
+      "chat-rookie": {
+        "enabled": true
+      },
+      "social-butterfly": {
+        "enabled": true
+      },
+      "message-master": {
+        "enabled": false
+      },
+      "voice-starter": {
+        "enabled": false
+      },
+      "voice-enthusiast": {
+        "enabled": false
+      },
+      "voice-king": {
+        "enabled": false
+      },
+      "stay-awhile-and-listen": {
+        "enabled": false
+      },
+      "true-star": {
+        "enabled": false
+      },
+      "night-owl": {
+        "enabled": false
+      },
+      "early-bird": {
+        "enabled": false
+      },
+      "level-up": {
+        "enabled": false
+      },
+      "level-pro": {
+        "enabled": false
+      },
+      "level-legend": {
+        "enabled": false
+      },
+      "reaction-king": {
+        "enabled": false
+      },
+      "event-joiner": {
+        "enabled": false
+      },
+      "event-master": {
+        "enabled": false
+      },
+      "meme-lord": {
+        "enabled": false
+      },
+      "helper": {
+        "enabled": false
+      },
+      "gamer": {
+        "enabled": false
+      },
+      "server-booster": {
+        "enabled": false
+      },
+      "anniversary": {
+        "enabled": false
+      }
+    },
+    "achievementChannel": "1000449800518520873",
+    "rules": {
+      "enabled": true,
+      "channel": "836336028180545536",
+      "html": "<p>*:sparkles:WELCOME TO FAUZAN SMP :sparkles:*</p><p><br></p><p>ıll <strong>FITUR</strong> llı&nbsp;</p><p>➥ Survival&nbsp;</p><p>➥ Gacha</p><p>➥ Pvp</p><p>➥ Rank</p><p>➥ Shop</p><p>➥ real-time</p><p>➥ job UI</p><p>➥ dynamic light</p><p>➥ clan</p><p>➥ DLL...</p><p><br></p><p>ıll<strong> ALL RULES</strong> llı&nbsp;</p><p>➥Saling Toleransi&nbsp;</p><p>➥ Dilarang Grief</p><p>➥ Dilarang Maling</p><p>➥ Dilarang Toxic</p><p>➥Dilarang Mengunakann Cheat/Toolbox&nbsp;</p><p>➥ Jangan Spam / Ngirim Virtex</p><p>➥ Jangan Rusuh</p><p>➥Jangan Promosi Server/Grup lain</p><p>➥Jangan Rasis</p><p>➥No Baper</p><p><br></p><p><br></p><p>ıll <strong>IP AND PORT</strong> llı&nbsp;</p><p>➥ #『🎮』ɪᴘ-sᴇʀᴠᴇʀ&nbsp;</p><p>➥ #『🎮』ɪᴘ-sᴇʀᴠᴇʀ&nbsp;</p><p><br></p><p>STATUS SERVER</p><p>&gt; ONLINE &lt;</p><p><br></p><p>ıll <strong>BELI RANK?</strong> llı</p><p>*- http://wa.me/+6282250228360*</p><p>*-https://wa.me/+6289521933091*</p><p><br></p><p>ıll <strong>ALL LINKS</strong> llı&nbsp;</p><p>-GC https://chat.whatsapp.com/BtGrJKzdozeEPuXeisrgAD</p><p>-DC</p><p>https://discord.gg/5ACf7vsAvt</p><p>-Web</p><p>http://fauzansmp.rf.gd</p><p>-vote</p><p>https://minecraftpocket-servers.com/server/121342</p><p><br></p><p><strong>TERIMA KASIH</strong></p>",
+      "markdown": "\\*:sparkles:WELCOME TO FAUZAN SMP :sparkles:\\*\n\nıll **FITUR** llı\n\n➥ Survival\n\n➥ Gacha\n\n➥ Pvp\n\n➥ Rank\n\n➥ Shop\n\n➥ real-time\n\n➥ job UI\n\n➥ dynamic light\n\n➥ clan\n\n➥ DLL...\n\nıll **ALL RULES** llı\n\n➥Saling Toleransi\n\n➥ Dilarang Grief\n\n➥ Dilarang Maling\n\n➥ Dilarang Toxic\n\n➥Dilarang Mengunakann Cheat/Toolbox\n\n➥ Jangan Spam / Ngirim Virtex\n\n➥ Jangan Rusuh\n\n➥Jangan Promosi Server/Grup lain\n\n➥Jangan Rasis\n\n➥No Baper\n\nıll **IP AND PORT** llı\n\n➥ #『🎮』ɪᴘ-sᴇʀᴠᴇʀ\n\n➥ #『🎮』ɪᴘ-sᴇʀᴠᴇʀ\n\nSTATUS SERVER\n\n> ONLINE <\n\nıll **BELI RANK?** llı\n\n\\*- http://wa.me/+6282250228360\\*\n\n\\*-https://wa.me/+6289521933091\\*\n\nıll **ALL LINKS** llı\n\n\\-GC https://chat.whatsapp.com/BtGrJKzdozeEPuXeisrgAD\n\n\\-DC\n\nhttps://discord.gg/5ACf7vsAvt\n\n\\-Web\n\nhttp://fauzansmp.rf.gd\n\n\\-vote\n\nhttps://minecraftpocket-servers.com/server/121342\n\n**TERIMA KASIH**",
+      "image": "https://titipjepang.com/wp-content/uploads/2025/03/BLOG-Black-torch-dapatkan-adaptasi-anime.jpg",
+      "embedColor": "#0084ff",
+      "buttonColor": "#5865f2",
+      "role1": "1000429996160057515",
+      "role2": null
+    }
+  }
 }

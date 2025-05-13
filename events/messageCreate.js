@@ -1,9 +1,10 @@
-const { EmbedBuilder } = require('discord.js');
+const { EmbedBuilder, PermissionFlagsBits } = require('discord.js');
 const { handleLevelUp } = require('../utils/levelUpHandler');
 const { handleAchievements } = require('../utils/achievementHandler');
 const { userData, initUser, saveData } = require('../utils/userDataHandler');
 const { config, serverList, ensureGuildConfig } = require('../utils/dataManager');
 const chalk = require('chalk');
+const { createCanvas, loadImage } = require('canvas');
 
 const log = (module, message, level = 'info') => {
     const timestamp = new Date().toISOString();
@@ -65,7 +66,7 @@ module.exports = {
         log('MessageCreate', `Received message from user ${userId} in guild ${guildId}: "${message.content}"`);
 
         // Handle prefix commands
-        const prefix = config.prefix || '..'; // Tetap gunakan config untuk prefix
+        const prefix = config.prefix || '..';
         if (message.content.startsWith(prefix)) {
             const args = message.content.slice(prefix.length).trim().split(/ +/);
             const commandName = args.shift().toLowerCase();
@@ -123,109 +124,273 @@ module.exports = {
         log('MessageCreate', `User ${userId} gained ${xpGain} XP. Total XP: ${userData[userId].guilds[guildId].xp}`);
         log('MessageCreate', `User ${userId} gained ${coinGain} coins. Total coins: ${userData[userId].guilds[guildId].coins}`);
 
-        // Hitung level berdasarkan XP (contoh: 100 XP per level)
-        const user = userData[userId].guilds[guildId];
-        let leveledUp = false;
-        let previousLevel = user.level || 1;
+        // Fungsi untuk menghasilkan rank card
+        async function generateRankCard(user, guildId, rank, level, xp, maxXP) {
+            const rankCardConfig = serverList[guildId]?.rankCard || {
+                font: 'Default',
+                mainColor: '#FFFFFF',
+                backgroundColor: '#000000',
+                overlayOpacity: 0.5,
+                backgroundImage: ''
+            };
 
-        while (user.xp >= previousLevel * 100) {
-            user.xp -= previousLevel * 100;
-            user.level = (user.level || 1) + 1;
-            leveledUp = true;
-            previousLevel = user.level;
+            const canvas = createCanvas(700, 250);
+            const ctx = canvas.getContext('2d');
+
+            // Background
+            let background;
+            try {
+                const backgroundUrl = rankCardConfig.backgroundImage || 'https://s6.gifyu.com/images/bbXYO.gif';
+                background = await loadImage(backgroundUrl);
+                ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
+            } catch (error) {
+                console.warn(`[RankCard] Failed to load background image: ${error.message}`);
+                ctx.fillStyle = rankCardConfig.backgroundColor;
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+            }
+
+            // Overlay
+            ctx.fillStyle = `rgba(0, 0, 0, ${rankCardConfig.overlayOpacity})`;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Avatar
+            const avatarUrl = user.displayAvatarURL({ format: 'png', size: 128 }) || 'https://cdn.discordapp.com/embed/avatars/0.png';
+            const avatar = await loadImage(avatarUrl);
+            const avatarSize = 128;
+            const avatarX = 50;
+            const avatarY = (canvas.height - avatarSize) / 2;
+            ctx.save();
+            ctx.beginPath();
+            ctx.arc(avatarX + avatarSize / 2, avatarY + avatarSize / 2, avatarSize / 2, 0, Math.PI * 2, true);
+            ctx.closePath();
+            ctx.clip();
+            ctx.drawImage(avatar, avatarX, avatarY, avatarSize, avatarSize);
+            ctx.restore();
+
+            // Avatar Border
+            ctx.strokeStyle = rankCardConfig.mainColor;
+            ctx.lineWidth = 4;
+            ctx.beginPath();
+            ctx.arc(avatarX + avatarSize / 2, avatarY + avatarSize / 2, avatarSize / 2, 0, Math.PI * 2, true);
+            ctx.closePath();
+            ctx.stroke();
+
+            // Gunakan font yang dipilih
+            const fontFamily = rankCardConfig.font === 'Default' ? 'Sans' : rankCardConfig.font;
+            log('RankCard', `Using font: ${fontFamily}`);
+
+            // Username
+            ctx.font = `bold 36px "${fontFamily}", Sans`;
+            ctx.fillStyle = rankCardConfig.mainColor;
+            ctx.textAlign = 'left';
+            ctx.fillText(user.tag, 200, 60);
+
+            // Rank and Level
+            ctx.font = `24px "${fontFamily}", Sans`;
+            ctx.fillText(`Rank #${rank}`, 200, 100);
+            ctx.fillText(`Level ${level}`, 400, 100);
+
+            // XP Bar
+            const barWidth = 300;
+            const barHeight = 20;
+            const barX = 200;
+            const barY = 170;
+            const xpProgress = xp / maxXP;
+            ctx.fillStyle = rankCardConfig.mainColor;
+            ctx.fillRect(barX, barY, xpProgress * barWidth, barHeight);
+            ctx.strokeStyle = '#FFFFFF';
+            ctx.strokeRect(barX, barY, barWidth, barHeight);
+
+            // XP Text
+            ctx.font = `16px "${fontFamily}", Sans`;
+            ctx.fillText(`${xp}/${maxXP} XP`, 200, barY + 40);
+
+            return canvas.toBuffer('image/png');
         }
 
-        // Update role berdasarkan level
-        if (leveledUp) {
-            try {
-                const member = await message.guild.members.fetch(userId);
+        // Logika level-up
+        if (!message.author.bot) {
+            const guildId = message.guild.id;
+            const userId = message.author.id;
 
-                // Definisikan role berdasarkan level
-                let newRoleName;
-                if (user.level >= 1 && user.level <= 10) {
-                    newRoleName = 'Lounge Visitor';
-                } else if (user.level >= 11 && user.level <= 20) {
-                    newRoleName = 'Cozy Settler';
-                } else if (user.level >= 21 && user.level <= 30) {
-                    newRoleName = 'Comfort Zone';
-                } else if (user.level >= 31 && user.level <= 40) {
-                    newRoleName = 'Night Dweller';
-                } else if (user.level >= 41) {
-                    newRoleName = 'Paradise Resident';
-                }
+            // Pastikan serverList[guildId] ada
+            ensureGuildConfig(guildId);
 
-                // Cek apakah bot punya izin ManageRoles
-                if (!message.guild.members.me.permissions.has('ManageRoles')) {
-                    log('MessageCreate', 'Bot tidak punya izin ManageRoles!', 'error');
-                    return;
-                }
+            // Cek apakah fitur levels diaktifkan
+            if (!serverList[guildId]?.levels?.enabled) {
+                log('MessageCreate', `Levels feature is disabled for guild ${guildId}`, 'info');
+                return;
+            }
 
-                // Cari role di server berdasarkan nama
-                let role = message.guild.roles.cache.find(r => r.name === newRoleName);
-                if (!role) {
-                    // Kalau role ga ada, bikin role baru
-                    try {
-                        role = await message.guild.roles.create({
-                            name: newRoleName,
-                            color: 'Default', // Bisa diganti dengan warna tertentu
-                            reason: `Role dibuat otomatis untuk level ${user.level}`
-                        });
-                        log('MessageCreate', `Berhasil membuat role baru: ${newRoleName} (${role.id})`, 'success');
-                    } catch (error) {
-                        log('MessageCreate', `Gagal membuat role ${newRoleName}: ${error.message}`, 'error');
+            const levelConfig = serverList[guildId].levels;
+            log('MessageCreate', `Level channel configured: ${levelConfig.levelChannel}`, 'info');
+
+            // Cek No-XP Roles
+            const member = await message.guild.members.fetch(userId);
+            const hasNoXPRole = member.roles.cache.some(role => levelConfig.noXPRoles.includes(role.id));
+            if (levelConfig.noXPRolesMode === 'allowAll' && hasNoXPRole) {
+                log('MessageCreate', `User ${userId} has a no-XP role in guild ${guildId}`, 'info');
+                return;
+            }
+            if (levelConfig.noXPRolesMode === 'denyAll' && !hasNoXPRole) {
+                log('MessageCreate', `User ${userId} does not have an allowed role for XP in guild ${guildId}`, 'info');
+                return;
+            }
+
+            // Cek No-XP Channels
+            const channelId = message.channel.id;
+            const isNoXPChannel = levelConfig.noXPChannels.includes(channelId);
+            if (levelConfig.noXPChannelsMode === 'allowAll' && isNoXPChannel) {
+                log('MessageCreate', `Channel ${channelId} is a no-XP channel in guild ${guildId}`, 'info');
+                return;
+            }
+            if (levelConfig.noXPChannelsMode === 'denyAll' && !isNoXPChannel) {
+                log('MessageCreate', `Channel ${channelId} is not an allowed channel for XP in guild ${guildId}`, 'info');
+                return;
+            }
+
+            // Berikan XP
+            initUser(userId, guildId); // Pastikan user diinisialisasi
+            let user = userData[userId].guilds[guildId];
+            if (!user) {
+                userData[userId].guilds[guildId] = { xp: 0, level: 1, coins: 0, messageCount: 0 };
+                user = userData[userId].guilds[guildId];
+            }
+
+            const baseXP = Math.floor(Math.random() * 10) + 15; // XP acak antara 15-25
+            const xpGain = baseXP * (levelConfig.xpRate || 1);
+            user.xp += xpGain;
+            log('MessageCreate', `User ${userId} gained ${xpGain} XP in guild ${guildId}`, 'success');
+
+            // Hitung level
+            const xpNeeded = user.level * 100 + 100; // XP yang dibutuhkan untuk naik level
+            let leveledUp = false;
+            while (user.xp >= xpNeeded) {
+                user.xp -= xpNeeded;
+                user.level += 1;
+                leveledUp = true;
+                log('MessageCreate', `User ${userId} leveled up to level ${user.level} in guild ${guildId}`, 'success');
+            }
+
+            await saveData(); // Simpan data setelah perubahan
+
+            // Update role berdasarkan level
+            if (leveledUp) {
+                try {
+                    // Cek apakah bot punya izin ManageRoles
+                    if (!message.guild.members.me.permissions.has(PermissionFlagsBits.ManageRoles)) {
+                        log('MessageCreate', 'Bot tidak punya izin ManageRoles!', 'error');
                         return;
                     }
-                }
 
-                // Cek apakah role-nya bisa dikasih (harus lebih rendah dari role bot)
-                if (role.position >= message.guild.members.me.roles.highest.position) {
-                    log('MessageCreate', `Role ${newRoleName} lebih tinggi dari role bot!`, 'error');
-                    return;
-                }
-
-                // Daftar semua role level
-                const levelRoles = [
-                    'Lounge Visitor',
-                    'Cozy Settler',
-                    'Comfort Zone',
-                    'Night Dweller',
-                    'Paradise Resident'
-                ];
-
-                // Hapus role level lama (kalau ada)
-                for (const roleName of levelRoles) {
-                    if (roleName !== newRoleName) {
-                        const oldRole = message.guild.roles.cache.find(r => r.name === roleName);
-                        if (oldRole && member.roles.cache.has(oldRole.id)) {
-                            await member.roles.remove(oldRole);
-                            log('MessageCreate', `Menghapus role lama ${oldRole.name} dari ${member.user.tag}`, 'success');
+                    // Cari role reward yang sesuai dengan level pengguna
+                    let newRoleId = null;
+                    let highestLevel = 0;
+                    for (const reward of levelConfig.roleRewards || []) {
+                        if (user.level >= reward.level && reward.level >= highestLevel) {
+                            newRoleId = reward.roleId;
+                            highestLevel = reward.level;
                         }
                     }
-                }
 
-                // Tambah role baru
-                if (!member.roles.cache.has(role.id)) {
-                    await member.roles.add(role);
-                    log('MessageCreate', `Menambahkan role ${role.name} ke ${member.user.tag}`, 'success');
-                }
+                    if (newRoleId) {
+                        const role = message.guild.roles.cache.get(newRoleId);
+                        if (!role) {
+                            log('MessageCreate', `Role with ID ${newRoleId} not found!`, 'error');
+                            return;
+                        }
 
-                // Kirim pesan level up
-                const levelUpEmbed = new EmbedBuilder()
-                    .setColor('#00FF00')
-                    .setTitle('🎉 Level Up!')
-                    .setDescription(`${member.user.tag} telah naik ke **Level ${user.level}**!\nKamu sekarang adalah **${newRoleName}**!`)
-                    .setTimestamp();
+                        // Cek apakah role-nya bisa dikasih
+                        if (role.position >= message.guild.members.me.roles.highest.position) {
+                            log('MessageCreate', `Role ${role.name} lebih tinggi dari role bot!`, 'error');
+                            return;
+                        }
 
-                // Kirim ke channel level-up (kalau ada) atau channel saat ini
-                const levelChannelId = serverList[guildId].levelChannel || message.channel.id; // Gunakan serverList
-                const levelChannel = message.guild.channels.cache.get(levelChannelId);
-                if (levelChannel) {
-                    await levelChannel.send({ embeds: [levelUpEmbed] });
-                } else {
-                    await message.channel.send({ embeds: [levelUpEmbed] });
+                        // Jika roleRewardType adalah 'highest', hapus role lain
+                        if (levelConfig.roleRewardType === 'highest') {
+                            for (const reward of levelConfig.roleRewards) {
+                                if (reward.roleId !== newRoleId) {
+                                    const oldRole = message.guild.roles.cache.get(reward.roleId);
+                                    if (oldRole && member.roles.cache.has(oldRole.id)) {
+                                        await member.roles.remove(oldRole);
+                                        log('MessageCreate', `Menghapus role lama ${oldRole.name} dari ${member.user.tag}`, 'success');
+                                    }
+                                }
+                            }
+                        }
+
+                        // Tambahkan role baru jika belum dimiliki
+                        if (!member.roles.cache.has(role.id)) {
+                            await member.roles.add(role);
+                            log('MessageCreate', `Menambahkan role ${role.name} ke ${member.user.tag}`, 'success');
+                        }
+                    }
+
+                    // Hitung rank (berdasarkan XP)
+                    const allUsers = Object.entries(userData)
+                        .filter(([id, data]) => data.guilds && data.guilds[guildId]) // Pastikan guilds ada
+                        .map(([id, data]) => ({
+                            id,
+                            xp: data.guilds[guildId]?.xp || 0,
+                            level: data.guilds[guildId]?.level || 1
+                        }))
+                        .sort((a, b) => (b.xp + b.level * 1000) - (a.xp + a.level * 1000));
+                    const rank = allUsers.findIndex(u => u.id === userId) + 1;
+
+                    // Generate rank card
+                    const rankCardBuffer = await generateRankCard(member.user, guildId, rank, user.level, user.xp, xpNeeded);
+
+                    // Kirim pengumuman level-up dengan rank card
+                    const levelMessage = levelConfig.levelMessage
+                        .replace('[player]', member.user.tag)
+                        .replace('[level]', user.level);
+
+                    const levelUpEmbed = new EmbedBuilder()
+                        .setColor('#00FF00')
+                        .setTitle('🎉 Level Up!')
+                        .setDescription(levelMessage)
+                        .setImage('attachment://rank-card.png')
+                        .setTimestamp();
+
+                    // Logika untuk mengirim ke levelChannel
+                    const levelChannelId = levelConfig.levelChannel || message.channel.id;
+                    log('MessageCreate', `Attempting to send level-up message to channel ${levelChannelId}`);
+
+                    const levelChannel = message.guild.channels.cache.get(levelChannelId);
+                    if (levelChannel) {
+                        // Cek apakah bot punya izin untuk mengirim pesan di channel tersebut
+                        const botPermissions = levelChannel.permissionsFor(message.guild.members.me);
+                        if (!botPermissions.has(PermissionFlagsBits.SendMessages)) {
+                            log('MessageCreate', `Bot lacks SEND_MESSAGES permission in channel ${levelChannelId}`, 'error');
+                            await message.channel.send({
+                                embeds: [levelUpEmbed],
+                                files: [{ attachment: rankCardBuffer, name: 'rank-card.png' }]
+                            });
+                        } else {
+                            try {
+                                await levelChannel.send({
+                                    embeds: [levelUpEmbed],
+                                    files: [{ attachment: rankCardBuffer, name: 'rank-card.png' }]
+                                });
+                                log('MessageCreate', `Successfully sent level-up message to channel ${levelChannelId}`, 'success');
+                            } catch (error) {
+                                log('MessageCreate', `Failed to send level-up message to channel ${levelChannelId}: ${error.message}`, 'error');
+                                await message.channel.send({
+                                    embeds: [levelUpEmbed],
+                                    files: [{ attachment: rankCardBuffer, name: 'rank-card.png' }]
+                                });
+                            }
+                        }
+                    } else {
+                        log('MessageCreate', `Level channel ${levelChannelId} not found, falling back to message channel ${message.channel.id}`, 'warning');
+                        await message.channel.send({
+                            embeds: [levelUpEmbed],
+                            files: [{ attachment: rankCardBuffer, name: 'rank-card.png' }]
+                        });
+                    }
+                } catch (error) {
+                    log('MessageCreate', `Gagal update role atau kirim rank card untuk ${userId}: ${error.message}`, 'error');
                 }
-            } catch (error) {
-                log('MessageCreate', `Gagal update role untuk ${userId}: ${error.message}`, 'error');
             }
         }
 
@@ -240,11 +405,8 @@ module.exports = {
 
         // Fitur baru: Deteksi dan balas salam berdasarkan waktu
         const content = message.content.toLowerCase();
-
-        // Log untuk memastikan bot memproses salam
         log('MessageCreate', `Checking for greeting in message: "${content}"`);
 
-        // Daftar salam yang akan dideteksi
         const greetings = {
             pagi: ['selamat pagi', 'pagi', 'good morning', 'morning'],
             siang: ['selamat siang', 'siang', 'good afternoon'],
@@ -252,7 +414,6 @@ module.exports = {
             malam: ['selamat malam', 'malam', 'good night', 'night']
         };
 
-        // Daftar balasan random
         const replies = {
             pagi: {
                 match: [
@@ -312,7 +473,6 @@ module.exports = {
             }
         };
 
-        // Deteksi salam dalam pesan
         let detectedGreeting = null;
         for (const [timeOfDay, phrases] of Object.entries(greetings)) {
             for (const phrase of phrases) {
@@ -326,41 +486,32 @@ module.exports = {
         }
 
         if (detectedGreeting) {
-            // Dapatkan waktu saat ini (WIB, UTC+7)
             const now = new Date();
-            const wibOffset = 7 * 60; // WIB adalah UTC+7 (dalam menit)
+            const wibOffset = 7 * 60;
             const localTime = new Date(now.getTime() + (wibOffset * 60 * 1000));
             const hours = localTime.getUTCHours();
 
-            // Log waktu saat ini
             log('MessageCreate', `Current time (WIB): ${hours}:${localTime.getUTCMinutes()}`);
 
-            // Tentukan waktu saat ini
             let currentTimeOfDay;
             if (hours >= 0 && hours < 11) {
-                currentTimeOfDay = 'pagi'; // 00:00 - 10:59 WIB
+                currentTimeOfDay = 'pagi';
             } else if (hours >= 11 && hours < 15) {
-                currentTimeOfDay = 'siang'; // 11:00 - 14:59 WIB
+                currentTimeOfDay = 'siang';
             } else if (hours >= 15 && hours < 18) {
-                currentTimeOfDay = 'sore'; // 15:00 - 17:59 WIB
+                currentTimeOfDay = 'sore';
             } else {
-                currentTimeOfDay = 'malam'; // 18:00 - 23:59 WIB
+                currentTimeOfDay = 'malam';
             }
 
-            // Log waktu yang ditentukan
             log('MessageCreate', `Determined time of day: ${currentTimeOfDay}`);
 
-            // Pilih balasan berdasarkan apakah waktu sesuai atau tidak
             const replyList = detectedGreeting === currentTimeOfDay ? replies[detectedGreeting].match : replies[detectedGreeting].mismatch;
             const randomReply = replyList[Math.floor(Math.random() * replyList.length)];
-
-            // Ganti @user dengan mention user
             const reply = randomReply.replace('@user', `<@${message.author.id}>`);
 
-            // Log balasan yang akan dikirim
             log('MessageCreate', `Sending reply: "${reply}"`);
 
-            // Kirim balasan
             try {
                 await message.reply(reply);
                 log('MessageCreate', `Replied to greeting "${detectedGreeting}" from user ${userId} with: ${reply}`, 'success');
@@ -369,6 +520,198 @@ module.exports = {
             }
         } else {
             log('MessageCreate', `No greeting detected in message: "${content}"`);
+        }
+
+        // Simpan data user setelah semua perubahan
+        try {
+            await saveData();
+            log('MessageCreate', `Successfully saved user data for user ${userId}`, 'success');
+        } catch (error) {
+            log('MessageCreate', `Failed to save user data for user ${userId}: ${error.message}`, 'error');
+        }
+
+        // Logika Automod
+        const automodConfig = serverList[guildId]?.automod;
+        if (!automodConfig || !automodConfig.enabled) {
+            log('Automod', `Automod is disabled for guild ${guildId}`);
+            return;
+        }
+
+        const member = message.member;
+        if (!member) {
+            log('Automod', `Could not fetch member for user ${userId} in guild ${guildId}`, 'error');
+            return;
+        }
+
+        // Cek jika member memiliki izin Administrator atau Manage Guild
+        if (member.permissions.has(PermissionFlagsBits.Administrator) || member.permissions.has(PermissionFlagsBits.ManageGuild)) {
+            log('Automod', `User ${userId} has Administrator or Manage Guild permissions, skipping automod checks`);
+            return;
+        }
+
+        // Cek apakah bot punya izin untuk memberikan timeout
+        if (!message.guild.members.me.permissions.has(PermissionFlagsBits.ModerateMembers)) {
+            log('Automod', `Bot lacks MODERATE_MEMBERS permission in guild ${guildId}, skipping automod checks`, 'error');
+            return;
+        }
+
+        // Cek apakah role bot lebih tinggi dari role pengguna
+        if (member.roles.highest.position >= message.guild.members.me.roles.highest.position) {
+            log('Automod', `Bot's highest role is not higher than ${member.user.tag}'s highest role in guild ${guildId}, skipping automod checks`, 'error');
+            return;
+        }
+
+        // Fungsi untuk mengecek whitelist
+        const isWhitelisted = (featureConfig) => {
+            if (featureConfig.channelWhitelist.includes(message.channel.id)) {
+                log('Automod', `Channel ${message.channel.id} is whitelisted for ${featureConfig.name} in guild ${guildId}`);
+                return true;
+            }
+            if (featureConfig.roleWhitelist.some(roleId => member.roles.cache.has(roleId))) {
+                log('Automod', `User ${userId} has a whitelisted role for ${featureConfig.name} in guild ${guildId}`);
+                return true;
+            }
+            return false;
+        };
+
+        // Fungsi untuk menangani punishment berdasarkan punishmentType
+        const applyPunishment = async (featureConfig, reason) => {
+            const punishmentType = featureConfig.punishmentType || 'timeout';
+            const timeoutDuration = featureConfig.timeout.duration * (featureConfig.timeout.unit === 'seconds' ? 1000 :
+                featureConfig.timeout.unit === 'minutes' ? 60 * 1000 :
+                featureConfig.timeout.unit === 'hours' ? 60 * 60 * 1000 :
+                24 * 60 * 60 * 1000);
+
+            try {
+                switch (punishmentType) {
+                    case 'timeout':
+                        await member.timeout(timeoutDuration, reason);
+                        log('Automod', `Timed out ${member.user.tag} in guild ${guildId} for ${featureConfig.name}`, 'success');
+                        break;
+                    case 'warn':
+                        // Logika untuk warn (bisa disesuaikan dengan sistem warn yang kamu miliki)
+                        log('Automod', `Warned ${member.user.tag} in guild ${guildId} for ${featureConfig.name}`, 'success');
+                        break;
+                    case 'kick':
+                        await member.kick(reason);
+                        log('Automod', `Kicked ${member.user.tag} from guild ${guildId} for ${featureConfig.name}`, 'success');
+                        break;
+                    case 'ban':
+                        await member.ban({ reason });
+                        log('Automod', `Banned ${member.user.tag} from guild ${guildId} for ${featureConfig.name}`, 'success');
+                        break;
+                }
+
+                await message.delete();
+
+                // Hitung waktu berakhirnya timeout (jika punishmentType adalah timeout)
+                let timeoutEnd = '';
+                if (punishmentType === 'timeout') {
+                    const endTime = new Date(Date.now() + timeoutDuration);
+                    timeoutEnd = `**Ends At:** ${endTime.toLocaleString('en-US', { timeZone: 'UTC' })} UTC\n`;
+                }
+
+                // Buat embed untuk notifikasi DM
+                const punishmentEmbed = new EmbedBuilder()
+                    .setColor('#FF0000')
+                    .setTitle(`⚠️ You Have Been ${punishmentType.charAt(0).toUpperCase() + punishmentType.slice(1)}ed`)
+                    .setDescription(
+                        `You have been **${punishmentType}ed** in **${message.guild.name}**.\n` +
+                        `**Violation:** ${reason}\n` +
+                        (punishmentType === 'timeout' ? `**Duration:** ${featureConfig.timeout.duration} ${featureConfig.timeout.unit}\n${timeoutEnd}` : '') +
+                        (['kick', 'ban'].includes(punishmentType) ? `You have been removed from the server.` : '')
+                    )
+                    .setTimestamp();
+
+                // Kirim notifikasi DM ke pengguna
+                await message.author.send({ embeds: [punishmentEmbed] }).catch(err => {
+                    log('Automod', `Failed to send punishment notification to ${message.author.tag}: ${err.message}`, 'error');
+                });
+            } catch (error) {
+                log('Automod', `Failed to apply ${punishmentType} to ${member.user.tag} in guild ${guildId} for ${featureConfig.name}: ${error.message}`, 'error');
+            }
+        };
+
+        // Anti Spam
+        if (automodConfig.antiSpam?.enabled) {
+            automodConfig.antiSpam.name = 'Anti Spam';
+            if (isWhitelisted(automodConfig.antiSpam)) return;
+
+            if (!client.messageTimestamps) client.messageTimestamps = new Map();
+            const userTimestamps = client.messageTimestamps.get(message.author.id) || [];
+            userTimestamps.push(Date.now());
+            client.messageTimestamps.set(message.author.id, userTimestamps);
+
+            const cutoff = Date.now() - (automodConfig.antiSpam.seconds * 1000);
+            while (userTimestamps.length && userTimestamps[0] < cutoff) userTimestamps.shift();
+
+            if (userTimestamps.length >= automodConfig.antiSpam.messages) {
+                await applyPunishment(automodConfig.antiSpam, `Anti Spam: Sending too many messages (${userTimestamps.length} messages in ${automodConfig.antiSpam.seconds} seconds)`);
+            }
+        }
+
+        // Anti Invite
+        if (automodConfig.antiInvite?.enabled) {
+            automodConfig.antiInvite.name = 'Anti Invite';
+            if (isWhitelisted(automodConfig.antiInvite)) return;
+
+            if (message.content.includes('discord.gg/') || message.content.includes('discord.com/invite/')) {
+                await applyPunishment(automodConfig.antiInvite, 'Anti Invite: Sending a Discord invite link');
+            }
+        }
+
+        // Anti Links
+        if (automodConfig.antiLinks?.enabled) {
+            automodConfig.antiLinks.name = 'Anti Links';
+            if (isWhitelisted(automodConfig.antiLinks)) return;
+
+            const urlRegex = /(https?:\/\/[^\s]+)/g;
+            const urls = message.content.match(urlRegex) || [];
+
+            if (urls.length > 0) {
+                const linksWhitelist = automodConfig.antiLinks.linksWhitelist || [];
+                let isWhitelistedLink = false;
+
+                for (const url of urls) {
+                    isWhitelistedLink = linksWhitelist.some(pattern => {
+                        // Ganti * dengan regex wildcard (.*)
+                        const regexPattern = pattern.replace(/\*/g, '.*').replace(/\./g, '\\.');
+                        const regex = new RegExp(`^${regexPattern}$`, 'i');
+                        return regex.test(url);
+                    });
+
+                    if (isWhitelistedLink) {
+                        log('Automod', `Link ${url} is whitelisted for Anti Links in guild ${guildId}`);
+                        break;
+                    }
+                }
+
+                if (!isWhitelistedLink) {
+                    await applyPunishment(automodConfig.antiLinks, `Anti Links: Sending unwhitelisted links (${urls.join(', ')})`);
+                }
+            }
+        }
+
+        // Mentions Spam
+        if (automodConfig.mentionsSpam?.enabled) {
+            automodConfig.mentionsSpam.name = 'Mentions Spam';
+            if (isWhitelisted(automodConfig.mentionsSpam)) return;
+
+            const mentionCount = (message.mentions.users.size + message.mentions.roles.size);
+            if (mentionCount > automodConfig.mentionsSpam.maxMentions) {
+                await applyPunishment(automodConfig.mentionsSpam, `Mentions Spam: Too many mentions (${mentionCount} mentions, max allowed: ${automodConfig.mentionsSpam.maxMentions})`);
+            }
+        }
+
+        // Caps Spam
+        if (automodConfig.capsSpam?.enabled) {
+            automodConfig.capsSpam.name = 'Caps Spam';
+            if (isWhitelisted(automodConfig.capsSpam)) return;
+
+            const capsPercentage = (message.content.replace(/[^A-Z]/g, '').length / message.content.length) * 100;
+            if (capsPercentage > 80 && message.content.length > 10) {
+                await applyPunishment(automodConfig.capsSpam, `Caps Spam: Using too many capital letters (${capsPercentage.toFixed(2)}% caps, max allowed: 80%)`);
+            }
         }
     },
 };

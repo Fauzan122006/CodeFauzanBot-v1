@@ -6,14 +6,14 @@ const roleListPath = path.join(__dirname, '../botconfig/roleList.json');
 const userDataPath = path.join(__dirname, '../database/userData.json');
 const achievementListPath = path.join(__dirname, '../botconfig/achievementList.json');
 const rulesPath = path.join(__dirname, '../botconfig/rules.json');
-const serverListPath = path.join(__dirname, '../botconfig/serverList.json'); // Tambah path untuk serverList.json
+const serverListPath = path.join(__dirname, '../botconfig/serverList.json');
 
 let config = {};
 let roleList = { guilds: {} };
 let userData = {};
 let achievementList = {};
 let rules = {};
-let serverList = {}; // Tambah variabel untuk serverList
+let serverList = {};
 
 const loadData = () => {
     // Load config.json
@@ -184,23 +184,59 @@ function saveRules() {
     }
 }
 
-function saveServerList() {
-    try {
-        fs.writeFileSync(serverListPath, JSON.stringify(serverList, null, 2));
-        console.log('ServerList saved successfully.');
-    } catch (error) {
-        console.error('Error saving serverList:', error);
+    function saveServerList() {
+        try {
+            fs.writeFileSync(serverListPath, JSON.stringify(serverList, null, 2));
+            console.log('ServerList saved successfully.');
+        } catch (error) {
+            console.error('Error saving serverList:', error);
+        }
     }
-}
 
-// Fungsi untuk memastikan serverList[guildId] selalu ada
-function ensureGuildConfig(guildId) {
-    if (!serverList[guildId]) {
-        serverList[guildId] = {};
-        saveServerList();
-        console.log(`[DataManager] Initialized config for guild: ${guildId}`);
+    // Fungsi untuk memastikan serverList[guildId] selalu ada dan menginisialisasi achievements
+
+    function ensureGuildConfig(guildId) {
+        if (!serverList[guildId]) {
+            serverList[guildId] = {
+                achievements: {},
+                achievementChannel: null // Inisialisasi achievementChannel
+            };
+            // Inisialisasi status aktif untuk setiap achievement
+            Object.keys(achievementList).forEach(achievementId => {
+                serverList[guildId].achievements[achievementId] = { enabled: false };
+            });
+            saveServerList();
+            console.log(`[DataManager] Initialized config for guild: ${guildId}`);
+        } else {
+            if (!serverList[guildId].achievements) {
+                serverList[guildId].achievements = {};
+                Object.keys(achievementList).forEach(achievementId => {
+                    serverList[guildId].achievements[achievementId] = { enabled: false };
+                });
+            }
+            if (!serverList[guildId].achievementChannel) {
+                serverList[guildId].achievementChannel = null; // Pastikan ada achievementChannel
+            }
+            saveServerList();
+            console.log(`[DataManager] Ensured achievements and achievementChannel for guild: ${guildId}`);
+        }
     }
-}
+
+    // Fungsi untuk menginisialisasi rankCard di serverList[guildId]
+    function initRankCard(guildId) {
+        ensureGuildConfig(guildId); // Pastikan guild ada
+        if (!serverList[guildId].rankCard) {
+            serverList[guildId].rankCard = {
+                font: 'Default',
+                mainColor: '#FFFFFF',
+                backgroundColor: '#000000',
+                overlayOpacity: 0.5,
+                backgroundImage: ''
+            };
+            saveServerList();
+            console.log(`[DataManager] Initialized rankCard for guild: ${guildId}`);
+        }
+    }
 
 module.exports = {
     config,
@@ -208,13 +244,14 @@ module.exports = {
     userData,
     achievementList,
     rules,
-    serverList, // Tambah serverList ke export
+    serverList,
     saveConfig,
     saveRoleList,
     saveData,
     saveAchievementList,
     saveRules,
-    saveServerList, // Tambah saveServerList ke export
+    saveServerList,
     loadData,
-    ensureGuildConfig
+    ensureGuildConfig,
+    initRankCard
 };

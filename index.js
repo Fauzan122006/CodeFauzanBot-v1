@@ -1,12 +1,10 @@
-const { Client, IntentsBitField, REST, Routes, Collection, EmbedBuilder } = require('discord.js');
 const fs = require('fs');
-const path = require('path');
+const { Client, GatewayIntentBits, Collection, EmbedBuilder, ActivityType } = require('discord.js');
 const fetch = require('node-fetch');
 const chalk = require('chalk');
 global.fetch = fetch;
-const { config, saveConfig } = require('./utils/dataManager');
+const { config, saveConfig, serverList, saveServerList } = require('./utils/dataManager');
 const { saveData } = require('./utils/userDataHandler');
-
 const codefauzan = `
 ---
 
@@ -48,48 +46,27 @@ log('Index', 'Token yang digunakan: [HIDDEN]');
 log('Index', 'Initializing Discord client...');
 const client = new Client({
     intents: [
-        IntentsBitField.Flags.Guilds,
-        IntentsBitField.Flags.GuildMessages,
-        IntentsBitField.Flags.MessageContent,
-        IntentsBitField.Flags.GuildMembers,
-        IntentsBitField.Flags.GuildPresences,
-        IntentsBitField.Flags.GuildVoiceStates,
-        IntentsBitField.Flags.GuildMessageReactions
-    ]
+        GatewayIntentBits.Guilds,
+        GatewayIntentBits.GuildMessages,
+        GatewayIntentBits.MessageContent,
+        GatewayIntentBits.GuildMembers,
+        GatewayIntentBits.GuildPresences,
+        GatewayIntentBits.GuildVoiceStates,
+        GatewayIntentBits.GuildMessageReactions,
+    ],
 });
 
 client.commands = new Collection();
+const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
 
-log('Index', 'Loading commands...');
-const commandsPath = path.join(__dirname, 'commands');
-log('Index', `Commands path: ${commandsPath}`);
-
-let commandFiles;
-try {
-    commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
-    log('Index', `Command files found: [${commandFiles.join(', ')}]`);
-} catch (error) {
-    log('Index', `Error reading commands folder: ${error.message}`, 'error');
-    commandFiles = [];
-}
-
-const commands = [];
 for (const file of commandFiles) {
-    const filePath = path.join(commandsPath, file);
-    try {
-        const command = require(filePath);
-        client.commands.set(command.data.name, command);
-        commands.push(command.data.toJSON());
-        log('Index', `Successfully loaded command: ${command.data.name} from ${file}`, 'success');
-    } catch (error) {
-        log('Index', `Error loading command from ${file}: ${error.message}`, 'error');
-    }
+    const command = require(`./commands/${file}`);
+    client.commands.set(command.data.name, command);
+    log('Index', `Registered command: ${command.data.name}`, 'success');
 }
 
 log('Index', 'Loading events...');
-const eventsPath = path.join(__dirname, 'events');
-log('Index', `Events path: ${eventsPath}`);
-
+const eventsPath = './events';
 let eventFiles;
 try {
     eventFiles = fs.readdirSync(eventsPath).filter(file => file.endsWith('.js'));
@@ -100,43 +77,27 @@ try {
 }
 
 for (const file of eventFiles) {
-    const filePath = path.join(eventsPath, file);
-    try {
-        const event = require(filePath);
-        if (event.once) {
-            client.once(event.name, (...args) => event.execute(...args, client));
-            log('Index', `Successfully loaded one-time event: ${event.name} from ${file}`, 'success');
-        } else {
-            client.on(event.name, (...args) => event.execute(...args, client));
-            log('Index', `Successfully loaded recurring event: ${event.name} from ${file}`, 'success');
-        }
-    } catch (error) {
-        log('Index', `Error loading event from ${file}: ${error.message}`, 'error');
+    const event = require(`./events/${file}`);
+    if (event.once) {
+        client.once(event.name, (...args) => event.execute(...args, client));
+        log('Index', `Successfully loaded one-time event: ${event.name} from ${file}`, 'success');
+    } else {
+        client.on(event.name, (...args) => event.execute(...args, client));
+        log('Index', `Successfully loaded recurring event: ${event.name} from ${file}`, 'success');
     }
 }
 
-log('Index', 'Setting up client ready event...');
 client.once('ready', async () => {
     log('Index', `Bot is ready as ${client.user.tag}`, 'success');
     log('Index', `Logged in as ${client.user.tag}`);
 
-    try {
-        log('Index', 'Registering application commands...');
-        const rest = new REST({ version: '10' }).setToken(config.clienttoken);
-
-        // Hapus semua perintah lama (global commands)
-        await rest.put(Routes.applicationCommands(config.clientid), { body: [] });
-        log('Index', 'Successfully cleared all application commands.', 'success');
-
-        // Daftarkan ulang perintah baru
-        await rest.put(
-            Routes.applicationCommands(config.clientid),
-            { body: commands }
-        );
-        log('Index', `Successfully registered application commands: [${commands.map(cmd => cmd.name).join(', ')}]`, 'success');
-    } catch (error) {
-        log('Index', `Error registering application commands: ${error.message}`, 'error');
-    }
+    client.user.setPresence({
+        activities: [{
+            name: 'Configure me at the dashboard!',
+            type: ActivityType.Playing
+        }],
+        status: 'online'
+    });
 
     log('Index', 'Starting YouTube update check interval (every 5 minutes)...');
     setInterval(() => checkYouTubeUpdates(client), 300000);
@@ -158,10 +119,10 @@ async function checkYouTubeUpdates(client) {
         return;
     }
 
-    const guilds = Object.keys(config).filter(key => key.match(/^\d+$/));
+    const guilds = Object.keys(serverList).filter(key => key.match(/^\d+$/));
     for (const guildId of guilds) {
-        const socialChannelId = config[guildId]?.socialChannel;
-        const channelId = config[guildId]?.youtubeChannelId;
+        const socialChannelId = serverList[guildId]?.socialChannel;
+        const channelId = serverList[guildId]?.youtubeChannelId;
 
         if (!socialChannelId || !channelId) {
             log('YouTubeUpdate', `Social channel or YouTube channel ID not set for guild: ${guildId}`);
@@ -217,8 +178,7 @@ async function checkYouTubeUpdates(client) {
                 log('YouTubeUpdate', `No thumbnail found for video: ${videoLink}`, 'warning');
             }
 
-            if (!config[guildId]) config[guildId] = {};
-            if (!config[guildId].lastYouTubeVideoId || config[guildId].lastYouTubeVideoId !== videoId) {
+            if (!serverList[guildId].lastYouTubeVideoId || serverList[guildId].lastYouTubeVideoId !== videoId) {
                 const embed = new EmbedBuilder()
                     .setTitle('🎥 Video YouTube Baru!')
                     .setDescription(`Hai @everyone, video baru telah diunggah! Cek sekarang!\n\n**${videoTitle}**\n${videoLink}`)
@@ -227,8 +187,8 @@ async function checkYouTubeUpdates(client) {
                     .setTimestamp();
 
                 await socialChannel.send({ embeds: [embed] });
-                config[guildId].lastYouTubeVideoId = videoId;
-                saveConfig();
+                serverList[guildId].lastYouTubeVideoId = videoId;
+                saveServerList();
                 log('YouTubeUpdate', `Posted new YouTube video in guild ${guildId}: ${videoLink}`, 'success');
             } else {
                 log('YouTubeUpdate', `No new videos to post for guild: ${guildId}`);
@@ -266,4 +226,6 @@ process.on('warning', (warning) => {
     }
 });
 
-require('./dashboard');
+// Jalankan dashboard dengan mengirimkan client sebagai parameter
+const dashboard = require('./dashboard');
+dashboard.start(client);

@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CodeFauzanBot - Rules Settings</title>
+    <!-- Tambahkan Quill.js CSS -->
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+    <!-- Font Awesome untuk ikon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts untuk font modern -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Whitney (mirip Discord) -->
+    <style>
+        @font-face {
+            font-family: 'Whitney';
+            src: url('https://cdn.jsdelivr.net/npm/@discordapp/font@1.0.0/Whitney-Book.woff2') format('woff2');
+            font-weight: 400;
+            font-style: normal;
+        }
+
+        @font-face {
+            font-family: 'Whitney';
+            src: url('https://cdn.jsdelivr.net/npm/@discordapp/font@1.0.0/Whitney-Medium.woff2') format('woff2');
+            font-weight: 500;
+            font-style: normal;
+        }
+
+        @font-face {
+            font-family: 'Whitney';
+            src: url('https://cdn.jsdelivr.net/npm/@discordapp/font@1.0.0/Whitney-Semibold.woff2') format('woff2');
+            font-weight: 600;
+            font-style: normal;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #1e2124 0%, #2c2f33 100%);
+            color: #ffffff;
+            margin: 0;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 250px;
+            background: #2f3136;
+            padding: 20px;
+            border-right: 1px solid #36393f;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .sidebar h2 {
+            font-size: 22px;
+            margin-bottom: 20px;
+            color: #b9bbbe;
+            font-weight: 600;
+        }
+
+        .sidebar ul {
+            list-style: none;
+        }
+
+        .sidebar ul li {
+            margin-bottom: 10px;
+        }
+
+        .sidebar ul li a {
+            color: #b9bbbe;
+            text-decoration: none;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar ul li a:hover,
+        .sidebar ul li a.active {
+            background: linear-gradient(90deg, #5865f2, #7289da);
+            color: #ffffff;
+            transform: translateX(5px);
+        }
+
+        .sidebar ul li a i {
+            margin-right: 10px;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 40px;
+            background: transparent;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            background: linear-gradient(90deg, #5865f2, #7289da);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .back {
+            color: #5865f2;
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .back:hover {
+            color: #7289da;
+            text-decoration: underline;
+        }
+
+        .content-container {
+            display: flex;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+
+        .form-container {
+            background: #2f3136;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+            flex: 1;
+            min-width: 300px;
+            transition: transform 0.3s ease;
+        }
+
+        .form-container:hover {
+            transform: translateY(-5px);
+        }
+
+        .preview-container {
+            background: #2f3136;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+            flex: 1;
+            min-width: 300px;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.3s ease;
+        }
+
+        .preview-container:hover {
+            transform: translateY(-5px);
+        }
+
+        .preview-container h3 {
+            font-size: 18px;
+            font-weight: 500;
+            margin-bottom: 20px;
+            color: #b9bbbe;
+            text-align: center;
+        }
+
+        .preview-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .preview-image {
+            max-width: 100%;
+            border-radius: 8px;
+            display: none;
+            /* Awalnya disembunyikan, akan ditampilkan jika ada URL gambar */
+        }
+
+        .embed-preview {
+            background: #202225;
+            border-radius: 8px;
+            padding: 16px;
+            position: relative;
+            overflow: hidden;
+            font-family: 'Whitney', sans-serif;
+            width: 100%;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        .embed-preview::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--embed-color, #5865f2);
+            /* Warna default, akan diubah oleh JS */
+        }
+
+        .embed-preview .embed-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 8px;
+        }
+
+        .embed-preview .embed-description {
+            font-size: 14px;
+            color: #dcddde;
+            line-height: 1.5;
+            margin-bottom: 16px;
+        }
+
+        .embed-preview .embed-description img {
+            width: 24px;
+            height: 24px;
+            vertical-align: middle;
+        }
+
+        .embed-preview .embed-button {
+            background: var(--button-color, #5865f2);
+            color: #ffffff;
+            padding: 8px 16px;
+            border-radius: 4px;
+            text-align: center;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: not-allowed;
+            opacity: 0.8;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: #b9bbbe;
+        }
+
+        .form-group input[type="checkbox"] {
+            width: auto;
+            margin-right: 10px;
+            accent-color: #5865f2;
+        }
+
+        .form-group input[type="text"],
+        .form-group select,
+        .form-group input[type="color"] {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            background: #36393f;
+            color: #ffffff;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input[type="color"] {
+            width: 30px;
+            height: 30px;
+            padding: 0;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            border-radius: 50%;
+        }
+
+        .form-group input[type="color"]::-webkit-color-swatch-wrapper {
+            padding: 0;
+        }
+
+        .form-group input[type="color"]::-webkit-color-swatch {
+            border: none;
+            border-radius: 50%;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            background: #40444b;
+            box-shadow: 0 0 0 2px #5865f2;
+            outline: none;
+        }
+
+        .form-group select {
+            appearance: none;
+            background: #36393f url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIHZpZXdCb3g9IjAgMCA1NiAxNiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTQgNkw4IDEwTDEyIDYiIHN0cm9rZT0iI2I5YmJiZSIgc3Ryb2tlLXdpZHRoPSIxLjUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPgo8L3N2Zz4K') no-repeat right 10px center;
+            padding-right: 30px;
+        }
+
+        /* Styling untuk Quill editor */
+        #rules-editor {
+            background: #36393f;
+            color: #ffffff;
+            border-radius: 8px;
+            height: 300px;
+        }
+
+        .ql-toolbar {
+            background: #2f3136;
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+        }
+
+        .ql-container {
+            border-bottom-left-radius: 8px;
+            border-bottom-right-radius: 8px;
+        }
+
+        .ql-editor {
+            min-height: 200px;
+        }
+
+        .ql-emoji {
+            color: #ffffff;
+            font-size: 16px;
+        }
+
+        .ql-emoji:hover {
+            color: #5865f2;
+        }
+
+        /* Styling untuk modal emoji */
+        .emoji-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .emoji-modal-content {
+            background: #202225;
+            padding: 16px;
+            border-radius: 8px;
+            width: 440px;
+            max-height: 500px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .emoji-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #2f3136;
+            margin-bottom: 16px;
+        }
+
+        .emoji-modal-header h3 {
+            margin: 0;
+            font-size: 16px;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .emoji-modal-close {
+            font-size: 24px;
+            color: #b9bbbe;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .emoji-modal-close:hover {
+            color: #ffffff;
+        }
+
+        .emoji-list {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            gap: 8px;
+            max-height: 400px;
+            overflow-y: auto;
+            padding-right: 8px;
+        }
+
+        .emoji-list::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .emoji-list::-webkit-scrollbar-track {
+            background: #2f3136;
+            border-radius: 4px;
+        }
+
+        .emoji-list::-webkit-scrollbar-thumb {
+            background: #4f545c;
+            border-radius: 4px;
+        }
+
+        .emoji-list::-webkit-scrollbar-thumb:hover {
+            background: #72767d;
+        }
+
+        .emoji-item {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 36px;
+            height: 36px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .emoji-item:hover {
+            background: #2f3136;
+        }
+
+        .emoji-item img {
+            width: 32px;
+            height: 32px;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        button {
+            padding: 12px 24px;
+            background: linear-gradient(90deg, #5865f2, #7289da);
+            color: #ffffff;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        button:hover {
+            background: linear-gradient(90deg, #4752c4, #5865f2);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(88, 101, 242, 0.3);
+        }
+
+        button i {
+            font-size: 16px;
+        }
+
+        button.danger {
+            background: linear-gradient(90deg, #ff5555, #ff7777);
+        }
+
+        button.danger:hover {
+            background: linear-gradient(90deg, #ff7777, #ff9999);
+            box-shadow: 0 5px 15px rgba(255, 85, 85, 0.3);
+        }
+
+        /* Responsivitas */
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                border-right: none;
+                border-bottom: 1px solid #36393f;
+            }
+
+            .main-content {
+                padding: 20px;
+            }
+
+            .content-container {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Sidebar -->
+    <%- include('template/sidebar', { guild: guild, currentPage: 'rules' }) %>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="header">
+                <a href="/dashboard/<%= guild.id %>" class="back">← Back to Dashboard</a>
+                <h1>Rules Settings - <%= guild.name %>
+                </h1>
+            </div>
+
+            <div class="content-container">
+                <!-- Form Container -->
+                <div class="form-container">
+                    <form method="POST" action="/dashboard/<%= guild.id %>/rules" id="rulesForm">
+                        <!-- Enable Rules -->
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" name="enabled" <%=config.enabled ? 'checked' : '' %>>
+                                Enable Rules
+                            </label>
+                        </div>
+
+                        <!-- Rules Channel -->
+                        <div class="form-group">
+                            <label for="channel">Rules Channel</label>
+                            <select name="channel" id="channel" required>
+                                <% guild.channels.cache.filter(ch => ch.isTextBased() && !ch.isThread()).forEach(channel => { %>
+                                    <option value="<%= channel.id %>" <%= config.channel === channel.id ? 'selected' : '' %>>
+                                        <%= channel.name %>
+                                    </option>
+                                <% }); %>
+                            </select>
+                        </div>
+
+                        <!-- Rules Editor -->
+                        <div class="form-group">
+                            <label for="rules">Rules</label>
+                            <div id="rules-editor"></div>
+                            <input type="hidden" name="rules" id="rules">
+                        </div>
+
+                        <!-- Image URL -->
+                        <div class="form-group">
+                            <label for="image">Image URL (Optional)</label>
+                            <input type="text" name="image" id="image" placeholder="https://example.com/image.png"
+                                value="<%= config.image || '' %>">
+                        </div>
+
+                        <!-- Embed Color -->
+                        <div class="form-group">
+                            <label for="embedColor">Embed Color</label>
+                            <input type="color" name="embedColor" id="embedColor"
+                                value="<%= config.embedColor || '#FF0000' %>">
+                        </div>
+
+                        <!-- Button Color -->
+                        <div class="form-group">
+                            <label for="buttonColor">Button Color</label>
+                            <input type="color" name="buttonColor" id="buttonColor"
+                                value="<%= config.buttonColor || '#5865F2' %>">
+                        </div>
+
+                        <!-- Role 1 -->
+                        <div class="form-group">
+                            <label for="role1">Role 1 (Required)</label>
+                            <select name="role1" id="role1" required>
+                                <% guild.roles.cache.forEach(role=> { %>
+                                    <option value="<%= role.id %>" <%=config.role1===role.id ? 'selected' : '' %>><%=
+                                            role.name %>
+                                    </option>
+                                    <% }) %>
+                            </select>
+                        </div>
+
+                        <!-- Role 2 -->
+                        <div class="form-group">
+                            <label for="role2">Role 2 (Optional)</label>
+                            <select name="role2" id="role2">
+                                <option value="">None</option>
+                                <% guild.roles.cache.forEach(role=> { %>
+                                    <option value="<%= role.id %>" <%=config.role2===role.id ? 'selected' : '' %>><%=
+                                            role.name %>
+                                    </option>
+                                    <% }) %>
+                            </select>
+                        </div>
+
+                        <!-- Tombol Aksi -->
+                        <div class="action-buttons">
+                            <button type="submit">
+                                <i class="fas fa-save"></i> Save
+                            </button>
+                            <button type="button" class="danger"
+                                onclick="window.location.href='/dashboard/<%= guild.id %>'">
+                                <i class="fas fa-times"></i> Discard
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Preview Container -->
+                <div class="preview-container">
+                    <h3>Rules Embed Preview</h3>
+                    <div class="preview-content">
+                        <img class="preview-image" id="previewImage" src="<%= config.image || '' %>"
+                            alt="Preview Image">
+                        <div class="embed-preview" id="embedPreview">
+                            <div class="embed-title">Server Rules</div>
+                            <div class="embed-description" id="embedDescription">
+                                <%- config.html
+                                    || '<p><strong>Rule 1:</strong> Be nice 😊</p><p><strong>Rule 2:</strong> No spamming 🚫</p>'
+                                    %>
+                            </div>
+                            <div class="embed-button">Accept Rules</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal untuk memilih emoji -->
+        <div class="emoji-modal" id="emojiModal">
+            <div class="emoji-modal-content">
+                <div class="emoji-modal-header">
+                    <h3>Pilih Emoji</h3>
+                    <span class="emoji-modal-close" id="emojiModalClose">×</span>
+                </div>
+                <div class="emoji-list" id="emojiList">
+                    <% emojis.forEach(emoji=> { %>
+                        <span class="emoji-item" data-emoji="<%= emoji.string %>">
+                            <img src="<%= emoji.url %>" alt="<%= emoji.name %>">
+                        </span>
+                        <% }) %>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tambahkan Quill.js JS -->
+        <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+        <script>
+            // Pastikan script hanya dijalankan sekali
+            if (!window.quillInitialized) {
+                window.quillInitialized = true;
+
+                // Pastikan EmojiBlot hanya dideklarasikan sekali
+                if (!Quill.imports['blots/emoji']) {
+                    const EmojiBlot = Quill.import('blots/inline');
+                    class CustomEmojiBlot extends EmojiBlot {
+                        static create(value) {
+                            const node = super.create();
+                            node.innerHTML = value;
+                            return node;
+                        }
+
+                        static formats(node) {
+                            return node.innerHTML;
+                        }
+                    }
+                    CustomEmojiBlot.blotName = 'emoji';
+                    CustomEmojiBlot.tagName = 'span';
+                    Quill.register(CustomEmojiBlot);
+                }
+
+                // Tambahkan tombol emoji ke toolbar
+                const icons = Quill.import('ui/icons');
+                icons['emoji'] = '<i class="fas fa-smile"></i>';
+
+                // Inisialisasi Quill editor
+                const quill = new Quill('#rules-editor', {
+                    theme: 'snow',
+                    modules: {
+                        toolbar: {
+                            container: [
+                                ['bold', 'italic', 'underline', 'strike'],
+                                ['code'],
+                                [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+                                ['emoji'],
+                                ['clean']
+                            ],
+                            handlers: {
+                                emoji: function () {
+                                    const modal = document.getElementById('emojiModal');
+                                    modal.style.display = 'flex';
+                                }
+                            }
+                        }
+                    }
+                });
+
+                // Isi editor dengan data rules yang sudah ada
+                const existingRules = `<%- config.html || '' %>`;
+                quill.root.innerHTML = existingRules || '<p><strong>Rule 1:</strong> Be nice 😊</p><p><strong>Rule 2:</strong> No spamming 🚫</p>';
+
+                // Saat form disubmit, ambil konten dari Quill
+                document.querySelector('form').onsubmit = function () {
+                    const rulesInput = document.querySelector('#rules');
+                    rulesInput.value = quill.root.innerHTML;
+                };
+
+                // Tangani modal emoji
+                const emojiModal = document.getElementById('emojiModal');
+                const emojiModalClose = document.getElementById('emojiModalClose');
+                const emojiList = document.getElementById('emojiList');
+
+                emojiModalClose.onclick = function () {
+                    emojiModal.style.display = 'none';
+                };
+
+                window.onclick = function (event) {
+                    if (event.target === emojiModal) {
+                        emojiModal.style.display = 'none';
+                    }
+                };
+
+                emojiList.addEventListener('click', function (event) {
+                    const emojiItem = event.target.closest('.emoji-item');
+                    if (emojiItem) {
+                        const emoji = emojiItem.getAttribute('data-emoji');
+                        const range = quill.getSelection(true);
+                        quill.insertText(range.index, emoji);
+                        emojiModal.style.display = 'none';
+                    }
+                });
+
+                // Fungsi untuk mengonversi emoji server ke gambar
+                function convertEmojiToImage(content) {
+                    const emojiRegex = /<a?:(\w+):(\d+)>/g;
+                    return content.replace(emojiRegex, (match, name, id) => {
+                        const isAnimated = match.startsWith('<a:');
+                        const extension = isAnimated ? 'gif' : 'png';
+                        const emojiUrl = `https://cdn.discordapp.com/emojis/${id}.${extension}?size=32`;
+                        return `<img src="${emojiUrl}" alt="${name}" style="width: 24px; height: 24px; vertical-align: middle;" />`;
+                    });
+                }
+
+                // Fungsi untuk memperbarui preview
+                function updatePreview() {
+                    // Ambil elemen preview
+                    const embedDescription = document.getElementById('embedDescription');
+                    const previewImage = document.getElementById('previewImage');
+                    const embedPreview = document.getElementById('embedPreview');
+
+                    // Ambil konten dari Quill editor dan konversi emoji
+                    let content = quill.root.innerHTML;
+                    content = convertEmojiToImage(content);
+                    embedDescription.innerHTML = content;
+
+                    // Update gambar
+                    const imageUrl = document.getElementById('image').value;
+                    if (imageUrl) {
+                        previewImage.src = imageUrl;
+                        previewImage.style.display = 'block';
+                    } else {
+                        previewImage.style.display = 'none';
+                    }
+
+                    // Update warna embed (hanya garis sisi kiri)
+                    const embedColor = document.getElementById('embedColor').value;
+                    embedPreview.style.setProperty('--embed-color', embedColor);
+
+                    // Update warna tombol
+                    const buttonColor = document.getElementById('buttonColor').value;
+                    embedPreview.style.setProperty('--button-color', buttonColor);
+                }
+
+                // Konversi emoji pada konten awal
+                const embedDescription = document.getElementById('embedDescription');
+                let initialContent = embedDescription.innerHTML;
+                initialContent = convertEmojiToImage(initialContent);
+                embedDescription.innerHTML = initialContent;
+
+                // Tambahkan event listener untuk Quill editor
+                quill.on('text-change', updatePreview);
+
+                // Tambahkan event listener untuk input gambar, warna embed, dan warna tombol
+                document.getElementById('image').addEventListener('input', updatePreview);
+                document.getElementById('embedColor').addEventListener('input', updatePreview);
+                document.getElementById('buttonColor').addEventListener('input', updatePreview);
+
+                // Set warna awal untuk embed preview dan tombol
+                const embedPreview = document.getElementById('embedPreview');
+                const initialEmbedColor = document.getElementById('embedColor').value;
+                const initialButtonColor = document.getElementById('buttonColor').value;
+                embedPreview.style.setProperty('--embed-color', initialEmbedColor);
+                embedPreview.style.setProperty('--button-color', initialButtonColor);
+
+                // Tampilkan gambar awal jika ada
+                const initialImage = document.getElementById('image').value;
+                if (initialImage) {
+                    document.getElementById('previewImage').style.display = 'block';
+                }
+            }
+        </script>
+</body>
+
+</html>

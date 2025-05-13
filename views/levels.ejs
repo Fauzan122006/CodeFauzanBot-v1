@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Levels - <%= guild.name %>
+    </title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #1e2124 0%, #2c2f33 100%);
+            color: #ffffff;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 250px;
+            background: #2f3136;
+            padding: 20px;
+            border-right: 1px solid #36393f;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .sidebar h2 {
+            font-size: 22px;
+            margin-bottom: 20px;
+            color: #b9bbbe;
+            font-weight: 600;
+        }
+
+        .sidebar ul {
+            list-style: none;
+        }
+
+        .sidebar ul li {
+            margin-bottom: 10px;
+        }
+
+        .sidebar ul li a {
+            color: #b9bbbe;
+            text-decoration: none;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar ul li a:hover,
+        .sidebar ul li a.active {
+            background: linear-gradient(90deg, #5865f2, #7289da);
+            color: #ffffff;
+            transform: translateX(5px);
+        }
+
+        .sidebar ul li a i {
+            margin-right: 10px;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 40px;
+            background: transparent;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            background: linear-gradient(90deg, #5865f2, #7289da);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .back {
+            color: #5865f2;
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .back:hover {
+            color: #7289da;
+            text-decoration: underline;
+        }
+
+        .form-container {
+            background: #2c2f33;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+            width: 90%;
+            max-width: 800px;
+            /* Diperlebar */
+            margin: 0 auto;
+            border: 1px solid #5865f2;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group h2 {
+            font-size: 24px;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 5px;
+        }
+
+        .form-group .description {
+            font-size: 14px;
+            color: #b9bbbe;
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: #ffffff;
+        }
+
+        .form-group p {
+            font-size: 12px;
+            color: #b9bbbe;
+            margin-bottom: 10px;
+        }
+
+        /* Toggle Switch */
+        .toggle {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .toggle input[type="checkbox"] {
+            display: none;
+        }
+
+        .toggle .switch {
+            position: relative;
+            display: inline-block;
+            width: 40px;
+            height: 20px;
+            background: #36393f;
+            border-radius: 20px;
+            transition: background 0.3s ease;
+        }
+
+        .toggle .switch::before {
+            content: '';
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            background: #5865f2;
+            border-radius: 50%;
+            top: 2px;
+            left: 2px;
+            transition: transform 0.3s ease;
+        }
+
+        .toggle input[type="checkbox"]:checked+.switch {
+            background: #43b581;
+        }
+
+        .toggle input[type="checkbox"]:checked+.switch::before {
+            transform: translateX(20px);
+        }
+
+        .form-group select {
+            width: 100%;
+            padding: 8px;
+            border: none;
+            border-radius: 5px;
+            background: #36393f;
+            color: #ffffff;
+            font-size: 14px;
+            appearance: none;
+            background: #36393f url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIHZpZXdCb3g9IjAgMCA1NiAxNiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTQgNkw4IDEwTDEyIDYiIHN0cm9rZT0iI2I5YmJiZSIgc3Ryb2tlLXdpZHRoPSIxLjUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPgo8L3N2Zz4K') no-repeat right 10px center;
+            padding-right: 30px;
+        }
+
+        .form-group select:focus {
+            background: #40444b;
+            outline: none;
+        }
+
+        .form-group textarea {
+            width: 100%;
+            padding: 8px;
+            border: none;
+            border-radius: 5px;
+            background: #36393f;
+            color: #ffffff;
+            font-size: 14px;
+            resize: vertical;
+        }
+
+        .form-group textarea:focus {
+            background: #40444b;
+            outline: none;
+        }
+
+        .form-group .note {
+            font-size: 12px;
+            color: #ff8c00;
+            margin-top: 5px;
+        }
+
+        /* Role Rewards Section */
+        .role-rewards {
+            margin-top: 20px;
+        }
+
+        .role-reward-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .role-reward-item input[type="number"] {
+            width: 80px;
+            padding: 8px;
+            border: none;
+            border-radius: 5px;
+            background: #36393f;
+            color: #ffffff;
+            font-size: 14px;
+        }
+
+        .role-reward-item select {
+            flex: 1;
+        }
+
+        .role-reward-item button {
+            padding: 8px;
+            background: #ff5555;
+            border: none;
+            border-radius: 5px;
+            color: #ffffff;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .role-reward-item button:hover {
+            background: #ff7777;
+        }
+
+        /* Rank Card Preview */
+        .rank-card-preview {
+            background: #2f3136;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .rank-card-preview img {
+            max-width: 100%;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .edit-rank-card {
+            padding: 12px 24px;
+            background: linear-gradient(90deg, #5865f2, #7289da);
+            color: #ffffff;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .edit-rank-card:hover {
+            background: linear-gradient(90deg, #4752c4, #5865f2);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(88, 101, 242, 0.3);
+        }
+
+        /* XP Rate Slider */
+        .xp-rate-slider {
+            width: 100%;
+            margin-top: 10px;
+            -webkit-appearance: none;
+            height: 8px;
+            background: #36393f;
+            border-radius: 5px;
+            outline: none;
+            transition: background 0.3s ease;
+        }
+
+        .xp-rate-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            background: #5865f2;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+        }
+
+        .xp-rate-slider::-moz-range-thumb {
+            width: 16px;
+            height: 16px;
+            background: #5865f2;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+        }
+
+        .xp-rate-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #b9bbbe;
+            margin-top: 5px;
+        }
+
+        /* No-XP Roles/Channels */
+        .no-xp-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .no-xp-item select {
+            flex: 1;
+        }
+
+        .no-xp-item button {
+            padding: 8px;
+            background: #ff5555;
+            border: none;
+            border-radius: 5px;
+            color: #ffffff;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .no-xp-item button:hover {
+            background: #ff7777;
+        }
+
+        /* Commands Section */
+        .command-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px;
+            background: #36393f;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+
+        .command-item .toggle {
+            margin-left: auto;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            flex: 1;
+        }
+
+        .save-button {
+            background: #43b581;
+            color: #ffffff;
+        }
+
+        .save-button:hover {
+            background: #3aa672;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(67, 181, 129, 0.3);
+        }
+
+        .discard-button {
+            background: #ff5555;
+            color: #ffffff;
+        }
+
+        .discard-button:hover {
+            background: #ff7777;
+            box-shadow: 0 5px 15px rgba(255, 85, 85, 0.3);
+        }
+
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                border-right: none;
+                border-bottom: 1px solid #36393f;
+            }
+
+            .main-content {
+                padding: 20px;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Sidebar -->
+    <%- include('template/sidebar', { guild: guild, currentPage: 'levels' }) %>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="header">
+                <a href="/dashboard/<%= guild.id %>" class="back">← Back to Dashboard</a>
+                <h1>Edit Levels - <%= guild.name %>
+                </h1>
+            </div>
+
+            <div class="form-container">
+                <form method="POST" action="/dashboard/<%= guild.id %>/levels">
+                    <!-- Levels Settings -->
+                    <div class="form-group">
+                        <h2>Levels</h2>
+                        <p class="description">Give your members XP and Levels when they send messages and rank them by
+                            activity in a leaderboard.</p>
+                        <div class="toggle">
+                            <label>Active</label>
+                            <input type="checkbox" name="levelsEnabled" id="levelsEnabled" <%=config?.levels?.enabled
+                                ? 'checked' : '' %>>
+                            <label for="levelsEnabled" class="switch"></label>
+                        </div>
+                    </div>
+
+                    <!-- Default Server Rank Card -->
+                    <div class="form-group">
+                        <h2>Default Server Rank Card</h2>
+                        <p class="description">You can customize the default /rank card in your server. By default,
+                            every
+                            member of your server will have that rank card.</p>
+                        <div class="rank-card-preview">
+                            <img src="/dashboard/<%= guild.id %>/rankcard/preview?font=<%= config?.rankCard?.font || 'Default' %>&mainColor=<%= encodeURIComponent(config?.rankCard?.mainColor || '#FFFFFF') %>&backgroundColor=<%= encodeURIComponent(config?.rankCard?.backgroundColor || '#000000') %>&overlayOpacity=<%= config?.rankCard?.overlayOpacity || 0.5 %>&backgroundImage=<%= encodeURIComponent(config?.rankCard?.backgroundImage || '') %>"
+                                alt="Rank Card Preview">
+                        </div>
+                        <a href="/dashboard/<%= guild.id %>/rankcard" class="edit-rank-card">Edit server rank card</a>
+                    </div>
+
+                    <!-- XP Rate -->
+                    <div class="form-group">
+                        <h2>XP Rate</h2>
+                        <p class="description">Change the leveling difficulty by tweaking the rate at which your members
+                            will gain XP.</p>
+                        <input type="range" class="xp-rate-slider" name="xpRate" id="xpRate" min="0.25" max="3"
+                            step="0.25" value="<%= config?.levels?.xpRate || 1 %>">
+                        <div class="xp-rate-labels">
+                            <span>x0.25</span>
+                            <span>x0.5</span>
+                            <span>x0.75</span>
+                            <span>x1</span>
+                            <span>x1.5</span>
+                            <span>x2</span>
+                            <span>x2.5</span>
+                            <span>x3</span>
+                        </div>
+                        <div class="toggle">
+                            <input type="checkbox" name="noExtraXPForPro" id="noExtraXPForPro"
+                                <%=config?.levels?.noExtraXPForPro ? 'checked' : '' %>>
+                            <label for="noExtraXPForPro" class="switch"></label>
+                            <label for="noExtraXPForPro">Do not give extra XP to MEE6 Pro subscribers</label>
+                        </div>
+                    </div>
+
+                    <!-- Leveling Up Settings -->
+                    <div class="form-group">
+                        <h2>Leveling Up</h2>
+                        <p class="description">When the user gains a level, CodeFauzanBot can send a personalized
+                            message.
+                        </p>
+
+                        <label>Level Up Announce</label>
+                        <p>Choose the channel to announce level-ups.</p>
+                        <select name="levelChannel" id="levelChannel">
+                            <option value="">Custom Channel</option>
+                            <% if (channels && channels.length> 0) { %>
+                                <% channels.forEach(channel=> { %>
+                                    <option value="<%= channel.id %>" <%=config?.levels?.levelChannel===channel.id
+                                        ? 'selected' : '' %>><%= channel.name %>
+                                    </option>
+                                    <% }) %>
+                                        <% } else { %>
+                                            <option value="" disabled>No text channels available</option>
+                                            <% } %>
+                        </select>
+
+                        <label>Announce Message</label>
+                        <p>Use [player] for the user's name and [level] for the new level.</p>
+                        <textarea name="levelMessage" rows="3"
+                            placeholder="GG [player], kamu baru saja naik ke level [level]!"><%= config?.levels?.levelMessage || 'GG [player], kamu baru saja naik ke level [level]!' %></textarea>
+                    </div>
+
+                    <!-- Role Rewards Configuration -->
+                    <div class="form-group">
+                        <h2>Role Rewards Configuration</h2>
+                        <p class="description">Role rewards are roles that will be automatically given to a player when
+                            reaching a specific level. You can choose to stack them or only keep the highest role
+                            reward.
+                        </p>
+
+                        <label>Role Reward Type</label>
+                        <div class="toggle">
+                            <input type="radio" name="roleRewardType" id="stackRewards" value="stack"
+                                <%=(config?.levels?.roleRewardType || 'stack' )==='stack' ? 'checked' : '' %>>
+                            <label for="stackRewards">Stack previous rewards</label>
+                        </div>
+                        <p>Users can have multiple rewards at once.</p>
+                        <div class="toggle">
+                            <input type="radio" name="roleRewardType" id="highestReward" value="highest"
+                                <%=(config?.levels?.roleRewardType || 'stack' )==='highest' ? 'checked' : '' %>>
+                            <label for="highestReward">Remove previous rewards</label>
+                        </div>
+                        <p>Users will only have the highest role reward.</p>
+
+                        <div class="toggle">
+                            <input type="checkbox" name="removeRoleOnXPLoss" id="removeRoleOnXPLoss"
+                                <%=config?.levels?.removeRoleOnXPLoss ? 'checked' : '' %>>
+                            <label for="removeRoleOnXPLoss" class="switch"></label>
+                            <label for="removeRoleOnXPLoss">Remove role reward after member loses XP</label>
+                        </div>
+                        <p>Typically after a /remove-xp command.</p>
+
+                        <div class="role-rewards">
+                            <label>Role Rewards</label>
+                            <div id="role-rewards-list">
+                                <% (config?.levels?.roleRewards || []).forEach((reward, index)=> { %>
+                                    <div class="role-reward-item">
+                                        <input type="number" name="roleRewardLevel[]" value="<%= reward.level %>"
+                                            min="1" placeholder="Level">
+                                        <select name="roleRewardId[]">
+                                            <option value="">Select a role</option>
+                                            <% roles.forEach(role=> { %>
+                                                <option value="<%= role.id %>" <%=reward.roleId===role.id ? 'selected'
+                                                    : '' %>><%= role.name %>
+                                                </option>
+                                                <% }) %>
+                                        </select>
+                                        <button type="button" onclick="removeRoleReward(this)">Remove</button>
+                                    </div>
+                                    <% }) %>
+                            </div>
+                            <button type="button" onclick="addRoleReward()">Add Role Reward</button>
+                        </div>
+                    </div>
+
+                    <!-- No-XP Roles -->
+                    <div class="form-group">
+                        <h2>No-XP Roles</h2>
+                        <p class="description">You can set roles here that will stop users from gaining XP.</p>
+                        <div class="toggle">
+                            <input type="radio" name="noXPRolesMode" id="denyAllRoles" value="denyAll"
+                                <%=(config?.levels?.noXPRolesMode || 'allowAll' )==='denyAll' ? 'checked' : '' %>>
+                            <label for="denyAllRoles">Deny all roles to gain XP, except</label>
+                        </div>
+                        <div class="toggle">
+                            <input type="radio" name="noXPRolesMode" id="allowAllRoles" value="allowAll"
+                                <%=(config?.levels?.noXPRolesMode || 'allowAll' )==='allowAll' ? 'checked' : '' %>>
+                            <label for="allowAllRoles">Allow all roles to gain XP, except</label>
+                        </div>
+                        <div id="no-xp-roles-list">
+                            <% (config?.levels?.noXPRoles || []).forEach((roleId, index)=> { %>
+                                <div class="no-xp-item">
+                                    <select name="noXPRoles[]">
+                                        <option value="">Select a role</option>
+                                        <% roles.forEach(role=> { %>
+                                            <option value="<%= role.id %>" <%=roleId===role.id ? 'selected' : '' %>><%=
+                                                    role.name %>
+                                            </option>
+                                            <% }) %>
+                                    </select>
+                                    <button type="button" onclick="removeNoXPRole(this)">Remove</button>
+                                </div>
+                                <% }) %>
+                        </div>
+                        <button type="button" onclick="addNoXPRole()">Add Role</button>
+                    </div>
+
+                    <!-- No-XP Channels -->
+                    <div class="form-group">
+                        <h2>No-XP Channels</h2>
+                        <p class="description">You can also prevent your members from gaining XP if they send messages
+                            in
+                            certain text channels.</p>
+                        <div class="toggle">
+                            <input type="radio" name="noXPChannelsMode" id="denyAllChannels" value="denyAll"
+                                <%=(config?.levels?.noXPChannelsMode || 'allowAll' )==='denyAll' ? 'checked' : '' %>>
+                            <label for="denyAllChannels">Deny for all channels except</label>
+                        </div>
+                        <div class="toggle">
+                            <input type="radio" name="noXPChannelsMode" id="allowAllChannels" value="allowAll"
+                                <%=(config?.levels?.noXPChannelsMode || 'allowAll' )==='allowAll' ? 'checked' : '' %>>
+                            <label for="allowAllChannels">Allow for all channels except</label>
+                        </div>
+                        <div id="no-xp-channels-list">
+                            <% if (!channels || channels.length===0) { %>
+                                <p class="note">No text channels found in this server. Please create a text channel to
+                                    configure No-XP Channels.</p>
+                                <% } else { %>
+                                    <% (config?.levels?.noXPChannels || []).forEach((channelId, index)=> { %>
+                                        <div class="no-xp-item">
+                                            <select name="noXPChannels[]">
+                                                <option value="">Select a channel</option>
+                                                <% channels.forEach(channel=> { %>
+                                                    <option value="<%= channel.id %>" <%=channelId===channel.id
+                                                        ? 'selected' : '' %>><%= channel.name %>
+                                                    </option>
+                                                    <% }) %>
+                                            </select>
+                                            <button type="button" onclick="removeNoXPChannel(this)">Remove</button>
+                                        </div>
+                                        <% }) %>
+                                            <% } %>
+                        </div>
+                        <% if (channels && channels.length> 0) { %>
+                            <button type="button" onclick="addNoXPChannel()">Add Channel</button>
+                            <% } %>
+                    </div>
+
+                    <!-- Commands -->
+                    <div class="form-group">
+                        <h2>Commands</h2>
+                        <div class="command-item">
+                            <div>
+                                <strong>/give-xp</strong>
+                                <p>Give XP to a member</p>
+                            </div>
+                            <div class="toggle">
+                                <input type="checkbox" name="giveXPCommandEnabled" id="giveXPCommandEnabled"
+                                    <%=config?.levels?.commands?.giveXP?.enabled ? 'checked' : '' %>>
+                                <label for="giveXPCommandEnabled" class="switch"></label>
+                            </div>
+                        </div>
+                        <div class="command-item">
+                            <div>
+                                <strong>/levels</strong>
+                                <p>Get the link to the leaderboard</p>
+                            </div>
+                            <div class="toggle">
+                                <input type="checkbox" name="levelsCommandEnabled" id="levelsCommandEnabled"
+                                    <%=config?.levels?.commands?.levels?.enabled ? 'checked' : '' %>>
+                                <label for="levelsCommandEnabled" class="switch"></label>
+                            </div>
+                        </div>
+                        <div class="command-item">
+                            <div>
+                                <strong>/rank</strong>
+                                <p>Get your rank or another member's rank</p>
+                            </div>
+                            <div class="toggle">
+                                <input type="checkbox" name="rankCommandEnabled" id="rankCommandEnabled"
+                                    <%=config?.levels?.commands?.rank?.enabled ? 'checked' : '' %>>
+                                <label for="rankCommandEnabled" class="switch"></label>
+                            </div>
+                        </div>
+                        <div class="command-item">
+                            <div>
+                                <strong>/remove-xp</strong>
+                                <p>Remove XP from a member</p>
+                            </div>
+                            <div class="toggle">
+                                <input type="checkbox" name="removeXPCommandEnabled" id="removeXPCommandEnabled"
+                                    <%=config?.levels?.commands?.removeXP?.enabled ? 'checked' : '' %>>
+                                <label for="removeXPCommandEnabled" class="switch"></label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="action-buttons">
+                        <button type="submit" class="save-button">Save Changes</button>
+                        <button type="button" class="discard-button"
+                            onclick="window.location.href='/dashboard/<%= guild.id %>'">Discard</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <script>
+            function addRoleReward() {
+                const roleRewardsList = document.getElementById('role-rewards-list');
+                const newItem = document.createElement('div');
+                newItem.classList.add('role-reward-item');
+                newItem.innerHTML = `
+                <input type="number" name="roleRewardLevel[]" min="1" placeholder="Level">
+                <select name="roleRewardId[]">
+                    <option value="">Select a role</option>
+                    <% roles.forEach(role => { %>
+                        <option value="<%= role.id %>"><%= role.name %></option>
+                    <% }) %>
+                </select>
+                <button type="button" onclick="removeRoleReward(this)">Remove</button>
+            `;
+                roleRewardsList.appendChild(newItem);
+            }
+
+            function removeRoleReward(button) {
+                button.parentElement.remove();
+            }
+
+            function addNoXPRole() {
+                const noXPRolesList = document.getElementById('no-xp-roles-list');
+                const newItem = document.createElement('div');
+                newItem.classList.add('no-xp-item');
+                newItem.innerHTML = `
+                <select name="noXPRoles[]">
+                    <option value="">Select a role</option>
+                    <% roles.forEach(role => { %>
+                        <option value="<%= role.id %>"><%= role.name %></option>
+                    <% }) %>
+                </select>
+                <button type="button" onclick="removeNoXPRole(this)">Remove</button>
+            `;
+                noXPRolesList.appendChild(newItem);
+            }
+
+            function removeNoXPRole(button) {
+                button.parentElement.remove();
+            }
+
+            function addNoXPChannel() {
+                const noXPChannelsList = document.getElementById('no-xp-channels-list');
+                const newItem = document.createElement('div');
+                newItem.classList.add('no-xp-item');
+                newItem.innerHTML = `
+                <select name="noXPChannels[]">
+                    <option value="">Select a channel</option>
+                    <% channels.forEach(channel => { %>
+                        <option value="<%= channel.id %>"><%= channel.name %></option>
+                    <% }) %>
+                </select>
+                <button type="button" onclick="removeNoXPChannel(this)">Remove</button>
+            `;
+                noXPChannelsList.appendChild(newItem);
+            }
+
+            function removeNoXPChannel(button) {
+                button.parentElement.remove();
+            }
+        </script>
+</body>
+
+</html>

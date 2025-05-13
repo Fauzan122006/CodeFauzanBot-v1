@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CodeFauzanBot - Roles Settings</title>
+    <!-- Tambahkan Font Awesome untuk ikon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Tambahkan Google Fonts untuk font modern -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Whitney (mirip Discord) -->
+    <style>
+        @font-face {
+            font-family: 'Whitney';
+            src: url('https://cdn.jsdelivr.net/npm/@discordapp/font@1.0.0/Whitney-Book.woff2') format('woff2');
+            font-weight: 400;
+            font-style: normal;
+        }
+
+        @font-face {
+            font-family: 'Whitney';
+            src: url('https://cdn.jsdelivr.net/npm/@discordapp/font@1.0.0/Whitney-Medium.woff2') format('woff2');
+            font-weight: 500;
+            font-style: normal;
+        }
+
+        @font-face {
+            font-family: 'Whitney';
+            src: url('https://cdn.jsdelivr.net/npm/@discordapp/font@1.0.0/Whitney-Semibold.woff2') format('woff2');
+            font-weight: 600;
+            font-style: normal;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #1e2124 0%, #2c2f33 100%);
+            color: #ffffff;
+            margin: 0;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 250px;
+            background: #2f3136;
+            padding: 20px;
+            border-right: 1px solid #36393f;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .sidebar h2 {
+            font-size: 22px;
+            margin-bottom: 20px;
+            color: #b9bbbe;
+            font-weight: 600;
+        }
+
+        .sidebar ul {
+            list-style: none;
+        }
+
+        .sidebar ul li {
+            margin-bottom: 10px;
+        }
+
+        .sidebar ul li a {
+            color: #b9bbbe;
+            text-decoration: none;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar ul li a:hover,
+        .sidebar ul li a.active {
+            background: linear-gradient(90deg, #5865f2, #7289da);
+            color: #ffffff;
+            transform: translateX(5px);
+        }
+
+        .sidebar ul li a i {
+            margin-right: 10px;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 40px;
+            background: transparent;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            background: linear-gradient(90deg, #5865f2, #7289da);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .back {
+            color: #5865f2;
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .back:hover {
+            color: #7289da;
+            text-decoration: underline;
+        }
+
+        .form-container {
+            background: #2f3136;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease;
+        }
+
+        .form-container:hover {
+            transform: translateY(-5px);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: #b9bbbe;
+        }
+
+        .form-group input[type="checkbox"] {
+            width: auto;
+            margin-right: 10px;
+            accent-color: #5865f2;
+        }
+
+        .form-group input[type="text"],
+        .form-group select,
+        .form-group input[type="color"] {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            background: #36393f;
+            color: #ffffff;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input[type="color"] {
+            width: 30px;
+            height: 30px;
+            padding: 0;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            border-radius: 50%;
+        }
+
+        .form-group input[type="color"]::-webkit-color-swatch-wrapper {
+            padding: 0;
+        }
+
+        .form-group input[type="color"]::-webkit-color-swatch {
+            border: none;
+            border-radius: 50%;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            background: #40444b;
+            box-shadow: 0 0 0 2px #5865f2;
+            outline: none;
+        }
+
+        .form-group select {
+            appearance: none;
+            background: #36393f url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIHZpZXdCb3g9IjAgMCA1NiAxNiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTQgNkw4IDEwTDEyIDYiIHN0cm9rZT0iI2I5YmJiZSIgc3Ryb2tlLXdpZHRoPSIxLjUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPgo8L3N2Zz4K') no-repeat right 10px center;
+            padding-right: 30px;
+        }
+
+        .category-section {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #36393f;
+            border-radius: 8px;
+        }
+
+        .category-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .category-header h3 {
+            font-size: 16px;
+            font-weight: 500;
+            color: #b9bbbe;
+        }
+
+        .category-header button {
+            background: none;
+            border: none;
+            color: #ff5555;
+            cursor: pointer;
+            font-size: 14px;
+            transition: color 0.3s ease;
+        }
+
+        .category-header button:hover {
+            color: #ff7777;
+        }
+
+        .role-section {
+            margin-bottom: 10px;
+            padding: 10px;
+            background-color: #40444b;
+            border-radius: 8px;
+        }
+
+        .role-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .role-header h4 {
+            font-size: 14px;
+            font-weight: 500;
+            color: #b9bbbe;
+        }
+
+        .role-header button {
+            background: none;
+            border: none;
+            color: #ff5555;
+            cursor: pointer;
+            font-size: 12px;
+            transition: color 0.3s ease;
+        }
+
+        .role-header button:hover {
+            color: #ff7777;
+        }
+
+        .add-category-btn,
+        .add-role-btn {
+            padding: 12px 24px;
+            background: linear-gradient(90deg, #5865f2, #7289da);
+            color: #ffffff;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .add-category-btn:hover,
+        .add-role-btn:hover {
+            background: linear-gradient(90deg, #4752c4, #5865f2);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(88, 101, 242, 0.3);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        button {
+            padding: 12px 24px;
+            background: linear-gradient(90deg, #5865f2, #7289da);
+            color: #ffffff;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        button:hover {
+            background: linear-gradient(90deg, #4752c4, #5865f2);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(88, 101, 242, 0.3);
+        }
+
+        button i {
+            font-size: 16px;
+        }
+
+        button.danger {
+            background: linear-gradient(90deg, #ff5555, #ff7777);
+        }
+
+        button.danger:hover {
+            background: linear-gradient(90deg, #ff7777, #ff9999);
+            box-shadow: 0 5px 15px rgba(255, 85, 85, 0.3);
+        }
+
+        .color-options {
+            display: flex;
+            gap: 10px;
+            margin-top: 5px;
+            align-items: center;
+        }
+
+        .color-option {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .color-option:hover,
+        .color-option.selected {
+            border-color: #ffffff;
+            transform: scale(1.1);
+        }
+
+        /* Responsivitas */
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                border-right: none;
+                border-bottom: 1px solid #36393f;
+            }
+
+            .main-content {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Sidebar -->
+    <%- include('template/sidebar', { guild: guild, currentPage: 'roles' }) %>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="header">
+                <a href="/dashboard/<%= guild.id %>" class="back">← Back to Dashboard</a>
+                <h1>Roles Settings - <%= guild.name %>
+                </h1>
+            </div>
+
+            <div class="form-container">
+                <form method="POST" action="/dashboard/<%= guild.id %>/roles" id="rolesForm">
+                    <!-- Enable Roles -->
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" name="enabled" <%=config.enabled ? 'checked' : '' %>>
+                            Enable Roles
+                        </label>
+                    </div>
+
+                    <!-- Roles Channel -->
+                    <div class="form-group">
+                        <label for="channel">Roles Channel</label>
+                        <select name="channel" id="channel" required>
+                            <% guild.channels.cache.filter(ch=> ch.isTextBased() && !ch.isThread()).forEach(channel => {
+                                %>
+                                <option value="<%= channel.id %>" <%=config.channel===channel.id ? 'selected' : '' %>>
+                                    <%= channel.name %>
+                                </option>
+                                <% }) %>
+                        </select>
+                    </div>
+
+                    <!-- Embed Color -->
+                    <div class="form-group">
+                        <label for="embedColor">Embed Color</label>
+                        <div class="color-options">
+                            <input type="color" name="embedColor" id="embedColor"
+                                value="<%= config.embedColor || '#5865f2' %>">
+                            <div class="color-option" style="background-color: #5865f2;" data-color="#5865f2"></div>
+                            <div class="color-option" style="background-color: #ffffff;" data-color="#ffffff"></div>
+                            <div class="color-option" style="background-color: #ff5555;" data-color="#ff5555"></div>
+                            <div class="color-option" style="background-color: #55ff55;" data-color="#55ff55"></div>
+                            <div class="color-option" style="background-color: #5555ff;" data-color="#5555ff"></div>
+                        </div>
+                    </div>
+
+                    <!-- Categories -->
+                    <div class="form-group">
+                        <label>Categories</label>
+                        <div id="categories">
+                            <% if (config.categories && config.categories.length> 0) { %>
+                                <% config.categories.forEach((category, catIndex)=> { %>
+                                    <div class="category-section" data-category-index="<%= catIndex %>">
+                                        <div class="category-header">
+                                            <h3>Category <%= catIndex + 1 %>
+                                            </h3>
+                                            <button type="button" class="remove-category-btn">Remove</button>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Category Name</label>
+                                            <input type="text" name="categoryName_<%= catIndex %>"
+                                                value="<%= category.name %>" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Image URL (Optional)</label>
+                                            <input type="text" name="categoryImage_<%= catIndex %>"
+                                                value="<%= category.image || '' %>"
+                                                placeholder="https://example.com/image.png">
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Roles</label>
+                                            <div class="roles" data-category-index="<%= catIndex %>">
+                                                <% category.roles.forEach((role, roleIndex)=> { %>
+                                                    <div class="role-section" data-role-index="<%= roleIndex %>">
+                                                        <div class="role-header">
+                                                            <h4>Role <%= roleIndex + 1 %>
+                                                            </h4>
+                                                            <button type="button"
+                                                                class="remove-role-btn">Remove</button>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label>Role Name</label>
+                                                            <input type="text"
+                                                                name="roleName_<%= catIndex %>_<%= roleIndex %>"
+                                                                value="<%= role.name %>" required>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label>Role Emoji</label>
+                                                            <input type="text"
+                                                                name="roleEmoji_<%= catIndex %>_<%= roleIndex %>"
+                                                                value="<%= role.emoji %>" placeholder="e.g., 🎮">
+                                                        </div>
+                                                    </div>
+                                                    <% }) %>
+                                            </div>
+                                            <button type="button" class="add-role-btn"
+                                                data-category-index="<%= catIndex %>">
+                                                <i class="fas fa-plus"></i> Add Role
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <% }) %>
+                                        <% } %>
+                        </div>
+                        <button type="button" class="add-category-btn">
+                            <i class="fas fa-plus"></i> Add Category
+                        </button>
+                    </div>
+
+                    <!-- Hidden input untuk menyimpan data categories -->
+                    <input type="hidden" name="categories" id="categoriesInput">
+
+                    <!-- Tombol Aksi -->
+                    <div class="action-buttons">
+                        <button type="submit"><i class="fas fa-save"></i> Save</button>
+                        <button type="button" class="danger"
+                            onclick="window.location.href='/dashboard/<%= guild.id %>'"><i class="fas fa-times"></i>
+                            Discard</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <script>
+            let categoryIndex = <%= config.categories ?config.categories.length: 0 %>;
+
+            // Tambah category
+            document.querySelector('.add-category-btn').addEventListener('click', () => {
+                const categoriesDiv = document.getElementById('categories');
+                const categoryDiv = document.createElement('div');
+                categoryDiv.classList.add('category-section');
+                categoryDiv.setAttribute('data-category-index', categoryIndex);
+                categoryDiv.innerHTML = `
+                <div class="category-header">
+                    <h3>Category ${categoryIndex + 1}</h3>
+                    <button type="button" class="remove-category-btn">Remove</button>
+                </div>
+                <div class="form-group">
+                    <label>Category Name</label>
+                    <input type="text" name="categoryName_${categoryIndex}" required>
+                </div>
+                <div class="form-group">
+                    <label>Image URL (Optional)</label>
+                    <input type="text" name="categoryImage_${categoryIndex}" placeholder="https://example.com/image.png">
+                </div>
+                <div class="form-group">
+                    <label>Roles</label>
+                    <div class="roles" data-category-index="${categoryIndex}"></div>
+                    <button type="button" class="add-role-btn" data-category-index="${categoryIndex}">
+                        <i class="fas fa-plus"></i> Add Role
+                    </button>
+                </div>
+            `;
+                categoriesDiv.appendChild(categoryDiv);
+                categoryIndex++;
+            });
+
+            // Tambah role
+            document.addEventListener('click', (e) => {
+                if (e.target.classList.contains('add-role-btn')) {
+                    const catIndex = e.target.getAttribute('data-category-index');
+                    const rolesDiv = document.querySelector(`.roles[data-category-index="${catIndex}"]`);
+                    const roleCount = rolesDiv.querySelectorAll('.role-section').length;
+                    const roleDiv = document.createElement('div');
+                    roleDiv.classList.add('role-section');
+                    roleDiv.setAttribute('data-role-index', roleCount);
+                    roleDiv.innerHTML = `
+                    <div class="role-header">
+                        <h4>Role ${roleCount + 1}</h4>
+                        <button type="button" class="remove-role-btn">Remove</button>
+                    </div>
+                    <div class="form-group">
+                        <label>Role Name</label>
+                        <input type="text" name="roleName_${catIndex}_${roleCount}" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Role Emoji</label>
+                        <input type="text" name="roleEmoji_${catIndex}_${roleCount}" placeholder="e.g., 🎮">
+                    </div>
+                `;
+                    rolesDiv.appendChild(roleDiv);
+                }
+            });
+
+            // Hapus category
+            document.addEventListener('click', (e) => {
+                if (e.target.classList.contains('remove-category-btn')) {
+                    e.target.closest('.category-section').remove();
+                }
+            });
+
+            // Hapus role
+            document.addEventListener('click', (e) => {
+                if (e.target.classList.contains('remove-role-btn')) {
+                    e.target.closest('.role-section').remove();
+                }
+            });
+
+            // Saat form disubmit, kumpulkan data categories
+            document.getElementById('rolesForm').addEventListener('submit', (e) => {
+                const categories = [];
+                document.querySelectorAll('.category-section').forEach((categoryDiv) => {
+                    const catIndex = categoryDiv.getAttribute('data-category-index');
+                    const categoryName = categoryDiv.querySelector(`input[name="categoryName_${catIndex}"]`).value;
+                    const categoryImage = categoryDiv.querySelector(`input[name="categoryImage_${catIndex}"]`).value;
+                    const roles = [];
+                    categoryDiv.querySelectorAll('.role-section').forEach((roleDiv) => {
+                        const roleIndex = roleDiv.getAttribute('data-role-index');
+                        const roleName = roleDiv.querySelector(`input[name="roleName_${catIndex}_${roleIndex}"]`).value;
+                        const roleEmoji = roleDiv.querySelector(`input[name="roleEmoji_${catIndex}_${roleIndex}"]`).value;
+                        roles.push({
+                            name: roleName,
+                            emoji: roleEmoji
+                        });
+                    });
+                    categories.push({
+                        name: categoryName,
+                        image: categoryImage || '',
+                        roles: roles
+                    });
+                });
+                document.getElementById('categoriesInput').value = JSON.stringify(categories);
+            });
+
+            // JavaScript untuk color options
+            document.querySelectorAll('.color-option').forEach(option => {
+                option.addEventListener('click', () => {
+                    const color = option.getAttribute('data-color');
+                    const input = option.parentElement.querySelector('input[type="color"]');
+                    input.value = color;
+                });
+            });
+        </script>
+</body>
+
+</html>

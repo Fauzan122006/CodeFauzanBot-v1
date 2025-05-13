@@ -1,35 +1,365 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
-    <title>CodeFauzanBot Dashboard</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>CodeFauzanBot - The Best Discord Bot</title>
+        <style>
+                body {
+                        font-family: 'Arial', sans-serif;
+                        background-color: #1e2124;
+                        color: #ffffff;
+                        margin: 0;
+                        padding: 0;
+                        display: flex;
+                        flex-direction: column;
+                        min-height: 100vh;
+                }
+
+                header {
+                        background-color: #2f3136;
+                        padding: 20px;
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+                }
+
+                .logo {
+                        display: flex;
+                        align-items: center;
+                }
+
+                .logo img {
+                        width: 40px;
+                        height: 40px;
+                        margin-right: 10px;
+                }
+
+                .logo h1 {
+                        font-size: 24px;
+                        margin: 0;
+                }
+
+                nav a {
+                        color: #b9bbbe;
+                        text-decoration: none;
+                        margin: 0 15px;
+                        font-size: 16px;
+                }
+
+                nav a:hover {
+                        color: #ffffff;
+                }
+
+                .login-btn {
+                        background-color: #5865f2;
+                        color: #ffffff;
+                        padding: 10px 20px;
+                        border-radius: 5px;
+                        text-decoration: none;
+                        font-size: 16px;
+                }
+
+                .login-btn:hover {
+                        background-color: #4752c4;
+                }
+
+                .hero {
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        padding: 80px 20px;
+                        text-align: left;
+                        background: linear-gradient(180deg, #1e2124 0%, #2f3136 100%);
+                }
+
+                .hero-content {
+                        max-width: 1200px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: space-between;
+                        width: 100%;
+                }
+
+                .hero-text {
+                        max-width: 45%;
+                }
+
+                .hero-text h2 {
+                        font-size: 56px;
+                        font-weight: bold;
+                        margin: 0 0 20px;
+                        line-height: 1.2;
+                }
+
+                .hero-text p {
+                        font-size: 18px;
+                        color: #b9bbbe;
+                        margin: 0 0 30px;
+                }
+
+                .hero-buttons {
+                        display: flex;
+                        gap: 20px;
+                }
+
+                .add-btn {
+                        background-color: #5865f2;
+                        color: #ffffff;
+                        padding: 15px 30px;
+                        border-radius: 5px;
+                        text-decoration: none;
+                        font-size: 18px;
+                        font-weight: bold;
+                        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+                        transition: background-color 0.3s ease;
+                }
+
+                .add-btn:hover {
+                        background-color: #4752c4;
+                }
+
+                .features-btn {
+                        background-color: #2f3136;
+                        color: #ffffff;
+                        padding: 15px 30px;
+                        border-radius: 5px;
+                        text-decoration: none;
+                        font-size: 18px;
+                        font-weight: bold;
+                        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+                        transition: background-color 0.3s ease;
+                }
+
+                .features-btn:hover {
+                        background-color: #36393f;
+                }
+
+                .hero-image img {
+                        max-width: 600px;
+                        height: auto;
+                        border-radius: 10px;
+                }
+
+                /* Styling untuk section Features */
+                .features {
+                        padding: 50px 20px;
+                        background-color: #1e2124;
+                }
+
+                .features h2 {
+                        font-size: 36px;
+                        text-align: center;
+                        margin-bottom: 40px;
+                }
+
+                .feature {
+                        max-width: 1200px;
+                        margin: 0 auto;
+                        display: flex;
+                        align-items: center;
+                        gap: 40px;
+                        margin-bottom: 60px;
+                }
+
+                .feature.reverse {
+                        flex-direction: row-reverse;
+                }
+
+                .feature-text {
+                        flex: 1;
+                }
+
+                .feature-text h3 {
+                        font-size: 28px;
+                        margin: 0 0 15px;
+                }
+
+                .feature-text p {
+                        font-size: 16px;
+                        color: #b9bbbe;
+                        margin: 0 0 20px;
+                        line-height: 1.6;
+                }
+
+                .feature-image {
+                        flex: 1;
+                        position: relative;
+                }
+
+                .feature-image img {
+                        max-width: 100%;
+                        height: auto;
+                        border-radius: 10px;
+                        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+                        transition: transform 0.3s ease;
+                }
+
+                .feature-image img:hover {
+                        transform: scale(1.05);
+                }
+
+                /* Dekorasi ikon kecil (opsional) */
+                .feature-image::before {
+                        content: '';
+                        position: absolute;
+                        width: 40px;
+                        height: 40px;
+                        background: url('https://via.placeholder.com/40') no-repeat center;
+                        top: -20px;
+                        left: -20px;
+                        opacity: 0.8;
+                }
+
+                .feature-buttons {
+                        display: flex;
+                        gap: 15px;
+                }
+
+                footer {
+                        background-color: #2f3136;
+                        padding: 20px;
+                        text-align: center;
+                        font-size: 14px;
+                        color: #b9bbbe;
+                }
+
+                /* Responsivitas */
+                @media (max-width: 768px) {
+                        .hero-content {
+                                flex-direction: column;
+                                text-align: center;
+                        }
+
+                        .hero-text {
+                                max-width: 100%;
+                                margin-bottom: 40px;
+                        }
+
+                        .hero-text h2 {
+                                font-size: 36px;
+                        }
+
+                        .hero-image img {
+                                max-width: 100%;
+                        }
+
+                        .hero-buttons {
+                                justify-content: center;
+                        }
+
+                        .feature {
+                                flex-direction: column;
+                                text-align: center;
+                        }
+
+                        .feature.reverse {
+                                flex-direction: column;
+                        }
+
+                        .feature-image {
+                                margin-top: 20px;
+                        }
+
+                        .feature-buttons {
+                                justify-content: center;
+                        }
+                }
+        </style>
 </head>
 
 <body>
-    <h1>CodeFauzanBot Dashboard</h1>
-    <h2>Server Configuration</h2>
-    <% Object.keys(config).filter(key=> key.match(/^\d+$/)).forEach(guildId => { %>
-        <form action="/update-config" method="POST">
-            <h3>Guild ID: <%= guildId %>
-            </h3>
-            <input type="hidden" name="guildId" value="<%= guildId %>">
-            <label>Welcome Channel: <input type="text" name="welcomeChannel"
-                    value="<%= config[guildId].welcomeChannel || '' %>"></label><br>
-            <label>Level Channel: <input type="text" name="levelChannel"
-                    value="<%= config[guildId].levelChannel || '' %>"></label><br>
-            <label>Achievement Channel: <input type="text" name="achievementChannel"
-                    value="<%= config[guildId].achievementChannel || '' %>"></label><br>
-            <label>Roles Channel: <input type="text" name="rolesChannel"
-                    value="<%= config[guildId].rolesChannel || '' %>"></label><br>
-            <label>Rules Channel: <input type="text" name="rulesChannel"
-                    value="<%= config[guildId].rulesChannel || '' %>"></label><br>
-            <label>Social Channel: <input type="text" name="socialChannel"
-                    value="<%= config[guildId].socialChannel || '' %>"></label><br>
-            <label>YouTube Channel ID: <input type="text" name="youtubeChannelId"
-                    value="<%= config[guildId].youtubeChannelId || '' %>"></label><br>
-            <button type="submit">Save</button>
-        </form>
-        <% }) %>
+        <header>
+                <div class="logo">
+                        <img src="https://via.placeholder.com/40" alt="CodeFauzanBot Logo">
+                        <h1>CodeFauzanBot</h1>
+                </div>
+                <nav>
+                        <a href="#features">Features</a>
+                        <a href="#resources">Resources</a>
+                        <a href="#premium">Premium</a>
+                        <a href="/auth/discord" class="login-btn">Login with Discord</a>
+                </nav>
+        </header>
+
+        <section class="hero">
+                <div class="hero-content">
+                        <div class="hero-text">
+                                <h2>The best all-in-one bot for Discord</h2>
+                                <p>CodeFauzanBot is a complete Discord bot, easy-to-use, that millions of Discord
+                                        servers worldwide trust to manage, entertain, and grow their community.</p>
+                                <div class="hero-buttons">
+                                        <a href="https://discord.com/oauth2/authorize?client_id=<%= clientId %>&scope=bot&permissions=8"
+                                                class="add-btn">Add to Discord</a>
+                                        <a href="#features" class="features-btn">See features</a>
+                                </div>
+                        </div>
+                        <div class="hero-image">
+                                <img src="https://wallpaperaccess.com/full/1494770.jpg"
+                                        alt="CodeFauzanBot Illustration">
+                        </div>
+                </div>
+        </section>
+
+        <!-- Section Features -->
+        <section id="features" class="features">
+                <h2>Features</h2>
+                <!-- Fitur Welcome -->
+                <div class="feature">
+                        <div class="feature-text">
+                                <h3>Creative Welcome Messages</h3>
+                                <p>Extend a warm greeting to new members with custom welcome messages. Include images,
+                                        personalized text, and more to make them feel at home from the moment they join.
+                                </p>
+                                <div class="feature-buttons">
+                                        <a href="https://discord.com/oauth2/authorize?client_id=<%= clientId %>&scope=bot&permissions=8"
+                                                class="add-btn">Add to Discord</a>
+                                </div>
+                        </div>
+                        <div class="feature-image">
+                                <img src="https://images.unsplash.com/photo-1515168833906-d2a3f915ce22?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                                        alt="Welcome Feature Illustration">
+                        </div>
+                </div>
+                <!-- Fitur Role System -->
+                <div class="feature reverse">
+                        <div class="feature-text">
+                                <h3>Advanced Role System</h3>
+                                <p>Empower your server with a role selection system. Let members choose roles that match
+                                        their interests, streamlining organization and enhancing user experience.</p>
+                                <div class="feature-buttons">
+                                        <a href="https://discord.com/oauth2/authorize?client_id=<%= clientId %>&scope=bot&permissions=8"
+                                                class="add-btn">Add to Discord</a>
+                                </div>
+                        </div>
+                        <div class="feature-image">
+                                <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                                        alt="Role System Feature Illustration">
+                        </div>
+                </div>
+                <!-- Fitur Rules -->
+                <div class="feature">
+                        <div class="feature-text">
+                                <h3>Organized Server Rules</h3>
+                                <p>Display server rules with a beautiful embed. Ensure all members understand the
+                                        guidelines and expectations, creating a structured and harmonious community.</p>
+                                <div class="feature-buttons">
+                                        <a href="https://discord.com/oauth2/authorize?client_id=<%= clientId %>&scope=bot&permissions=8"
+                                                class="add-btn">Add to Discord</a>
+                                </div>
+                        </div>
+                        <div class="feature-image">
+                                <img src="https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                                        alt="Rules Feature Illustration">
+                        </div>
+                </div>
+        </section>
+
+        <footer>
+                <p>© 2025 CodeFauzanBot. All rights reserved.</p>
+        </footer>
 </body>
 
 </html>

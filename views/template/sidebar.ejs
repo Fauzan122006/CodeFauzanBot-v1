@@ -1,0 +1,62 @@
+<!-- Sidebar -->
+<div class="sidebar">
+    <h2>CodeFauzanBot</h2>
+
+    <!-- Kategori Essential -->
+    <h3 style="font-size: 16px; color: #b9bbbe; margin: 20px 0 10px">
+        Essential
+    </h3>
+    <ul>
+        <li>
+            <a href="/dashboard/<%= guild.id %>" class="<%= currentPage === 'dashboard' ? 'active' : '' %>">
+                <i class="fas fa-tachometer-alt"></i> Dashboard
+            </a>
+        </li>
+        <li>
+            <a href="/dashboard/<%= guild.id %>/welcome" class="<%= currentPage === 'welcome' ? 'active' : '' %>">
+                <i class="fas fa-handshake"></i> Welcome
+            </a>
+        </li>
+        <li>
+            <a href="/dashboard/<%= guild.id %>/rules" class="<%= currentPage === 'rules' ? 'active' : '' %>">
+                <i class="fas fa-book"></i> Rules
+            </a>
+        </li>
+        <li>
+            <a href="/dashboard/<%= guild.id %>/roles" class="<%= currentPage === 'roles' ? 'active' : '' %>">
+                <i class="fas fa-users"></i> Roles
+            </a>
+        </li>
+        <li>
+            <a href="/dashboard/<%= guild.id %>/rankcard" class="<%= currentPage === 'rankcard' ? 'active' : '' %>">
+                <i class="fas fa-id-card"></i> Rank Card
+            </a>
+        </li>
+        <li>
+            <a href="/dashboard/<%= guild.id %>/levels" class="<%= currentPage === 'levels' ? 'active' : '' %>">
+                <i class="fas fa-trophy"></i> Levels
+            </a>
+        </li>
+        <li>
+            <a href="/dashboard/<%= guild.id %>/achievements"
+                class="<%= currentPage === 'achievements' ? 'active' : '' %>">
+                <i class="fas fa-award"></i> Achievements
+            </a>
+        </li>
+    </ul>
+
+    <!-- Kategori Modules -->
+    <h3 style="font-size: 16px; color: #b9bbbe; margin: 20px 0 10px">Modules</h3>
+    <ul>
+        <li>
+            <a href="/dashboard/<%= guild.id %>/autoroles" class="<%= currentPage === 'autoroles' ? 'active' : '' %>">
+                <i class="fas fa-user-plus"></i> Auto Roles
+            </a>
+        </li>
+        <li>
+            <a href="/dashboard/<%= guild.id %>/automod" class="<%= currentPage === 'automod' ? 'active' : '' %>">
+                <i class="fas fa-shield-alt"></i> Automod
+            </a>
+        </li>
+    </ul>
+</div>

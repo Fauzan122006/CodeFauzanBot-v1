@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CodeFauzanBot - Welcome Settings</title>
+    <!-- Font Awesome untuk ikon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts untuk font modern -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Whitney (mirip Discord) -->
+    <style>
+        @font-face {
+            font-family: 'Whitney';
+            src: url('https://cdn.jsdelivr.net/npm/@discordapp/font@1.0.0/Whitney-Book.woff2') format('woff2');
+            font-weight: 400;
+            font-style: normal;
+        }
+
+        @font-face {
+            font-family: 'Whitney';
+            src: url('https://cdn.jsdelivr.net/npm/@discordapp/font@1.0.0/Whitney-Medium.woff2') format('woff2');
+            font-weight: 500;
+            font-style: normal;
+        }
+
+        @font-face {
+            font-family: 'Whitney';
+            src: url('https://cdn.jsdelivr.net/npm/@discordapp/font@1.0.0/Whitney-Semibold.woff2') format('woff2');
+            font-weight: 600;
+            font-style: normal;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #1e2124 0%, #2c2f33 100%);
+            color: #ffffff;
+            margin: 0;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 250px;
+            background: #2f3136;
+            padding: 20px;
+            border-right: 1px solid #36393f;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .sidebar h2 {
+            font-size: 22px;
+            margin-bottom: 20px;
+            color: #b9bbbe;
+            font-weight: 600;
+        }
+
+        .sidebar ul {
+            list-style: none;
+        }
+
+        .sidebar ul li {
+            margin-bottom: 10px;
+        }
+
+        .sidebar ul li a {
+            color: #b9bbbe;
+            text-decoration: none;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar ul li a:hover,
+        .sidebar ul li a.active {
+            background: linear-gradient(90deg, #5865f2, #7289da);
+            color: #ffffff;
+            transform: translateX(5px);
+        }
+
+        .sidebar ul li a i {
+            margin-right: 10px;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 40px;
+            background: transparent;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            background: linear-gradient(90deg, #5865f2, #7289da);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .back {
+            color: #5865f2;
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .back:hover {
+            color: #7289da;
+            text-decoration: underline;
+        }
+
+        .content-container {
+            display: flex;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+
+        .form-container {
+            background: #2f3136;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+            flex: 1;
+            min-width: 300px;
+            transition: transform 0.3s ease;
+        }
+
+        .form-container:hover {
+            transform: translateY(-5px);
+        }
+
+        .color-container {
+            background: #2f3136;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+            flex: 1;
+            min-width: 300px;
+            transition: transform 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .color-container:hover {
+            transform: translateY(-5px);
+        }
+
+        .preview-container {
+            background: #2f3136;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .preview-container h3 {
+            font-size: 18px;
+            font-weight: 500;
+            margin-bottom: 20px;
+            color: #b9bbbe;
+        }
+
+        .preview-container img {
+            max-width: 100%;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .preview-text,
+        .preview-embed {
+            display: none;
+            width: 100%;
+            max-width: 400px;
+            background: #313338;
+            padding: 10px;
+            border-radius: 8px;
+            font-family: 'Poppins', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        }
+
+        .preview-text.active,
+        .preview-embed.active {
+            display: block;
+        }
+
+        .preview-text p {
+            font-size: 16px;
+            color: #dcddde;
+            line-height: 1.5;
+        }
+
+        .preview-text p .user-mention {
+            color: #1e90ff;
+            font-weight: 500;
+        }
+
+        .preview-text p .channel-mention {
+            background: #40444b;
+            border-radius: 3px;
+            padding: 1px 3px;
+            color: #00aff4;
+            font-weight: 500;
+        }
+
+        .preview-embed {
+            position: relative;
+            background: #2f3136;
+            border-left: 4px solid #5865f2;
+            /* Warna default, akan diubah oleh JS */
+            padding: 8px 12px;
+            border-radius: 4px;
+        }
+
+        .embed-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 8px;
+        }
+
+        .embed-description {
+            font-size: 14px;
+            color: #dcddde;
+            line-height: 1.5;
+        }
+
+        .embed-description .user-mention {
+            color: #1e90ff;
+            font-weight: 500;
+        }
+
+        .embed-description .channel-mention {
+            background: #40444b;
+            border-radius: 3px;
+            padding: 1px 3px;
+            color: #00aff4;
+            font-weight: 500;
+        }
+
+        .embed-image {
+            margin-top: 10px;
+            max-width: 100%;
+            border-radius: 4px;
+        }
+
+        .preview-image {
+            margin-top: 10px;
+            max-width: 100%;
+            border-radius: 4px;
+        }
+
+        .preview-info {
+            margin-top: 20px;
+            background: #36393f;
+            padding: 15px;
+            border-radius: 8px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .preview-info h4 {
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 10px;
+            color: #b9bbbe;
+        }
+
+        .preview-info p {
+            font-size: 14px;
+            color: #b9bbbe;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: #b9bbbe;
+        }
+
+        .form-group input[type="checkbox"] {
+            width: auto;
+            margin-right: 10px;
+            accent-color: #5865f2;
+        }
+
+        .form-group input[type="text"],
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            background: #36393f;
+            color: #ffffff;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            background: #40444b;
+            box-shadow: 0 0 0 2px #5865f2;
+            outline: none;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .form-group select {
+            appearance: none;
+            background: #36393f url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIHZpZXdCb3g9IjAgMCA1NiAxNiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTQgNkw4IDEwTDEyIDYiIHN0cm9rZT0iI2I5YmJiZSIgc3Ryb2tlLXdpZHRoPSIxLjUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPgo8L3N2Zz4K') no-repeat right 10px center;
+            padding-right: 30px;
+        }
+
+        .form-group input[type="color"] {
+            width: 30px;
+            height: 30px;
+            padding: 0;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            border-radius: 50%;
+        }
+
+        .form-group input[type="color"]::-webkit-color-swatch-wrapper {
+            padding: 0;
+        }
+
+        .form-group input[type="color"]::-webkit-color-swatch {
+            border: none;
+            border-radius: 50%;
+        }
+
+        .color-options {
+            display: flex;
+            gap: 10px;
+            margin-top: 5px;
+            align-items: center;
+        }
+
+        .color-option {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .color-option:hover,
+        .color-option.selected {
+            border-color: #ffffff;
+            transform: scale(1.1);
+        }
+
+        .opacity-slider {
+            width: 100%;
+            margin-top: 10px;
+            -webkit-appearance: none;
+            height: 8px;
+            background: #36393f;
+            border-radius: 5px;
+            outline: none;
+            transition: background 0.3s ease;
+        }
+
+        .opacity-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            background: #5865f2;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+        }
+
+        .opacity-slider::-moz-range-thumb {
+            width: 16px;
+            height: 16px;
+            background: #5865f2;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        button {
+            padding: 12px 24px;
+            background: linear-gradient(90deg, #5865f2, #7289da);
+            color: #ffffff;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        button:hover {
+            background: linear-gradient(90deg, #4752c4, #5865f2);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(88, 101, 242, 0.3);
+        }
+
+        button i {
+            font-size: 16px;
+        }
+
+        button.danger {
+            background: linear-gradient(90deg, #ff5555, #ff7777);
+        }
+
+        button.danger:hover {
+            background: linear-gradient(90deg, #ff7777, #ff9999);
+            box-shadow: 0 5px 15px rgba(255, 85, 85, 0.3);
+        }
+
+        /* Responsivitas */
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                border-right: none;
+                border-bottom: 1px solid #36393f;
+            }
+
+            .main-content {
+                padding: 20px;
+            }
+
+            .content-container {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Sidebar -->
+    <%- include('template/sidebar', { guild: guild, currentPage: 'welcome' }) %>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="header">
+                <a href="/dashboard/<%= guild.id %>" class="back">← Back to Dashboard</a>
+                <h1>Welcome Settings - <%= guild.name %>
+                </h1>
+            </div>
+
+            <div class="content-container">
+                <!-- Form Container (Kolom Kiri dan Kanan Digabung) -->
+                <div class="form-container">
+                    <form method="POST" action="/dashboard/<%= guild.id %>/welcome" id="welcomeForm">
+                        <!-- Enable Welcome Message -->
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" name="enabled" <%=config.enabled ? 'checked' : '' %>>
+                                Enable Welcome Message
+                            </label>
+                        </div>
+
+                        <!-- Welcome Channel -->
+                        <div class="form-group">
+                            <label for="channel">Welcome Channel</label>
+                            <select name="channel" id="channel" required>
+                                <% const sanitizeString=(str)=> {
+                                    if (typeof str !== 'string') return '';
+                                    return str
+                                    .replace(/'/g, "\\'")
+                                    .replace(/"/g, "\\\"")
+                                    .replace(/</g, "&lt;" ) .replace( />/g, "&gt;");
+                                    };
+                                    guild.channels.cache.filter(ch => ch.isTextBased() &&
+                                    !ch.isThread()).forEach(channel =>
+                                    { %>
+                                    <% console.log(`[WelcomeEJS] Channel ID: ${channel.id}, Name: ${channel.name}`); %>
+                                        <option value="<%= channel.id %>" <%=config.channel===channel.id ? 'selected'
+                                            : '' %>><%= sanitizeString(channel.name) %>
+                                        </option>
+                                        <% }) %>
+                            </select>
+                        </div>
+
+                        <!-- Message Type -->
+                        <div class="form-group">
+                            <label for="messageType">Message Type</label>
+                            <select name="messageType" id="messageType">
+                                <option value="text" <%=config.messageType==='text' ? 'selected' : '' %>>Text</option>
+                                <option value="embed" <%=config.messageType==='embed' ? 'selected' : '' %>>Embed
+                                </option>
+                            </select>
+                        </div>
+
+                        <!-- Font -->
+                        <div class="form-group">
+                            <label for="font">Font</label>
+                            <select name="font" id="font">
+                                <option value="default" <%=config.font==='default' ? 'selected' : '' %>>Default</option>
+                                <option value="arial" <%=config.font==='arial' ? 'selected' : '' %>>Arial</option>
+                                <option value="times-new-roman" <%=config.font==='times-new-roman' ? 'selected' : '' %>
+                                    >Times New Roman</option>
+                                <% console.log('[WelcomeEJS] Available fonts:', availableFonts); %>
+                                    <% if (availableFonts && availableFonts.length> 0) { %>
+                                        <% availableFonts.forEach(font=> { %>
+                                            <option value="<%= font %>" <%=config.font===font ? 'selected' : '' %>><%=
+                                                    font %>
+                                            </option>
+                                            <% }) %>
+                                                <% } else { %>
+                                                    <% console.log('[WelcomeEJS] No dynamic fonts available'); %>
+                                                        <% } %>
+                            </select>
+                        </div>
+
+                        <!-- Welcome Text -->
+                        <div class="form-group">
+                            <label for="welcomeText">Welcome Text</label>
+                            <textarea name="welcomeText" id="welcomeText"
+                                placeholder="Hey {user}, selamat datang di {server}!"><%= config.welcomeText || 'Hey {user}, selamat datang di {server}!' %></textarea>
+                        </div>
+
+                        <!-- Title -->
+                        <div class="form-group">
+                            <label for="title">Title</label>
+                            <input type="text" name="title" id="title"
+                                value="<%= config.title || 'Welcome to {server}' %>" placeholder="Welcome to {server}">
+                        </div>
+
+                        <!-- Subtitle -->
+                        <div class="form-group">
+                            <label for="subtitle">Subtitle</label>
+                            <textarea name="subtitle" id="subtitle"
+                                placeholder="You are member #{server_member_count}. Make sure to read #rules!"><%= config.subtitle || 'You are member #{server_member_count}. Make sure to read #rules!' %></textarea>
+                        </div>
+
+                        <!-- Background Image URL -->
+                        <div class="form-group">
+                            <label for="backgroundImage">Background Image URL</label>
+                            <input type="text" name="backgroundImage" id="backgroundImage"
+                                value="<%= config.backgroundImage || '' %>" placeholder="Enter background image URL...">
+                        </div>
+
+                        <!-- Preview -->
+                        <div class="preview-container">
+                            <h3>Welcome Message Preview</h3>
+                            <div class="preview-text" id="previewText">
+                                <p id="previewTextContent"></p>
+                            </div>
+                            <div class="preview-embed" id="previewEmbed">
+                                <div class="embed-title" id="previewEmbedTitle"></div>
+                                <div class="embed-description" id="previewEmbedDescription"></div>
+                                <img id="previewEmbedImage" class="embed-image" style="display: none;"
+                                    alt="Welcome Card">
+                            </div>
+                            <img id="previewImage" class="preview-image" alt="Welcome Card">
+                        </div>
+
+                        <!-- Background Color -->
+                        <div class="form-group">
+                            <label for="backgroundColor">Background Color (Fallback)</label>
+                            <div class="color-options">
+                                <input type="color" name="backgroundColor" id="backgroundColor"
+                                    value="<%= config.backgroundColor || '#000000' %>">
+                                <div class="color-option" style="background-color: #000000;" data-color="#000000"></div>
+                                <div class="color-option" style="background-color: #ffffff;" data-color="#ffffff"></div>
+                                <div class="color-option" style="background-color: #ff5555;" data-color="#ff5555"></div>
+                                <div class="color-option" style="background-color: #55ff55;" data-color="#55ff55"></div>
+                                <div class="color-option" style="background-color: #5555ff;" data-color="#5555ff"></div>
+                            </div>
+                        </div>
+
+                        <!-- Overlay Opacity -->
+                        <div class="form-group">
+                            <label for="overlayOpacity">Overlay Opacity</label>
+                            <input type="range" class="opacity-slider" name="overlayOpacity" id="overlayOpacity" min="0"
+                                max="1" step="0.1" value="<%= config.overlayOpacity || 0.5 %>">
+                        </div>
+
+                        <!-- Embed Color -->
+                        <div class="form-group">
+                            <label for="embedColor">Embed Color</label>
+                            <div class="color-options">
+                                <input type="color" name="embedColor" id="embedColor"
+                                    value="<%= config.embedColor || '#5865f2' %>">
+                                <div class="color-option" style="background-color: #5865f2;" data-color="#5865f2"></div>
+                                <div class="color-option" style="background-color: #ffffff;" data-color="#ffffff"></div>
+                                <div class="color-option" style="background-color: #ff5555;" data-color="#ff5555"></div>
+                                <div class="color-option" style="background-color: #55ff55;" data-color="#55ff55"></div>
+                                <div class="color-option" style="background-color: #5555ff;" data-color="#5555ff"></div>
+                            </div>
+                        </div>
+
+                        <!-- Welcome Text Color -->
+                        <div class="form-group">
+                            <label for="welcomeTextColor">Welcome Text Color</label>
+                            <div class="color-options">
+                                <input type="color" name="welcomeTextColor" id="welcomeTextColor"
+                                    value="<%= config.welcomeTextColor || '#ffffff' %>">
+                                <div class="color-option" style="background-color: #ffffff;" data-color="#ffffff"></div>
+                                <div class="color-option" style="background-color: #ff5555;" data-color="#ff5555"></div>
+                                <div class="color-option" style="background-color: #55ff55;" data-color="#55ff55"></div>
+                                <div class="color-option" style="background-color: #5555ff;" data-color="#5555ff"></div>
+                                <div class="color-option" style="background-color: #000000;" data-color="#000000"></div>
+                            </div>
+                        </div>
+
+                        <!-- Welcome Neon Effect Color -->
+                        <div class="form-group">
+                            <label for="welcomeNeonColor">Welcome Neon Effect Color</label>
+                            <div class="color-options">
+                                <input type="color" name="welcomeNeonColor" id="welcomeNeonColor"
+                                    value="<%= config.welcomeNeonColor || '#ff8c00' %>">
+                                <div class="color-option" style="background-color: #ff8c00;" data-color="#ff8c00"></div>
+                                <div class="color-option" style="background-color: #ff5555;" data-color="#ff5555"></div>
+                                <div class="color-option" style="background-color: #55ff55;" data-color="#55ff55"></div>
+                                <div class="color-option" style="background-color: #5555ff;" data-color="#5555ff"></div>
+                                <div class="color-option" style="background-color: #ffffff;" data-color="#ffffff"></div>
+                            </div>
+                        </div>
+
+                        <!-- Subtitle Text Color -->
+                        <div class="form-group">
+                            <label for="memberTextColor">Subtitle Text Color</label>
+                            <div class="color-options">
+                                <input type="color" name="memberTextColor" id="memberTextColor"
+                                    value="<%= config.memberTextColor || '#ff8c00' %>">
+                                <div class="color-option" style="background-color: #ff8c00;" data-color="#ff8c00"></div>
+                                <div class="color-option" style="background-color: #ff5555;" data-color="#ff5555"></div>
+                                <div class="color-option" style="background-color: #55ff55;" data-color="#55ff55"></div>
+                                <div class="color-option" style="background-color: #5555ff;" data-color="#5555ff"></div>
+                                <div class="color-option" style="background-color: #ffffff;" data-color="#ffffff"></div>
+                            </div>
+                        </div>
+
+                        <!-- Tips -->
+                        <div class="preview-info">
+                            <h4>Tips for Better Welcome Message</h4>
+                            <p>Use a high-quality background image for a more engaging welcome message. Adjust the
+                                overlay
+                                opacity to ensure text readability.</p>
+                        </div>
+
+                        <!-- Tombol Submit -->
+                        <div class="action-buttons">
+                            <button type="submit"><i class="fas fa-save"></i> Save</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- JavaScript untuk Update Preview -->
+        <script>
+            // Fungsi debounce untuk membatasi frekuensi pemanggilan
+            function debounce(func, wait) {
+                let timeout;
+                return function (...args) {
+                    clearTimeout(timeout);
+                    timeout = setTimeout(() => func.apply(this, args), wait);
+                };
+            }
+
+            function updatePreview() {
+                const messageType = document.getElementById('messageType').value;
+                const title = document.getElementById('title').value || "Welcome to {server}";
+                const subtitle = document.getElementById('subtitle').value || "You are member #{server_member_count}. Make sure to read #rules!";
+                const welcomeText = document.getElementById('welcomeText').value || "Hey {user}, selamat datang di {server}!";
+                const embedColor = document.getElementById('embedColor').value || "#5865f2";
+                const welcomeTextColorInput = document.getElementById('welcomeTextColor');
+                const welcomeNeonColorInput = document.getElementById('welcomeNeonColor');
+                const memberTextColorInput = document.getElementById('memberTextColor');
+
+                // Pastikan input ada sebelum mengambil nilai
+                const welcomeTextColor = welcomeTextColorInput ? welcomeTextColorInput.value || "#ffffff" : "#ffffff";
+                const welcomeNeonColor = welcomeNeonColorInput ? welcomeNeonColorInput.value || "#ff8c00" : "#ff8c00";
+                const memberTextColor = memberTextColorInput ? memberTextColorInput.value || "#ff8c00" : "#ff8c00";
+
+                // Log untuk debugging
+                console.log('Updating preview with:');
+                console.log('Welcome Text Color:', welcomeTextColor);
+                console.log('Welcome Neon Color:', welcomeNeonColor);
+                console.log('Subtitle Text Color:', memberTextColor);
+
+                // Elemen preview
+                const previewText = document.getElementById('previewText');
+                const previewEmbed = document.getElementById('previewEmbed');
+                const previewTextContent = document.getElementById('previewTextContent');
+                const previewEmbedTitle = document.getElementById('previewEmbedTitle');
+                const previewEmbedDescription = document.getElementById('previewEmbedDescription');
+                const previewEmbedImage = document.getElementById('previewEmbedImage');
+                const previewImage = document.getElementById('previewImage');
+
+                // Placeholder replacement untuk preview
+                const userTag = "Fauzan"; // Dummy user tag
+                const serverName = "<%= guild.name %>";
+                const memberCount = "842"; // Dummy member count
+
+                const titleText = title.replace('{server}', serverName);
+                const subtitleText = subtitle.replace('{server_member_count}', memberCount).replace('#rules', '<span class="channel-mention">#📜〢・rules</span>');
+                let welcomeTextFormatted = welcomeText
+                    .replace('{user}', `<span class="user-mention">@${userTag}</span>`)
+                    .replace('{server}', serverName);
+
+                // Reset visibility
+                previewText.classList.remove('active');
+                previewEmbed.classList.remove('active');
+                previewEmbedImage.style.display = 'none';
+                previewImage.style.display = 'none';
+
+                if (messageType === 'text') {
+                    // Preview untuk teks biasa
+                    previewText.classList.add('active');
+                    previewTextContent.innerHTML = welcomeTextFormatted;
+                    previewImage.style.display = 'block'; // Tampilkan gambar di bawah teks
+                } else if (messageType === 'embed') {
+                    // Preview untuk embed
+                    previewEmbed.classList.add('active');
+                    previewEmbedTitle.innerHTML = titleText;
+                    previewEmbedDescription.innerHTML = welcomeTextFormatted;
+                    previewEmbed.style.borderLeftColor = embedColor;
+                    previewEmbedImage.style.display = 'block'; // Tampilkan gambar di dalam embed
+                }
+
+                // Update URL gambar welcome card
+                const font = encodeURIComponent(document.getElementById('font').value || "Default");
+                const backgroundImage = encodeURIComponent(document.getElementById('backgroundImage').value || "");
+                const backgroundColor = encodeURIComponent(document.getElementById('backgroundColor').value || "#000000");
+                const overlayOpacity = encodeURIComponent(document.getElementById('overlayOpacity').value || 0.5);
+                const timestamp = new Date().getTime(); // Tambahkan timestamp untuk mencegah caching
+                const welcomeTextColorEncoded = encodeURIComponent(welcomeTextColor);
+                const welcomeNeonColorEncoded = encodeURIComponent(welcomeNeonColor);
+                const memberTextColorEncoded = encodeURIComponent(memberTextColor);
+                const previewUrl = `/dashboard/<%= guild.id %>/welcome/preview?font=${font}&title=${encodeURIComponent(title)}&subtitle=${encodeURIComponent(subtitle)}&backgroundImage=${backgroundImage}&backgroundColor=${backgroundColor}&overlayOpacity=${overlayOpacity}&welcomeTextColor=${welcomeTextColorEncoded}&welcomeNeonColor=${welcomeNeonColorEncoded}&memberTextColor=${memberTextColorEncoded}&t=${timestamp}`;
+
+                // Log URL untuk debugging
+                console.log('Preview URL:', previewUrl);
+
+                previewImage.src = previewUrl;
+                previewEmbedImage.src = previewUrl;
+            }
+
+            // Update preview dengan debounce
+            const debouncedUpdatePreview = debounce(updatePreview, 500);
+            document.getElementById('welcomeForm').addEventListener('input', debouncedUpdatePreview);
+
+            // Set preview awal
+            window.onload = updatePreview;
+
+            // JavaScript untuk color options
+            document.querySelectorAll('.color-option').forEach(option => {
+                option.addEventListener('click', () => {
+                    const color = option.getAttribute('data-color');
+                    const input = option.parentElement.querySelector('input[type="color"]');
+                    input.value = color;
+                    debouncedUpdatePreview();
+                });
+            });
+        </script>
+</body>
+
+</html>

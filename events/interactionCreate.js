@@ -1,9 +1,7 @@
-const { EmbedBuilder } = require('discord.js');
-
+const { serverList } = require('../utils/dataManager');
 const { userData, initUser, saveData } = require('../utils/userDataHandler');
 const { handleLevelUp, getRequiredXP } = require('../utils/levelUpHandler');
-const { handleAchievements } = require('../utils/achievementHandler')
-const roleList = require('../botconfig/roleList.json');
+const { handleAchievements } = require('../utils/achievementHandler');
 
 const shopItems = {
     "vip-role": { name: "Peran VIP", price: 1000, roleId: "ROLE_ID_HERE" },
@@ -12,193 +10,194 @@ const shopItems = {
 
 module.exports = {
     name: 'interactionCreate',
-    async execute(interaction, client) {
+    async execute(interaction) {
         // Tangani slash command
-        if (interaction.isChatInputCommand()) {
-            const command = client.commands.get(interaction.commandName);
-            if (!command) return;
+        if (interaction.isCommand()) {
+            const command = interaction.client.commands.get(interaction.commandName);
+            if (!command) {
+                console.log(`[InteractionCreate] Command not found: ${interaction.commandName}`);
+                return;
+            }
 
             try {
-                await command.execute(interaction, client);
+                await command.execute(interaction);
             } catch (error) {
-                console.error(error);
-                if (!interaction.replied && !interaction.deferred) {
-                    await interaction.reply({ content: 'Terjadi error saat menjalankan perintah ini!', ephemeral: true });
-                } else if (interaction.deferred) {
-                    await interaction.editReply({ content: 'Terjadi error saat menjalankan perintah ini!' });
-                }
+                console.error(`[InteractionCreate] Error executing command ${interaction.commandName}:`, error);
+                await interaction.reply({ content: 'Terjadi error saat menjalankan perintah ini!', ephemeral: true });
             }
-        } 
-        // tangani tombol (untuk rules)
-        else if (interaction.isButton()) {
+        } else if (interaction.isButton()) {
+            // Tangani tombol "accept_rules"
             if (interaction.customId === 'accept_rules') {
                 try {
-                    if (interaction.deferred || interaction.replied) {
-                        console.log('[RulesButton] Interaksi sudah diakui, melanjutkan proses...');
-                    } else {
-                        await interaction.deferReply({ ephemeral: true });
-                        console.log('[RulesButton] Deferred reply untuk interaksi:', interaction.id);
-                    }
-        
+                    await interaction.deferReply({ ephemeral: true });
+
                     const guildId = interaction.guild.id;
+                    const config = serverList[guildId]?.rules;
+                    if (!config || !config.enabled) {
+                        await interaction.editReply({ content: 'Rules are not enabled for this server.' });
+                        return;
+                    }
+
+                    const role1 = interaction.guild.roles.cache.get(config.role1);
+                    const role2 = config.role2 ? interaction.guild.roles.cache.get(config.role2) : null;
+
+                    if (!role1) {
+                        await interaction.editReply({ content: 'Role 1 not found in the server!' });
+                        return;
+                    }
+
+                    if (!interaction.guild.members.me.permissions.has('ManageRoles')) {
+                        await interaction.editReply({ content: 'Bot tidak punya permission untuk manage roles! Berikan permission Manage Roles ke bot.' });
+                        return;
+                    }
+
+                    const botHighestRole = interaction.guild.members.me.roles.highest;
+                    if (botHighestRole.comparePositionTo(role1) <= 0 || (role2 && botHighestRole.comparePositionTo(role2) <= 0)) {
+                        await interaction.editReply({
+                            content: 'Bot tidak bisa memberikan role karena role bot lebih rendah dari role tersebut. Pindahkan role bot ke posisi lebih tinggi di daftar roles.'
+                        });
+                        return;
+                    }
+
                     const member = interaction.member;
-                    const rulesRole1Id = config[guildId]?.rulesRole1; // Role pertama
-                    const rulesRole2Id = config[guildId]?.rulesRole2; // Role kedua (opsional)
-        
-                    if (!rulesRole1Id) {
-                        await interaction.editReply({ content: 'Peran aturan belum diatur! Silakan atur dengan /set-rules.' });
-                        console.log(`[RulesButton] Peran aturan belum diatur untuk guild ${guildId}`);
+                    const rolesToAdd = [role1];
+                    if (role2) rolesToAdd.push(role2);
+
+                    try {
+                        await member.roles.add(rolesToAdd);
+                        await interaction.editReply({ content: `Kamu telah menerima aturan dan diberikan role: ${rolesToAdd.map(r => r.name).join(', ')}` });
+                        console.log(`[AcceptRules] User ${member.id} accepted rules and received roles: ${rolesToAdd.map(r => r.name).join(', ')}`);
+                    } catch (error) {
+                        await interaction.editReply({ content: `Gagal memberikan role: ${error.message}` });
+                        console.error(`[AcceptRules] Failed to add roles to user ${member.id}: ${error.message}`);
+                    }
+                } catch (error) {
+                    console.error('Error handling button interaction:', error);
+                    if (!interaction.replied && !interaction.deferred) {
+                        await interaction.reply({
+                            content: 'Terjadi error saat memproses tombol. Silakan coba lagi atau hubungi developer.',
+                            ephemeral: true
+                        }).catch(() => {});
+                    } else if (interaction.deferred && !interaction.replied) {
+                        await interaction.editReply({
+                            content: 'Terjadi error saat memproses tombol. Silakan coba lagi atau hubungi developer.'
+                        }).catch(() => {});
+                    }
+                }
+            }
+        } else if (interaction.isStringSelectMenu()) {
+            try {
+                // Tangani dropdown menu untuk toko (shop-buy)
+                if (interaction.customId === 'shop-buy') {
+                    await interaction.deferReply({ ephemeral: true });
+
+                    const userId = interaction.user.id;
+                    const guildId = interaction.guildId;
+                    const itemId = interaction.values[0];
+                    const item = shopItems[itemId];
+
+                    if (!userData[userId]?.guilds?.[guildId]) {
+                        await interaction.editReply({ content: 'Kamu belum memiliki data di server ini!' });
                         return;
                     }
-        
-                    const rulesRole1 = interaction.guild.roles.cache.get(rulesRole1Id);
-                    if (!rulesRole1) {
-                        await interaction.editReply({ content: 'Peran aturan pertama tidak ditemukan di server!' });
-                        console.log(`[RulesButton] Peran aturan ${rulesRole1Id} tidak ditemukan di guild ${guildId}`);
+
+                    const userCoins = userData[userId].guilds[guildId].coins || 0;
+                    if (userCoins < item.price) {
+                        await interaction.editReply({ content: `Koinmu tidak cukup! Kamu membutuhkan ${item.price} koin, tetapi kamu hanya memiliki ${userCoins}.` });
                         return;
                     }
-        
-                    const rolesToAdd = [rulesRole1];
-                    let roleMessage = rulesRole1.name;
-        
-                    // Tambah role kedua jika ada
-                    if (rulesRole2Id) {
-                        const rulesRole2 = interaction.guild.roles.cache.get(rulesRole2Id);
-                        if (rulesRole2) {
-                            rolesToAdd.push(rulesRole2);
-                            roleMessage += ` and ${rulesRole2.name}`;
-                        } else {
-                            console.log(`[RulesButton] Peran aturan kedua ${rulesRole2Id} tidak ditemukan di guild ${guildId}`);
+
+                    userData[userId].guilds[guildId].coins -= item.price;
+                    const member = await interaction.guild.members.fetch(userId);
+                    await member.roles.add(item.roleId);
+                    saveData();
+
+                    await interaction.editReply({ content: `Kamu telah membeli ${item.name} seharga ${item.price} koin!` });
+                }
+                // Tangani dropdown menu untuk fitur Roles (select-role-)
+                else if (interaction.customId.startsWith('select-role-')) {
+                    await interaction.deferReply({ ephemeral: true });
+
+                    const guildId = interaction.guild.id;
+                    const config = serverList[guildId]?.roles;
+                    if (!config || !config.enabled) {
+                        await interaction.editReply({ content: 'Role selection is not enabled for this server.' });
+                        return;
+                    }
+
+                    const selectedRoleName = interaction.values[0];
+                    let role = interaction.guild.roles.cache.find(r => r.name === selectedRoleName);
+                    if (!role) {
+                        try {
+                            // Gunakan embedColor dari konfigurasi untuk warna role
+                            const embedColor = config.embedColor || '#5865f2';
+                            role = await interaction.guild.roles.create({
+                                name: selectedRoleName,
+                                reason: 'Role dibuat otomatis oleh bot untuk fitur select roles',
+                                color: embedColor.replace('#', ''), // Konversi hex ke format Discord
+                                permissions: []
+                            });
+                            console.log(`[SelectRole] Created role ${selectedRoleName} for guild ${guildId}`);
+                            await interaction.editReply({ content: `Role **${selectedRoleName}** telah dibuat otomatis di server!` });
+                        } catch (error) {
+                            console.error(`[SelectRole] Failed to create role ${selectedRoleName} in guild ${guildId}: ${error.message}`);
+                            await interaction.editReply({ content: `Gagal membuat role **${selectedRoleName}**: ${error.message}` });
+                            return;
                         }
                     }
-        
-                    // Cek apakah user sudah memiliki semua role
-                    const alreadyHasAllRoles = rolesToAdd.every(role => member.roles.cache.has(role.id));
-                    if (alreadyHasAllRoles) {
-                        await interaction.editReply({ content: `Kamu sudah memiliki semua peran aturan (${roleMessage})!` });
-                        console.log(`[RulesButton] Pengguna ${member.id} sudah memiliki semua peran di guild ${guildId}`);
+
+                    if (!interaction.guild.members.me.permissions.has('ManageRoles')) {
+                        console.error(`[SelectRole] Bot lacks ManageRoles permission in guild ${guildId}`);
+                        await interaction.editReply({ content: 'Bot tidak punya permission untuk manage roles! Berikan permission Manage Roles ke bot.' });
                         return;
                     }
-        
-                    // Tambah role ke user
-                    await member.roles.add(rolesToAdd);
-                    await interaction.editReply({ content: `Selamat! Kamu telah menerima aturan dan mendapatkan peran ${roleMessage}!` });
-                    console.log(`[RulesButton] Pengguna ${member.id} menerima aturan dan mendapatkan peran ${roleMessage} di guild ${guildId}`);
-                } catch (error) {
-                    console.error('Error menangani interaksi tombol:', error);
-                    if (!interaction.replied && !interaction.deferred) {
-                        await interaction.reply({ content: 'Terjadi error saat memproses tombol. Silakan coba lagi atau hubungi developer.', ephemeral: true }).catch(() => {});
-                    } else if (interaction.deferred && !interaction.replied) {
-                        await interaction.editReply({ content: 'Terjadi error saat memproses tombol. Silakan coba lagi atau hubungi developer.' }).catch(() => {});
-                    }
-                }
-            }
-        }
-        // Tangani dropdown menu (untuk toko)
-        else if (interaction.isStringSelectMenu() && interaction.customId === 'shop-buy') {
-            try {
-                await interaction.deferReply({ ephemeral: true });
 
-                const userId = interaction.user.id;
-                const guildId = interaction.guildId;
-                const itemId = interaction.values[0];
-                const item = shopItems[itemId];
-
-                if (!userData[userId]?.guilds?.[guildId]) {
-                    await interaction.editReply({ content: 'Kamu belum memiliki data di server ini!' });
-                    return;
-                }
-
-                const userCoins = userData[userId].guilds[guildId].coins || 0;
-                if (userCoins < item.price) {
-                    await interaction.editReply({ content: `Koinmu tidak cukup! Kamu membutuhkan ${item.price} koin, tetapi kamu hanya memiliki ${userCoins}.` });
-                    return;
-                }
-
-                userData[userId].guilds[guildId].coins -= item.price;
-                const member = await interaction.guild.members.fetch(userId);
-                await member.roles.add(item.roleId);
-                saveData();
-
-                await interaction.editReply({ content: `Kamu telah membeli ${item.name} seharga ${item.price} koin!` });
-            } catch (error) {
-                console.error('Error menangani interaksi toko:', error);
-                await interaction.editReply({ content: 'Terjadi error saat memproses pembelianmu!' });
-            }
-        } 
-        // Tangani dropdown menu (untuk get-roles)
-        else if (interaction.isStringSelectMenu() && interaction.customId.startsWith('select-role-')) {
-            try {
-                await interaction.deferReply({ flags: 64 });
-
-                const guildId = interaction.guildId;
-                const selectedRoleName = interaction.values[0]; // Ambil role yang dipilih
-
-                // Ambil semua role dari roleList
-                const roles = roleList.guilds && roleList.guilds[guildId] ? roleList.guilds[guildId] : [];
-                if (!roles || roles.length === 0) {
-                    await interaction.editReply({ content: 'Tidak ada peran yang ditemukan untuk server ini!', flags: 64 });
-                    return;
-                }
-
-                // Cari role berdasarkan nama di roleList
-                const roleData = roles.find(role => role.name === selectedRoleName);
-                if (!roleData) {
-                    await interaction.editReply({ content: 'Peran tidak ditemukan di daftar peran!', flags: 64 });
-                    return;
-                }
-
-                // Cek apakah bot punya izin ManageRoles
-                if (!interaction.guild.members.me.permissions.has('ManageRoles')) {
-                    await interaction.editReply({ content: 'Bot tidak memiliki izin untuk mengelola peran! Pastikan bot punya izin ManageRoles.', flags: 64 });
-                    return;
-                }
-
-                // Cari role di server berdasarkan nama
-                let role = interaction.guild.roles.cache.find(r => r.name === selectedRoleName);
-                if (!role) {
-                    // Kalau role ga ada, bikin role baru
-                    try {
-                        role = await interaction.guild.roles.create({
-                            name: selectedRoleName,
-                            color: 'Default', // Bisa diganti dengan warna tertentu
-                            reason: `Role dibuat otomatis oleh bot untuk ${selectedRoleName}`
+                    const botHighestRole = interaction.guild.members.me.roles.highest;
+                    if (botHighestRole.comparePositionTo(role) <= 0) {
+                        console.error(`[SelectRole] Bot role is lower than target role ${selectedRoleName} in guild ${guildId}`);
+                        await interaction.editReply({
+                            content: `Bot tidak bisa memberikan role **${selectedRoleName}** karena role bot lebih rendah dari role tersebut. Pindahkan role bot ke posisi lebih tinggi di daftar roles.`
                         });
-                        console.log(`[InteractionCreate] Berhasil membuat role baru: ${selectedRoleName} (${role.id})`);
-                    } catch (error) {
-                        console.error(`[InteractionCreate] Gagal membuat role ${selectedRoleName}: ${error.message}`);
-                        await interaction.editReply({ content: 'Gagal membuat peran baru! Pastikan bot punya izin ManageRoles.', flags: 64 });
                         return;
                     }
-                }
 
-                // Cek apakah role-nya bisa dikasih (harus lebih rendah dari role bot)
-                if (role.position >= interaction.guild.members.me.roles.highest.position) {
-                    await interaction.editReply({ content: 'Bot tidak bisa memberikan peran ini karena peran tersebut lebih tinggi atau sama dengan peran tertinggi bot!', flags: 64 });
-                    return;
+                    const member = interaction.member;
+                    try {
+                        if (member.roles.cache.has(role.id)) {
+                            await member.roles.remove(role);
+                            await interaction.editReply({ content: `Role **${selectedRoleName}** telah dihapus dari kamu!` });
+                            console.log(`[SelectRole] User ${member.id} removed role ${selectedRoleName} in guild ${guildId}`);
+                        } else {
+                            await member.roles.add(role);
+                            await interaction.editReply({ content: `Role **${selectedRoleName}** telah ditambahkan ke kamu!` });
+                            console.log(`[SelectRole] User ${member.id} added role ${selectedRoleName} in guild ${guildId}`);
+                        }
+                    } catch (error) {
+                        console.error(`[SelectRole] Failed to modify role ${selectedRoleName} for user ${member.id} in guild ${guildId}: ${error.message}`);
+                        await interaction.editReply({ content: `Gagal memodifikasi role **${selectedRoleName}**: ${error.message}` });
+                    }
                 }
-
-                // Cek apakah user sudah punya role ini
-                if (interaction.member.roles.cache.has(role.id)) {
-                    await interaction.editReply({ content: `Kamu sudah memiliki peran ${role.name}!`, flags: 64 });
-                    return;
-                }
-
-                // Kasih role ke user
-                await interaction.member.roles.add(role);
-                await interaction.editReply({ content: `Berhasil menambahkan peran ${role.name} ke kamu!`, flags: 64 });
             } catch (error) {
-                console.error(`[InteractionCreate] Gagal memberikan peran ${selectedRoleName} ke ${interaction.user.id}: ${error.message}`);
-                await interaction.editReply({ content: 'Gagal memberikan peran! Pastikan bot punya izin atau peran masih ada.', flags: 64 });
+                console.error('Error handling select menu:', error);
+                if (!interaction.replied && !interaction.deferred) {
+                    await interaction.reply({
+                        content: 'Terjadi error saat memproses select menu. Silakan coba lagi atau hubungi developer.',
+                        ephemeral: true
+                    }).catch(() => {});
+                } else if (interaction.deferred && !interaction.replied) {
+                    await interaction.editReply({
+                        content: 'Terjadi error saat memproses select menu. Silakan coba lagi atau hubungi developer.'
+                    }).catch(() => {});
+                }
             }
         }
 
-        // Handle level up dan achievements
+        // Handle level up dan achievements untuk setiap interaksi
         try {
             await handleLevelUp(interaction.user.id, interaction.guild, interaction.user);
             await handleAchievements(interaction.user.id, interaction.guild, 'interaction');
         } catch (error) {
-            console.error(`[InteractionCreate] Error handling level up or achievements for user ${interaction.user.id}: ${error.message}`);
+            console.error(`[InteractionCreate] Error handling level up or achievements for user ${interaction.user.id}:`, error);
         }
     },
 };

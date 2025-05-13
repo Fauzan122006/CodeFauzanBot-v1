@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, PermissionFlagsBits, ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder } = require('discord.js');
-const { config, saveConfig, rules, saveRules } = require('../utils/dataManager');
+const { serverList, saveServerList } = require('../utils/dataManager');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -85,19 +85,20 @@ module.exports = {
         }
 
         const guildId = interaction.guild.id;
-        if (!config[guildId]) config[guildId] = {};
-        config[guildId].rulesChannel = rulesChannel.id;
-        config[guildId].rulesRole1 = rulesRole1.id;
-        config[guildId].rulesRole2 = rulesRole2 ? rulesRole2.id : null;
-        saveConfig();
-
-        if (!rules.guildSpecific) rules.guildSpecific = {};
-        rules.guildSpecific[guildId] = { categories: guildRules };
-        saveRules();
+        if (!serverList[guildId]) serverList[guildId] = {};
+        serverList[guildId].rules = {
+            enabled: true,
+            channel: rulesChannel.id,
+            rules: guildRules,
+            image: imageUrl || '',
+            role1: rulesRole1.id,
+            role2: rulesRole2 ? rulesRole2.id : null
+        };
+        saveServerList();
 
         const embeds = [];
         let currentEmbed = new EmbedBuilder()
-            .setColor(config.colorthemecode || '#00BFFF')
+            .setColor('#00BFFF')
             .setTitle('📜 Server Rules');
 
         if (imageUrl) {
@@ -113,7 +114,7 @@ module.exports = {
             if (totalLength + fieldLength > 6000 || currentEmbed.data.fields?.length >= 25) {
                 embeds.push(currentEmbed);
                 currentEmbed = new EmbedBuilder()
-                    .setColor(config.colorthemecode || '#00BFFF')
+                    .setColor('#00BFFF')
                     .setTitle('📜 Server Rules (Continued)');
                 totalLength = 0;
             }
