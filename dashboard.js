@@ -1484,8 +1484,11 @@ function start(client) {
         res.redirect(`/dashboard/${guildId}/achievements`);
     });
 
-    app.listen(3000, () => {
-        log('Dashboard', 'Dashboard running on http://localhost:3000', 'success');
+    // node web server
+    const port = process.env.PORT || 3000;
+
+    app.listen(port, () => {
+        log('Dashboard', `Dashboard running on http://localhost:${port}`, 'success');
     });
 }
 
