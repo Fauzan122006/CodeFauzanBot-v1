@@ -6,10 +6,24 @@ const { serverList, saveServerList, config, ensureGuildConfig, initRankCard, ach
 const chalk = require('chalk');
 const { EmbedBuilder, ActionRowBuilder, SelectMenuBuilder, SelectMenuOptionBuilder, ButtonBuilder, ButtonStyle, ChannelType } = require('discord.js');
 const htmlToMd = require('html-to-md');
-const { createCanvas, loadImage, registerFont } = require('canvas');
 const fs = require('fs');
 const path = require('path');
-const fontkit = require('fontkit');
+
+// Try to load canvas, fallback if not available
+let createCanvas, loadImage, registerFont, fontkit;
+let canvasAvailable = false;
+try {
+    const canvas = require('canvas');
+    createCanvas = canvas.createCanvas;
+    loadImage = canvas.loadImage;
+    registerFont = canvas.registerFont;
+    fontkit = require('fontkit');
+    canvasAvailable = true;
+    console.log('[Canvas] Canvas module loaded successfully');
+} catch (error) {
+    console.warn('[Canvas] Canvas module not available:', error.message);
+    console.warn('[Canvas] Welcome cards and rank cards will be disabled');
+}
 
 // Impor middleware
 const { ensureAuthenticated, ensureAdmin } = require('./middleware/auth');
@@ -22,6 +36,11 @@ const availableFonts = [];
 
 // Pastikan pendaftaran font berjalan sebelum server mulai
 function registerFonts() {
+    if (!canvasAvailable) {
+        console.log('[FontRegistration] Skipping font registration - Canvas not available');
+        return;
+    }
+    
     if (fs.existsSync(fontsDir)) {
         console.log(`[FontRegistration] Fonts directory found at ${fontsDir}`);
         const fontFiles = fs.readdirSync(fontsDir).filter(file => file.endsWith('.ttf') || file.endsWith('.otf'));
@@ -220,20 +239,14 @@ function start(client) {
             // 3. Currently Online: Jumlah anggota yang sedang online di server saat ini
             let onlineMembers = 0;
             try {
-                // Fetch members dengan timeout 10 detik dan limit
-                await Promise.race([
-                    guild.members.fetch({ limit: 1000, force: false }), // Ambil max 1000 members, gunakan cache jika ada
-                    new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 10000))
-                ]);
+                // Gunakan cache yang ada tanpa fetch untuk menghindari timeout
                 onlineMembers = guild.members.cache.filter(m => 
                     m.presence?.status === 'online' || m.presence?.status === 'idle' || m.presence?.status === 'dnd'
                 ).size;
+                log('Dashboard', `Online members count: ${onlineMembers} (from cache)`, 'info');
             } catch (error) {
-                // Jika timeout atau error, gunakan data yang ada di cache
-                log('Dashboard', `Failed to fetch members: ${error.message}, using cache instead`, 'warning');
-                onlineMembers = guild.members.cache.filter(m => 
-                    m.presence?.status === 'online' || m.presence?.status === 'idle' || m.presence?.status === 'dnd'
-                ).size;
+                log('Dashboard', `Failed to count online members: ${error.message}`, 'warning');
+                onlineMembers = 0;
             }
     
             // 4. Banned Users: Jumlah pengguna yang dibanned di server saat ini
@@ -335,6 +348,10 @@ function start(client) {
 
     // Route untuk preview welcome message (digunakan untuk menghasilkan gambar welcome card)
     app.get('/dashboard/:guildId/welcome/preview', ensureAuthenticated, ensureAdmin, async (req, res) => {
+        if (!canvasAvailable) {
+            return res.status(503).send('Canvas module not available. Please install canvas dependencies.');
+        }
+        
         const guildId = req.params.guildId;
         console.log(`[WelcomePreview] Processing preview for guild ${guildId}`);
     
@@ -469,6 +486,24 @@ function start(client) {
         const welcomeConfig = serverList[guildId]?.welcome;
         if (!welcomeConfig || !welcomeConfig.enabled || !welcomeConfig.channel) {
             console.log(`[GuildMemberAdd] Welcome message not enabled or channel not set for guild ${guildId}`);
+            return;
+        }
+        
+        if (!canvasAvailable) {
+            console.log(`[GuildMemberAdd] Canvas not available, skipping welcome image for guild ${guildId}`);
+            // Send simple text welcome instead
+            const channel = member.guild.channels.cache.get(welcomeConfig.channel);
+            if (channel) {
+                try {
+                    await channel.send(
+                        (welcomeConfig.welcomeText || 'Hey {user}, selamat datang di {server}!')
+                            .replace('{user}', member.user.toString())
+                            .replace('{server}', member.guild.name)
+                    );
+                } catch (error) {
+                    console.error(`[GuildMemberAdd] Error sending text welcome: ${error.message}`);
+                }
+            }
             return;
         }
     
@@ -684,6 +719,10 @@ function start(client) {
     });
 
     app.get('/dashboard/:guildId/rankcard/preview', ensureAuthenticated, ensureAdmin, async (req, res) => {
+        if (!canvasAvailable) {
+            return res.status(503).send('Canvas module not available. Please install canvas dependencies.');
+        }
+        
         const guildId = req.params.guildId;
         const { font, mainColor, backgroundColor, overlayOpacity, backgroundImage } = req.query;
     

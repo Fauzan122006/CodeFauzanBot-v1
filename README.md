@@ -143,6 +143,33 @@ Bot menggunakan prefix `!!` (dapat diubah di config).
 
 ## 🛠️ Troubleshooting
 
+### Canvas Module Error (Pterodactyl/VPS)
+**Error:** `invalid ELF header` atau `ERR_DLOPEN_FAILED`
+
+**Solusi:**
+```bash
+# Method 1: Rebuild canvas module
+npm rebuild canvas --build-from-source
+
+# Method 2: Clean install (jika method 1 gagal)
+rm -rf node_modules package-lock.json
+npm install
+npm rebuild canvas --build-from-source
+
+# Method 3: Install system dependencies (untuk Debian/Ubuntu)
+apt-get update
+apt-get install -y build-essential libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev
+npm rebuild canvas --build-from-source
+```
+
+**Catatan:** Bot akan tetap berjalan meskipun canvas module gagal load. Welcome cards dan rank cards akan dinonaktifkan sementara, tapi semua fitur lain tetap berfungsi normal.
+
+### Dashboard "Members didn't arrive in time"
+**Fixed:** Bot sekarang menggunakan member cache yang ada tanpa fetching untuk menghindari timeout di server besar. Statistik online members akan dihitung dari cache yang tersedia.
+
+### Deprecation Warning: punycode module
+**Status:** Warning ini berasal dari dependencies dan tidak mempengaruhi fungsionalitas bot. Akan diupdate pada versi berikutnya.
+
 ### Bot tidak bisa login
 - Pastikan `CLIENT_TOKEN` valid dan benar
 - Cek apakah bot token sudah di-reset di Discord Developer Portal
@@ -168,16 +195,23 @@ Bot menggunakan prefix `!!` (dapat diubah di config).
 
 ## 📝 Update Log
 
-### Bug Fixes (Latest)
-1. ✅ **Security**: Removed exposed tokens from config.json
-2. ✅ **Bug Fix**: Fixed duplicate member variable in messageCreate.js
-3. ✅ **Bug Fix**: Removed duplicate XP gain logic
-4. ✅ **Bug Fix**: Fixed level-up handler being called twice
-5. ✅ **Improvement**: Added better error handling for automod
-6. ✅ **Improvement**: Added return statements after punishment to prevent multiple triggers
-7. ✅ **Improvement**: Fixed deprecated `displayAvatarURL` format parameter
-8. ✅ **Improvement**: Added optional chaining for safer property access
-9. ✅ **Bug Fix**: Fixed ensureAdmin middleware to use permissions from OAuth2 data
+### Latest Fixes (v1.1.0)
+1. ✅ **Critical Fix**: Canvas module now optional - bot runs even if canvas fails to load
+2. ✅ **Performance**: Dashboard no longer fetches members, uses cache only (fixes timeout)
+3. ✅ **Security**: Removed exposed tokens from config.json
+4. ✅ **Bug Fix**: Fixed duplicate member variable in messageCreate.js
+5. ✅ **Bug Fix**: Removed duplicate XP gain logic
+6. ✅ **Bug Fix**: Fixed level-up handler being called twice
+7. ✅ **Improvement**: Added better error handling for automod
+8. ✅ **Improvement**: Added return statements after punishment to prevent multiple triggers
+9. ✅ **Improvement**: Fixed deprecated `displayAvatarURL` format parameter
+10. ✅ **Improvement**: Added optional chaining for safer property access
+11. ✅ **Bug Fix**: Fixed ensureAdmin middleware to use permissions from OAuth2 data
+12. ✅ **Enhancement**: Added fallback text welcome when canvas unavailable
+13. ✅ **Enhancement**: Added comprehensive error handling for Pterodactyl deployment
+
+### Previous Updates
+- Initial release with all core features
 
 ## 📞 Support
 

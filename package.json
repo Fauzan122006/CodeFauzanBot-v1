@@ -1,12 +1,14 @@
 {
   "name": "fauzanbot",
   "version": "1.0.0",
-  "description": "",
+  "description": "Discord Bot with Dashboard",
   "main": "index.js",
   "scripts": {
+    "start": "node index.js",
+    "rebuild": "npm rebuild canvas --build-from-source",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
+  "keywords": ["discord", "bot"],
   "author": "",
   "license": "ISC",
   "dependencies": {
