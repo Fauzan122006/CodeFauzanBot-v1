@@ -3,131 +3,271 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CodeFauzanBot - The Ultimate Discord Bot</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>CodeFauzanBot - Ultimate Discord Bot</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        /* Custom gradient background for the futuristic vibe */
-        .gradient-bg {
-            background: linear-gradient(180deg, #1e1b4b 0%, #2e1065 100%);
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        :root {
+            --bg-primary: #0f0f1e;
+            --bg-secondary: #1a1a2e;
+            --accent-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --text-primary: #ffffff;
+            --text-secondary: #b9bbbe;
+            --border-color: rgba(255, 255, 255, 0.1);
         }
-        .glow-effect {
-            box-shadow: 0 0 20px rgba(147, 51, 234, 0.5);
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
         }
-        .neon-text {
-            text-shadow: 0 0 10px rgba(147, 51, 234, 0.8);
+        
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 20% 50%, rgba(102, 126, 234, 0.15) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 80%, rgba(118, 75, 162, 0.1) 0%, transparent 50%);
+            z-index: -1;
         }
-        .hover-glow:hover {
-            box-shadow: 0 0 30px rgba(147, 51, 234, 0.7);
-            transform: scale(1.05);
-            transition: all 0.3s ease;
+        
+        header {
+            background: rgba(26, 26, 46, 0.8);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border-color);
+            padding: 20px 40px;
+        }
+        
+        .header-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+        
+        .logo img {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+        }
+        
+        .logo h1 {
+            font-size: 24px;
+            font-weight: 800;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        nav {
+            display: flex;
+            align-items: center;
+            gap: 32px;
+        }
+        
+        nav a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+            padding: 8px 16px;
+            border-radius: 8px;
+        }
+        
+        nav a:hover {
+            color: var(--text-primary);
+            background: rgba(88, 101, 242, 0.1);
+        }
+        
+        .btn-login {
+            background: var(--accent-gradient);
+            color: white !important;
+            padding: 12px 24px !important;
+            box-shadow: 0 4px 12px rgba(88, 101, 242, 0.4);
+        }
+        
+        .hero {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 120px 40px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+        }
+        
+        .hero h2 {
+            font-size: 56px;
+            font-weight: 900;
+            line-height: 1.1;
+            margin-bottom: 24px;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .hero p {
+            font-size: 18px;
+            color: var(--text-secondary);
+            margin-bottom: 40px;
+        }
+        
+        .btn {
+            padding: 16px 32px;
+            border-radius: 12px;
+            font-weight: 700;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            margin-right: 16px;
+        }
+        
+        .btn-primary {
+            background: var(--accent-gradient);
+            color: white;
+            box-shadow: 0 8px 24px rgba(88, 101, 242, 0.4);
+        }
+        
+        .btn-secondary {
+            background: var(--bg-secondary);
+            color: white;
+            border: 1px solid var(--border-color);
+        }
+        
+        .hero-image img {
+            width: 100%;
+            border-radius: 24px;
+        }
+        
+        .features {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 100px 40px;
+        }
+        
+        .features h2 {
+            font-size: 48px;
+            font-weight: 900;
+            text-align: center;
+            margin-bottom: 80px;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .feature-card {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            margin-bottom: 80px;
+            padding: 40px;
+            background: rgba(26, 26, 46, 0.5);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+        }
+        
+        .feature-card h3 {
+            font-size: 32px;
+            margin-bottom: 16px;
+        }
+        
+        .feature-card p {
+            color: var(--text-secondary);
+            margin-bottom: 24px;
+        }
+        
+        .feature-card img {
+            width: 100%;
+            border-radius: 16px;
+        }
+        
+        footer {
+            background: var(--bg-secondary);
+            border-top: 1px solid var(--border-color);
+            padding: 40px;
+            text-align: center;
+            color: var(--text-secondary);
         }
     </style>
 </head>
-<body class="gradient-bg text-white font-sans min-h-screen flex flex-col">
-    <!-- Header -->
-    <header class="flex justify-between items-center p-6 bg-opacity-50 bg-gray-900 shadow-lg">
-        <div class="flex items-center space-x-4">
-            <img src="https://iili.io/3SRUsTP.md.png" alt="CodeFauzanBot Logo" class="w-10 h-10">
-            <h1 class="text-2xl font-bold neon-text">CodeFauzanBot</h1>
+<body>
+    <header>
+        <div class="header-container">
+            <a href="/" class="logo">
+                <img src="https://iili.io/3SRUsTP.md.png" alt="CodeFauzanBot">
+                <h1>CodeFauzanBot</h1>
+            </a>
+            <nav>
+                <a href="#features">Features</a>
+                <a href="/auth/discord" class="btn-login">
+                    <i class="fab fa-discord"></i> Login
+                </a>
+            </nav>
         </div>
-        <nav class="flex space-x-6 items-center">
-            <a href="#features" class="text-gray-300 hover:text-purple-400 transition">Features</a>
-            <a href="#resources" class="text-gray-300 hover:text-purple-400 transition">Resources</a>
-            <a href="#premium" class="text-gray-300 hover:text-purple-400 transition">Premium</a>
-            <a href="/auth/discord" class="bg-purple-600 text-white px-4 py-2 rounded-lg glow-effect hover:bg-purple-700 transition">Login with Discord</a>
-        </nav>
     </header>
 
-    <!-- Hero Section -->
-    <section class="flex-1 flex items-center justify-center py-20 px-6">
-        <div class="max-w-6xl flex flex-col md:flex-row items-center justify-between w-full">
-            <div class="md:w-1/2 text-center md:text-left">
-                <h2 class="text-5xl md:text-6xl font-bold neon-text mb-6 leading-tight">
-                    The Ultimate Discord Bot Experience
-                </h2>
-                <p class="text-lg text-gray-300 mb-8">
-                    CodeFauzanBot brings your server to life with powerful tools to manage, entertain, and grow your community effortlessly.
-                </p>
-                <div class="flex justify-center md:justify-start space-x-4">
-                    <a href="https://discord.com/oauth2/authorize?client_id=<%= clientId %>&scope=bot&permissions=8" 
-                       class="bg-purple-600 text-white px-6 py-3 rounded-lg font-bold glow-effect hover-glow">
-                        Add to Discord
-                    </a>
-                    <a href="#features" 
-                       class="bg-gray-800 text-white px-6 py-3 rounded-lg font-bold glow-effect hover-glow">
-                        Explore Features
-                    </a>
-                </div>
+    <section class="hero">
+        <div>
+            <h2>The Ultimate Discord Bot</h2>
+            <p>Powerful tools to manage and grow your community effortlessly.</p>
+            <a href="https://discord.com/oauth2/authorize?client_id=<%= clientId %>&scope=bot&permissions=8" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Add to Discord
+            </a>
+            <a href="#features" class="btn btn-secondary">
+                <i class="fas fa-rocket"></i> Explore Features
+            </a>
+        </div>
+        <div class="hero-image">
+            <img src="https://iili.io/3S5dD3x.md.png" alt="Dashboard">
+        </div>
+    </section>
+
+    <section id="features" class="features">
+        <h2>Powerful Features</h2>
+
+        <div class="feature-card">
+            <div>
+                <h3><i class="fas fa-door-open"></i> Welcome System</h3>
+                <p>Greet new members with stunning, customizable welcome messages.</p>
+                <a href="https://discord.com/oauth2/authorize?client_id=<%= clientId %>&scope=bot&permissions=8" class="btn btn-primary">
+                    Add to Discord
+                </a>
             </div>
-            <div class="md:w-1/2 mt-10 md:mt-0">
-                <img src="https://iili.io/3S5dD3x.md.png" 
-                     alt="CodeFauzanBot Illustration" 
-                     class="w-full">
+            <div>
+                <img src="https://purple-ailey-17.tiiny.site/discord_feature_landing_page.svg" alt="Welcome">
+            </div>
+        </div>
+
+        <div class="feature-card">
+            <div>
+                <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800" alt="Roles">
+            </div>
+            <div>
+                <h3><i class="fas fa-shield-alt"></i> Role System</h3>
+                <p>Intuitive role selection system for better organization.</p>
+                <a href="https://discord.com/oauth2/authorize?client_id=<%= clientId %>&scope=bot&permissions=8" class="btn btn-primary">
+                    Add to Discord
+                </a>
             </div>
         </div>
     </section>
 
-    <!-- Features Section -->
-    <section id="features" class="py-20 px-6">
-        <h2 class="text-4xl font-bold text-center neon-text mb-12">Features</h2>
-        <!-- Feature 1: Welcome Messages -->
-        <div class="max-w-6xl mx-auto flex flex-col md:flex-row items-center gap-10 mb-16">
-            <div class="md:w-1/2">
-                <h3 class="text-3xl font-bold neon-text mb-4">Creative Welcome Messages</h3>
-                <p class="text-gray-300 mb-6">
-                    Greet new members with stunning, customizable welcome messages. Add images, personalized text, and more to make them feel right at home.
-                </p>
-                <a href="https://discord.com/oauth2/authorize?client_id=<%= clientId %>&scope=bot&permissions=8" 
-                   class="bg-purple-600 text-white px-6 py-3 rounded-lg font-bold glow-effect hover-glow">
-                    Add to Discord
-                </a>
-            </div>
-            <div class="md:w-1/2">
-                <img src="https://purple-ailey-17.tiiny.site/discord_feature_landing_page.svg" 
-                     alt="Welcome Feature Illustration" 
-                     class="w-full rounded-lg glow-effect hover-glow">
-            </div>
-        </div>
-        <!-- Feature 2: Role System -->
-        <div class="max-w-6xl mx-auto flex flex-col md:flex-row-reverse items-center gap-10 mb-16">
-            <div class="md:w-1/2">
-                <h3 class="text-3xl font-bold neon-text mb-4">Advanced Role System</h3>
-                <p class="text-gray-300 mb-6">
-                    Let members pick roles that suit their interests with an intuitive role selection system, enhancing organization and engagement.
-                </p>
-                <a href="https://discord.com/oauth2/authorize?client_id=<%= clientId %>&scope=bot&permissions=8" 
-                   class="bg-purple-600 text-white px-6 py-3 rounded-lg font-bold glow-effect hover-glow">
-                    Add to Discord
-                </a>
-            </div>
-            <div class="md:w-1/2">
-                <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" 
-                     alt="Role System Feature Illustration" 
-                     class="w-full rounded-lg glow-effect hover-glow">
-            </div>
-        </div>
-        <!-- Feature 3: Server Rules -->
-        <div class="max-w-6xl mx-auto flex flex-col md:flex-row items-center gap-10">
-            <div class="md:w-1/2">
-                <h3 class="text-3xl font-bold neon-text mb-4">Organized Server Rules</h3>
-                <p class="text-gray-300 mb-6">
-                    Showcase server rules with a sleek embed design, ensuring members understand guidelines for a harmonious community.
-                </p>
-                <a href="https://discord.com/oauth2/authorize?client_id=<%= clientId %>&scope=bot&permissions=8" 
-                   class="bg-purple-600 text-white px-6 py-3 rounded-lg font-bold glow-effect hover-glow">
-                    Add to Discord
-                </a>
-            </div>
-            <div class="md:w-1/2">
-                <img src="https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" 
-                     alt="Rules Feature Illustration" 
-                     class="w-full rounded-lg glow-effect hover-glow">
-            </div>
-        </div>
-    </section>
-
-    <!-- Footer -->
-    <footer class="bg-gray-900 py-6 text-center text-gray-400">
+    <footer>
         <p>© 2025 CodeFauzanBot. All rights reserved.</p>
     </footer>
 </body>

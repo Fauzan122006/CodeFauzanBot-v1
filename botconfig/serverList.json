@@ -363,7 +363,7 @@
         "enabled": false
       }
     },
-    "achievementChannel": null,
+    "achievementChannel": "1015258349719277618",
     "automod": {
       "enabled": true,
       "antiSpam": {

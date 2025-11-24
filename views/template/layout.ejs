@@ -1,0 +1,239 @@
+<!-- Template Layout untuk Dashboard Pages -->
+<!-- Gunakan dengan: <%- include('template/layout', { title: 'Page Title', activePage: 'welcome', guild: guild }) %> -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title || 'Dashboard' %> - CodeFauzanBot</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        <%- include('shared-styles') %>
+
+        .page-wrapper {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 40px;
+            overflow-y: auto;
+            max-width: 1600px;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .page-title-group h1 {
+            font-size: 32px;
+            font-weight: 800;
+            margin-bottom: 8px;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .page-title-group p {
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        .page-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .content-section {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 32px;
+            margin-bottom: 24px;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title i {
+            width: 32px;
+            height: 32px;
+            background: var(--accent-gradient);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 1024px) {
+            .main-content {
+                padding: 24px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .page-wrapper {
+                flex-direction: column;
+            }
+
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .page-actions {
+                width: 100%;
+                flex-direction: column;
+            }
+
+            .page-actions .btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .content-section {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="page-wrapper">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <a href="/servers" style="text-decoration: none;">
+                <div class="logo">
+                    <img src="https://iili.io/3SRUsTP.md.png" alt="Bot Logo">
+                    <h1>CodeFauzan</h1>
+                </div>
+            </a>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Main</div>
+                <a href="/dashboard/<%= guild.id %>" class="nav-link <%= activePage === 'overview' ? 'active' : '' %>">
+                    <i class="fas fa-home"></i>
+                    <span>Overview</span>
+                </a>
+                <a href="/dashboard/<%= guild.id %>/analytics" class="nav-link <%= activePage === 'analytics' ? 'active' : '' %>">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Analytics</span>
+                </a>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Features</div>
+                <a href="/dashboard/<%= guild.id %>/welcome" class="nav-link <%= activePage === 'welcome' ? 'active' : '' %>">
+                    <i class="fas fa-door-open"></i>
+                    <span>Welcome</span>
+                </a>
+                <a href="/dashboard/<%= guild.id %>/levels" class="nav-link <%= activePage === 'levels' ? 'active' : '' %>">
+                    <i class="fas fa-trophy"></i>
+                    <span>Leveling</span>
+                </a>
+                <a href="/dashboard/<%= guild.id %>/automod" class="nav-link <%= activePage === 'automod' ? 'active' : '' %>">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>Auto-Mod</span>
+                </a>
+                <a href="/dashboard/<%= guild.id %>/roles" class="nav-link <%= activePage === 'roles' ? 'active' : '' %>">
+                    <i class="fas fa-user-tag"></i>
+                    <span>Roles</span>
+                </a>
+                <a href="/dashboard/<%= guild.id %>/rules" class="nav-link <%= activePage === 'rules' ? 'active' : '' %>">
+                    <i class="fas fa-gavel"></i>
+                    <span>Rules</span>
+                </a>
+                <a href="/dashboard/<%= guild.id %>/achievements" class="nav-link <%= activePage === 'achievements' ? 'active' : '' %>">
+                    <i class="fas fa-medal"></i>
+                    <span>Achievements</span>
+                </a>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Customization</div>
+                <a href="/dashboard/<%= guild.id %>/rankcard" class="nav-link <%= activePage === 'rankcard' ? 'active' : '' %>">
+                    <i class="fas fa-id-card"></i>
+                    <span>Rank Card</span>
+                </a>
+                <a href="/dashboard/<%= guild.id %>/autoroles" class="nav-link <%= activePage === 'autoroles' ? 'active' : '' %>">
+                    <i class="fas fa-user-plus"></i>
+                    <span>Auto Roles</span>
+                </a>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Settings</div>
+                <a href="/servers" class="nav-link">
+                    <i class="fas fa-server"></i>
+                    <span>Switch Server</span>
+                </a>
+                <a href="/logout" class="nav-link">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <%- body %>
+        </div>
+    </div>
+
+    <!-- Success Toast Notification -->
+    <script>
+        function showToast(message, type = 'success') {
+            const toast = document.createElement('div');
+            toast.className = `alert alert-${type}`;
+            toast.style.position = 'fixed';
+            toast.style.top = '24px';
+            toast.style.right = '24px';
+            toast.style.zIndex = '10000';
+            toast.style.minWidth = '300px';
+            toast.innerHTML = `
+                <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i>
+                <span>${message}</span>
+            `;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+
+        // Auto-save indicator
+        let saveTimeout;
+        function autoSave(formData) {
+            clearTimeout(saveTimeout);
+            const indicator = document.getElementById('save-indicator');
+            if (indicator) {
+                indicator.textContent = 'Saving...';
+                indicator.style.color = 'var(--warning)';
+            }
+            
+            saveTimeout = setTimeout(() => {
+                // Actual save logic here
+                if (indicator) {
+                    indicator.textContent = 'Saved ✓';
+                    indicator.style.color = 'var(--success)';
+                }
+                setTimeout(() => {
+                    if (indicator) indicator.textContent = '';
+                }, 2000);
+            }, 1000);
+        }
+    </script>
+</body>
+</html>

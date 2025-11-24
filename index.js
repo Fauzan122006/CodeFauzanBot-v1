@@ -54,6 +54,16 @@ const client = new Client({
         GatewayIntentBits.GuildVoiceStates,
         GatewayIntentBits.GuildMessageReactions,
     ],
+    // Tingkatkan timeout untuk fetching members
+    ws: { 
+        properties: {
+            browser: 'Discord Client'
+        }
+    },
+    // Set timeout lebih lama untuk guild yang besar
+    rest: { 
+        timeout: 15000 
+    }
 });
 
 client.commands = new Collection();

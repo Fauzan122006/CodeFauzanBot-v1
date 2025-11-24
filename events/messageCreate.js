@@ -6,6 +6,10 @@ const { config, serverList, ensureGuildConfig } = require('../utils/dataManager'
 const chalk = require('chalk');
 const { createCanvas, loadImage } = require('canvas');
 
+// XP Cooldown System (60 seconds)
+const xpCooldowns = new Map();
+const XP_COOLDOWN_MS = 60 * 1000; // 60 seconds
+
 const log = (module, message, level = 'info') => {
     const timestamp = new Date().toISOString();
     let coloredMessage;
@@ -110,16 +114,32 @@ module.exports = {
         // Inisialisasi data user
         initUser(userId, guildId);
 
-        // Tambah message count dan coin
+        // Tambah message count
         userData[userId].guilds[guildId].messageCount = (userData[userId].guilds[guildId].messageCount || 0) + 1;
-        const coinGain = Math.floor(Math.random() * 10) + 5; // 5-15 coin per pesan
-        userData[userId].guilds[guildId].coins = (userData[userId].guilds[guildId].coins || 0) + coinGain;
         userData[userId].guilds[guildId].lastActive = Date.now();
 
         // Log aktivitas
         log('MessageCreate', `Processing message from user ${userId} in guild ${guildId}`);
         log('MessageCreate', `User ${userId} sent a message. Message count: ${userData[userId].guilds[guildId].messageCount}`);
-        log('MessageCreate', `User ${userId} gained ${coinGain} coins. Total coins: ${userData[userId].guilds[guildId].coins}`);
+
+        // XP Cooldown Check
+        const cooldownKey = `${userId}-${guildId}`;
+        const now = Date.now();
+        const lastXPGain = xpCooldowns.get(cooldownKey) || 0;
+        const canGainXP = (now - lastXPGain) >= XP_COOLDOWN_MS;
+
+        if (canGainXP) {
+            // Tambah coin hanya jika cooldown selesai
+            const coinGain = Math.floor(Math.random() * 10) + 5; // 5-15 coin per pesan
+            userData[userId].guilds[guildId].coins = (userData[userId].guilds[guildId].coins || 0) + coinGain;
+            log('MessageCreate', `User ${userId} gained ${coinGain} coins. Total coins: ${userData[userId].guilds[guildId].coins}`);
+            
+            // Update cooldown
+            xpCooldowns.set(cooldownKey, now);
+        } else {
+            const timeLeft = Math.ceil((XP_COOLDOWN_MS - (now - lastXPGain)) / 1000);
+            log('MessageCreate', `User ${userId} is on XP cooldown (${timeLeft}s remaining)`);
+        }
 
         // Fungsi untuk menghasilkan rank card
         async function generateRankCard(user, guildId, rank, level, xp, maxXP) {
@@ -252,7 +272,12 @@ module.exports = {
                 return;
             }
 
-            // Berikan XP
+            // Berikan XP hanya jika cooldown selesai
+            if (!canGainXP) {
+                log('MessageCreate', `User ${userId} cannot gain XP due to cooldown`);
+                return;
+            }
+
             initUser(userId, guildId); // Pastikan user diinisialisasi
             let user = userData[userId].guilds[guildId];
             if (!user) {

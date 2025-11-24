@@ -218,10 +218,23 @@ function start(client) {
             });
     
             // 3. Currently Online: Jumlah anggota yang sedang online di server saat ini
-            await guild.members.fetch(); // Pastikan data anggota terbaru
-            const onlineMembers = guild.members.cache.filter(m => 
-                m.presence?.status === 'online' || m.presence?.status === 'idle' || m.presence?.status === 'dnd'
-            ).size;
+            let onlineMembers = 0;
+            try {
+                // Fetch members dengan timeout 10 detik dan limit
+                await Promise.race([
+                    guild.members.fetch({ limit: 1000, force: false }), // Ambil max 1000 members, gunakan cache jika ada
+                    new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 10000))
+                ]);
+                onlineMembers = guild.members.cache.filter(m => 
+                    m.presence?.status === 'online' || m.presence?.status === 'idle' || m.presence?.status === 'dnd'
+                ).size;
+            } catch (error) {
+                // Jika timeout atau error, gunakan data yang ada di cache
+                log('Dashboard', `Failed to fetch members: ${error.message}, using cache instead`, 'warning');
+                onlineMembers = guild.members.cache.filter(m => 
+                    m.presence?.status === 'online' || m.presence?.status === 'idle' || m.presence?.status === 'dnd'
+                ).size;
+            }
     
             // 4. Banned Users: Jumlah pengguna yang dibanned di server saat ini
             const bans = await guild.bans.fetch();

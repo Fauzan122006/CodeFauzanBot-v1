@@ -8,26 +8,26 @@
     <!-- Tambahkan Font Awesome untuk ikon -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Tambahkan Google Fonts untuk font modern -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Font Whitney (mirip Discord) -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Inter (mirip Discord) -->
     <style>
         @font-face {
-            font-family: 'Whitney';
-            src: url('https://cdn.jsdelivr.net/npm/@discordapp/font@1.0.0/Whitney-Book.woff2') format('woff2');
+            font-family: 'Inter', sans-serif;
+            src: url('https://cdn.jsdelivr.net/npm/@discordapp/font@1.0.0/Inter-Book.woff2') format('woff2');
             font-weight: 400;
             font-style: normal;
         }
 
         @font-face {
-            font-family: 'Whitney';
-            src: url('https://cdn.jsdelivr.net/npm/@discordapp/font@1.0.0/Whitney-Medium.woff2') format('woff2');
+            font-family: 'Inter', sans-serif;
+            src: url('https://cdn.jsdelivr.net/npm/@discordapp/font@1.0.0/Inter-Medium.woff2') format('woff2');
             font-weight: 500;
             font-style: normal;
         }
 
         @font-face {
-            font-family: 'Whitney';
-            src: url('https://cdn.jsdelivr.net/npm/@discordapp/font@1.0.0/Whitney-Semibold.woff2') format('woff2');
+            font-family: 'Inter', sans-serif;
+            src: url('https://cdn.jsdelivr.net/npm/@discordapp/font@1.0.0/Inter-Semibold.woff2') format('woff2');
             font-weight: 600;
             font-style: normal;
         }
@@ -39,8 +39,8 @@
         }
 
         body {
-            font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, #1e2124 0%, #2c2f33 100%);
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0f0f1e 0%, #1a1a2e 100%);
             color: #ffffff;
             margin: 0;
             display: flex;
@@ -49,9 +49,9 @@
 
         .sidebar {
             width: 250px;
-            background: #2f3136;
+            background: #1a1a2e;
             padding: 20px;
-            border-right: 1px solid #36393f;
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
             box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
         }
 
@@ -83,13 +83,99 @@
 
         .sidebar ul li a:hover,
         .sidebar ul li a.active {
-            background: linear-gradient(90deg, #5865f2, #7289da);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: #ffffff;
             transform: translateX(5px);
         }
 
         .sidebar ul li a i {
             margin-right: 10px;
+        }
+
+                /* Sidebar Styles */
+        .sidebar {
+            width: 280px;
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--border-color);
+            padding: 24px 16px;
+            display: flex;
+            flex-direction: column;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
+            backdrop-filter: blur(10px);
+        }
+
+        .sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb {
+            background: var(--accent-primary);
+            border-radius: 10px;
+        }
+
+        .sidebar h2 {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 24px;
+            padding: 12px;
+            background: var(--accent-gradient);
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(88, 101, 242, 0.3);
+        }
+
+        .sidebar h3 {
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin: 20px 0 10px;
+            padding: 0 12px;
+            letter-spacing: 0.5px;
+        }
+
+        .sidebar ul {
+            list-style: none;
+            margin-bottom: 16px;
+        }
+
+        .sidebar ul li {
+            margin-bottom: 4px;
+        }
+
+        .sidebar ul li a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .sidebar ul li a:hover {
+            background: rgba(88, 101, 242, 0.1);
+            color: var(--text-primary);
+            transform: translateX(4px);
+        }
+
+        .sidebar ul li a.active {
+            background: var(--accent-gradient);
+            color: var(--text-primary);
+            box-shadow: 0 4px 12px rgba(88, 101, 242, 0.3);
+            font-weight: 600;
+        }
+
+        .sidebar ul li a i {
+            width: 20px;
+            text-align: center;
+            font-size: 16px;
         }
 
         .main-content {
@@ -111,7 +197,7 @@
         .header h1 {
             font-size: 28px;
             font-weight: 700;
-            background: linear-gradient(90deg, #5865f2, #7289da);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
@@ -136,7 +222,7 @@
         }
 
         .form-container {
-            background: #2f3136;
+            background: #1a1a2e;
             padding: 30px;
             border-radius: 12px;
             box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
@@ -150,7 +236,7 @@
         }
 
         .color-container {
-            background: #2f3136;
+            background: #1a1a2e;
             padding: 30px;
             border-radius: 12px;
             box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
@@ -167,7 +253,7 @@
         }
 
         .preview-container {
-            background: #2f3136;
+            background: #1a1a2e;
             padding: 20px;
             border-radius: 12px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
@@ -208,7 +294,7 @@
             padding: 12px;
             border: none;
             border-radius: 8px;
-            background: #36393f;
+            background: rgba(255, 255, 255, 0.1);
             color: #ffffff;
             font-size: 14px;
             transition: all 0.3s ease;
@@ -242,7 +328,7 @@
 
         .form-group select {
             appearance: none;
-            background: #36393f url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIHZpZXdCb3g9IjAgMCA1NiAxNiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTQgNkw4IDEwTDEyIDYiIHN0cm9rZT0iI2I5YmJiZSIgc3Ryb2tlLXdpZHRoPSIxLjUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPgo8L3N2Zz4K') no-repeat right 10px center;
+            background: rgba(255, 255, 255, 0.1) url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIHZpZXdCb3g9IjAgMCA1NiAxNiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTQgNkw4IDEwTDEyIDYiIHN0cm9rZT0iI2I5YmJiZSIgc3Ryb2tlLXdpZHRoPSIxLjUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPgo8L3N2Zz4K') no-repeat right 10px center;
             padding-right: 30px;
         }
 
@@ -273,7 +359,7 @@
             margin-top: 10px;
             -webkit-appearance: none;
             height: 8px;
-            background: #36393f;
+            background: rgba(255, 255, 255, 0.1);
             border-radius: 5px;
             outline: none;
             transition: background 0.3s ease;
@@ -306,7 +392,7 @@
 
         button {
             padding: 12px 24px;
-            background: linear-gradient(90deg, #5865f2, #7289da);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: #ffffff;
             border: none;
             border-radius: 8px;
@@ -347,10 +433,96 @@
             .sidebar {
                 width: 100%;
                 border-right: none;
-                border-bottom: 1px solid #36393f;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
             }
 
-            .main-content {
+                    /* Sidebar Styles */
+        .sidebar {
+            width: 280px;
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--border-color);
+            padding: 24px 16px;
+            display: flex;
+            flex-direction: column;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
+            backdrop-filter: blur(10px);
+        }
+
+        .sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb {
+            background: var(--accent-primary);
+            border-radius: 10px;
+        }
+
+        .sidebar h2 {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 24px;
+            padding: 12px;
+            background: var(--accent-gradient);
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(88, 101, 242, 0.3);
+        }
+
+        .sidebar h3 {
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin: 20px 0 10px;
+            padding: 0 12px;
+            letter-spacing: 0.5px;
+        }
+
+        .sidebar ul {
+            list-style: none;
+            margin-bottom: 16px;
+        }
+
+        .sidebar ul li {
+            margin-bottom: 4px;
+        }
+
+        .sidebar ul li a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .sidebar ul li a:hover {
+            background: rgba(88, 101, 242, 0.1);
+            color: var(--text-primary);
+            transform: translateX(4px);
+        }
+
+        .sidebar ul li a.active {
+            background: var(--accent-gradient);
+            color: var(--text-primary);
+            box-shadow: 0 4px 12px rgba(88, 101, 242, 0.3);
+            font-weight: 600;
+        }
+
+        .sidebar ul li a i {
+            width: 20px;
+            text-align: center;
+            font-size: 16px;
+        }
+
+        .main-content {
                 padding: 20px;
             }
 
@@ -494,3 +666,6 @@
 </body>
 
 </html>
+
+
+

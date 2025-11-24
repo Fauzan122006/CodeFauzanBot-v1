@@ -1,211 +1,186 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CodeFauzanBot - Select Server</title>
+    <title>Select Server - CodeFauzanBot</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
         body {
-            font-family: 'Arial', sans-serif;
-            background-color: #1e2124;
-            /* Background gelap seperti Discord */
-            color: #ffffff;
-            margin: 0;
-            padding: 40px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0f0f1e 0%, #1a1a2e 100%);
+            color: #fff;
             min-height: 100vh;
+            padding: 40px 20px;
         }
 
-        .container {
-            max-width: 900px;
-            width: 100%;
+        .header {
             text-align: center;
-        }
-
-        h1 {
-            font-size: 28px;
-            font-weight: bold;
-            margin-bottom: 30px;
-            color: #ffffff;
-        }
-
-        .server-list {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            /* 3 kolom seperti pada gambar */
-            gap: 20px;
-            justify-items: center;
-        }
-
-        .server {
-            position: relative;
-            /* Untuk elemen pseudo background */
-            background-color: #2f3136;
-            /* Fallback background jika ikon tidak ada */
-            padding: 20px;
-            border-radius: 15px;
-            width: 100%;
-            max-width: 250px;
-            text-align: center;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-            transition: transform 0.3s ease;
-            overflow: hidden;
-            /* Agar background blur tidak keluar dari card */
-        }
-
-        .server:hover {
-            transform: translateY(-5px);
-            /* Efek hover seperti MEE6 */
-        }
-
-        /* Background blur menggunakan ikon server */
-        .server::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-size: cover;
-            background-position: center;
-            filter: blur(20px);
-            /* Meningkatkan efek blur */
-            opacity: 0.3;
-            /* Mengurangi opacity agar konten lebih terbaca */
-            z-index: 0;
-            /* Background di belakang konten */
-            /* Menambahkan overlay gelap untuk kontras */
-            background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('') no-repeat center/cover;
-        }
-
-        .server-content {
+            margin-bottom: 48px;
             position: relative;
             z-index: 1;
-            /* Konten di atas background */
         }
 
-        .server img {
-            width: 80px;
-            height: 80px;
+        .header h1 {
+            font-size: 36px;
+            font-weight: 800;
+            margin-bottom: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header p { color: #b9bbbe; font-size: 16px; }
+
+        .logout-btn {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            padding: 12px 24px;
+            background: rgba(26, 26, 46, 0.8);
+            color: #fff;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .logout-btn:hover {
+            background: #f04747;
+            border-color: #f04747;
+        }
+
+        .server-grid {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 24px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .server-card {
+            background: rgba(26, 26, 46, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 16px;
+            padding: 24px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .server-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+            border-color: #5865f2;
+        }
+
+        .server-icon {
+            width: 96px;
+            height: 96px;
             border-radius: 50%;
-            margin-bottom: 15px;
-            border: 2px solid #ffffff;
-            /* Border putih tipis seperti pada gambar */
-            background: rgba(255, 255, 255, 0.1);
-            /* Efek blur pada background ikon */
-            backdrop-filter: blur(5px);
-            /* Efek blur pada ikon (opsional) */
+            margin: 0 auto 16px;
+            border: 4px solid #5865f2;
+            box-shadow: 0 8px 24px rgba(88,101,242,0.3);
             object-fit: cover;
         }
 
-        .server p {
-            margin: 5px 0;
-            font-size: 16px;
-        }
-
-        .server p:first-of-type {
-            font-weight: bold;
+        .server-name {
             font-size: 18px;
-            color: #ffffff;
+            font-weight: 700;
+            margin-bottom: 8px;
         }
 
-        .server p:last-of-type {
+        .server-role {
             font-size: 14px;
-            color: #b9bbbe;
+            color: #72767d;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
         }
 
-        .server a {
+        .server-btn {
+            width: 100%;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
             display: inline-block;
-            padding: 10px 20px;
-            background-color: #5865f2;
-            /* Warna biru Discord */
-            color: #ffffff;
-            text-decoration: none;
-            border-radius: 5px;
-            font-size: 14px;
-            font-weight: bold;
-            margin-top: 10px;
-            transition: background-color 0.3s ease;
         }
 
-        .server a:hover {
-            background-color: #4752c4;
+        .btn-manage {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
         }
 
-        .logout {
-            position: absolute;
-            top: 20px;
-            right: 20px;
+        .btn-manage:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(88,101,242,0.6);
         }
 
-        .logout a {
-            color: #ff5555;
-            text-decoration: none;
-            font-size: 16px;
+        .btn-setup {
+            background: #43b581;
+            color: white;
         }
 
-        .logout a:hover {
-            text-decoration: underline;
+        .btn-setup:hover {
+            background: #3aa76d;
+            transform: translateY(-2px);
         }
 
-        /* Responsivitas */
         @media (max-width: 768px) {
-            .server-list {
-                grid-template-columns: repeat(2, 1fr);
-                /* 2 kolom pada layar kecil */
-            }
-
-            .server {
-                max-width: 200px;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .server-list {
-                grid-template-columns: 1fr;
-                /* 1 kolom pada layar sangat kecil */
-            }
-
-            .server {
-                max-width: 100%;
-            }
+            .header h1 { font-size: 28px; }
+            .server-grid { grid-template-columns: 1fr; }
+            .logout-btn { position: static; width: 100%; margin-bottom: 24px; justify-content: center; }
         }
     </style>
 </head>
-
 <body>
-    <div class="logout">
-        <a href="/logout">Logout</a>
+    <a href="/logout" class="logout-btn">
+        <i class="fas fa-sign-out-alt"></i> Logout
+    </a>
+
+    <div class="header">
+        <h1><i class="fas fa-server"></i> Select Your Server</h1>
+        <p>Choose a server to manage with CodeFauzanBot</p>
     </div>
-    <div class="container">
-        <h1>Select a Server</h1>
-        <div class="server-list">
-            <% guilds.forEach(guild=> { %>
-                <div class="server"
-                    style="background: url('<%= guild.icon ? `https://cdn.discordapp.com/icons/${guild.id}/${guild.icon}.png` : 'https://via.placeholder.com/100' %>') no-repeat center/cover;">
-                    <div class="server-content">
-                        <img src="<%= guild.icon ? `https://cdn.discordapp.com/icons/${guild.id}/${guild.icon}.png` : 'https://via.placeholder.com/100' %>"
-                            alt="<%= guild.name %>">
-                        <p>
-                            <%= guild.name %>
-                        </p>
-                        <p>
-                            <%= guild.owner ? 'Owner' : 'Admin' %>
-                        </p>
-                        <% if (guild.hasBot) { %>
-                            <a href="/dashboard/<%= guild.id %>">Go</a>
-                            <% } else { %>
-                                <a href="<%= botInviteLink %>&guild_id=<%= guild.id %>"
-                                    style="background-color: #43b581;">Setup</a>
-                                <% } %>
-                    </div>
+
+    <div class="server-grid">
+        <% guilds.forEach(guild => { %>
+            <div class="server-card">
+                <img src="<%= guild.icon ? `https://cdn.discordapp.com/icons/${guild.id}/${guild.icon}.png` : 'https://via.placeholder.com/96' %>" 
+                     alt="<%= guild.name %>" 
+                     class="server-icon">
+                <div class="server-name"><%= guild.name %></div>
+                <div class="server-role">
+                    <i class="fas fa-<%= guild.owner ? 'crown' : 'shield-alt' %>"></i>
+                    <%= guild.owner ? 'Owner' : 'Administrator' %>
                 </div>
-                <% }) %>
-        </div>
+                <% if (guild.hasBot) { %>
+                    <a href="/dashboard/<%= guild.id %>" class="server-btn btn-manage">
+                        <i class="fas fa-cog"></i> Manage Server
+                    </a>
+                <% } else { %>
+                    <a href="<%= botInviteLink %>&guild_id=<%= guild.id %>" class="server-btn btn-setup">
+                        <i class="fas fa-plus"></i> Add Bot & Setup
+                    </a>
+                <% } %>
+            </div>
+        <% }); %>
     </div>
 </body>
-
 </html>

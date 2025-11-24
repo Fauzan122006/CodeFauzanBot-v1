@@ -93,7 +93,7 @@ module.exports = {
             ctx.font = 'bold 36px Sans'; // Font bisa dikustomisasi di masa depan
             ctx.fillStyle = rankCardConfig.mainColor;
             ctx.textAlign = 'left';
-            ctx.fillText(`${targetUser.username}#${targetUser.discriminator}`, 200, 60);
+            ctx.fillText(targetUser.username, 200, 60);
 
             // Tambah teks rank, level, dan coins
             ctx.font = '24px Sans';
