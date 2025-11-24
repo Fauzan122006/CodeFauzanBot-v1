@@ -110,18 +110,15 @@ module.exports = {
         // Inisialisasi data user
         initUser(userId, guildId);
 
-        // Tambah message count, XP, dan coin
+        // Tambah message count dan coin
         userData[userId].guilds[guildId].messageCount = (userData[userId].guilds[guildId].messageCount || 0) + 1;
-        const xpGain = Math.floor(Math.random() * 50) + 50; // 50-100 XP per pesan
         const coinGain = Math.floor(Math.random() * 10) + 5; // 5-15 coin per pesan
-        userData[userId].guilds[guildId].xp = (userData[userId].guilds[guildId].xp || 0) + xpGain;
         userData[userId].guilds[guildId].coins = (userData[userId].guilds[guildId].coins || 0) + coinGain;
         userData[userId].guilds[guildId].lastActive = Date.now();
 
         // Log aktivitas
         log('MessageCreate', `Processing message from user ${userId} in guild ${guildId}`);
         log('MessageCreate', `User ${userId} sent a message. Message count: ${userData[userId].guilds[guildId].messageCount}`);
-        log('MessageCreate', `User ${userId} gained ${xpGain} XP. Total XP: ${userData[userId].guilds[guildId].xp}`);
         log('MessageCreate', `User ${userId} gained ${coinGain} coins. Total coins: ${userData[userId].guilds[guildId].coins}`);
 
         // Fungsi untuk menghasilkan rank card
@@ -154,7 +151,7 @@ module.exports = {
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
             // Avatar
-            const avatarUrl = user.displayAvatarURL({ format: 'png', size: 128 }) || 'https://cdn.discordapp.com/embed/avatars/0.png';
+            const avatarUrl = user.displayAvatarURL({ extension: 'png', size: 128 }) || 'https://cdn.discordapp.com/embed/avatars/0.png';
             const avatar = await loadImage(avatarUrl);
             const avatarSize = 128;
             const avatarX = 50;
@@ -226,8 +223,14 @@ module.exports = {
             log('MessageCreate', `Level channel configured: ${levelConfig.levelChannel}`, 'info');
 
             // Cek No-XP Roles
-            const member = await message.guild.members.fetch(userId);
-            const hasNoXPRole = member.roles.cache.some(role => levelConfig.noXPRoles.includes(role.id));
+            let member;
+            try {
+                member = await message.guild.members.fetch(userId);
+            } catch (error) {
+                log('MessageCreate', `Failed to fetch member ${userId}: ${error.message}`, 'error');
+                return;
+            }
+            const hasNoXPRole = member.roles.cache.some(role => levelConfig.noXPRoles?.includes(role.id));
             if (levelConfig.noXPRolesMode === 'allowAll' && hasNoXPRole) {
                 log('MessageCreate', `User ${userId} has a no-XP role in guild ${guildId}`, 'info');
                 return;
@@ -239,7 +242,7 @@ module.exports = {
 
             // Cek No-XP Channels
             const channelId = message.channel.id;
-            const isNoXPChannel = levelConfig.noXPChannels.includes(channelId);
+            const isNoXPChannel = levelConfig.noXPChannels?.includes(channelId);
             if (levelConfig.noXPChannelsMode === 'allowAll' && isNoXPChannel) {
                 log('MessageCreate', `Channel ${channelId} is a no-XP channel in guild ${guildId}`, 'info');
                 return;
@@ -394,13 +397,11 @@ module.exports = {
             }
         }
 
-        // Panggil handler untuk level up dan achievements
+        // Panggil handler untuk achievements (level up sudah dihandle di atas)
         try {
-            await handleLevelUp(userId, message.guild, message.author);
             await handleAchievements(userId, message.guild, 'message');
-            await handleAchievements(userId, message.guild, 'level');
         } catch (error) {
-            log('MessageCreate', `Error handling level up or achievements for user ${userId}: ${error.message}`, 'error');
+            log('MessageCreate', `Error handling achievements for user ${userId}: ${error.message}`, 'error');
         }
 
         // Fitur baru: Deteksi dan balas salam berdasarkan waktu
@@ -537,14 +538,14 @@ module.exports = {
             return;
         }
 
-        const member = message.member;
-        if (!member) {
+        const automodMember = message.member;
+        if (!automodMember) {
             log('Automod', `Could not fetch member for user ${userId} in guild ${guildId}`, 'error');
             return;
         }
 
         // Cek jika member memiliki izin Administrator atau Manage Guild
-        if (member.permissions.has(PermissionFlagsBits.Administrator) || member.permissions.has(PermissionFlagsBits.ManageGuild)) {
+        if (automodMember.permissions.has(PermissionFlagsBits.Administrator) || automodMember.permissions.has(PermissionFlagsBits.ManageGuild)) {
             log('Automod', `User ${userId} has Administrator or Manage Guild permissions, skipping automod checks`);
             return;
         }
@@ -556,18 +557,18 @@ module.exports = {
         }
 
         // Cek apakah role bot lebih tinggi dari role pengguna
-        if (member.roles.highest.position >= message.guild.members.me.roles.highest.position) {
-            log('Automod', `Bot's highest role is not higher than ${member.user.tag}'s highest role in guild ${guildId}, skipping automod checks`, 'error');
+        if (automodMember.roles.highest.position >= message.guild.members.me.roles.highest.position) {
+            log('Automod', `Bot's highest role is not higher than ${automodMember.user.tag}'s highest role in guild ${guildId}, skipping automod checks`, 'error');
             return;
         }
 
         // Fungsi untuk mengecek whitelist
         const isWhitelisted = (featureConfig) => {
-            if (featureConfig.channelWhitelist.includes(message.channel.id)) {
+            if (featureConfig.channelWhitelist?.includes(message.channel.id)) {
                 log('Automod', `Channel ${message.channel.id} is whitelisted for ${featureConfig.name} in guild ${guildId}`);
                 return true;
             }
-            if (featureConfig.roleWhitelist.some(roleId => member.roles.cache.has(roleId))) {
+            if (featureConfig.roleWhitelist?.some(roleId => automodMember.roles.cache.has(roleId))) {
                 log('Automod', `User ${userId} has a whitelisted role for ${featureConfig.name} in guild ${guildId}`);
                 return true;
             }
@@ -577,32 +578,34 @@ module.exports = {
         // Fungsi untuk menangani punishment berdasarkan punishmentType
         const applyPunishment = async (featureConfig, reason) => {
             const punishmentType = featureConfig.punishmentType || 'timeout';
-            const timeoutDuration = featureConfig.timeout.duration * (featureConfig.timeout.unit === 'seconds' ? 1000 :
-                featureConfig.timeout.unit === 'minutes' ? 60 * 1000 :
-                featureConfig.timeout.unit === 'hours' ? 60 * 60 * 1000 :
+            const timeoutDuration = featureConfig.timeout?.duration * (featureConfig.timeout?.unit === 'seconds' ? 1000 :
+                featureConfig.timeout?.unit === 'minutes' ? 60 * 1000 :
+                featureConfig.timeout?.unit === 'hours' ? 60 * 60 * 1000 :
                 24 * 60 * 60 * 1000);
 
             try {
                 switch (punishmentType) {
                     case 'timeout':
-                        await member.timeout(timeoutDuration, reason);
-                        log('Automod', `Timed out ${member.user.tag} in guild ${guildId} for ${featureConfig.name}`, 'success');
+                        await automodMember.timeout(timeoutDuration, reason);
+                        log('Automod', `Timed out ${automodMember.user.tag} in guild ${guildId} for ${featureConfig.name}`, 'success');
                         break;
                     case 'warn':
                         // Logika untuk warn (bisa disesuaikan dengan sistem warn yang kamu miliki)
-                        log('Automod', `Warned ${member.user.tag} in guild ${guildId} for ${featureConfig.name}`, 'success');
+                        log('Automod', `Warned ${automodMember.user.tag} in guild ${guildId} for ${featureConfig.name}`, 'success');
                         break;
                     case 'kick':
-                        await member.kick(reason);
-                        log('Automod', `Kicked ${member.user.tag} from guild ${guildId} for ${featureConfig.name}`, 'success');
+                        await automodMember.kick(reason);
+                        log('Automod', `Kicked ${automodMember.user.tag} from guild ${guildId} for ${featureConfig.name}`, 'success');
                         break;
                     case 'ban':
-                        await member.ban({ reason });
-                        log('Automod', `Banned ${member.user.tag} from guild ${guildId} for ${featureConfig.name}`, 'success');
+                        await automodMember.ban({ reason });
+                        log('Automod', `Banned ${automodMember.user.tag} from guild ${guildId} for ${featureConfig.name}`, 'success');
                         break;
                 }
 
-                await message.delete();
+                await message.delete().catch(err => {
+                    log('Automod', `Failed to delete message: ${err.message}`, 'error');
+                });
 
                 // Hitung waktu berakhirnya timeout (jika punishmentType adalah timeout)
                 let timeoutEnd = '';
@@ -628,7 +631,7 @@ module.exports = {
                     log('Automod', `Failed to send punishment notification to ${message.author.tag}: ${err.message}`, 'error');
                 });
             } catch (error) {
-                log('Automod', `Failed to apply ${punishmentType} to ${member.user.tag} in guild ${guildId} for ${featureConfig.name}: ${error.message}`, 'error');
+                log('Automod', `Failed to apply ${punishmentType} to ${automodMember.user.tag} in guild ${guildId} for ${featureConfig.name}: ${error.message}`, 'error');
             }
         };
 
@@ -647,6 +650,7 @@ module.exports = {
 
             if (userTimestamps.length >= automodConfig.antiSpam.messages) {
                 await applyPunishment(automodConfig.antiSpam, `Anti Spam: Sending too many messages (${userTimestamps.length} messages in ${automodConfig.antiSpam.seconds} seconds)`);
+                return;
             }
         }
 
@@ -657,6 +661,7 @@ module.exports = {
 
             if (message.content.includes('discord.gg/') || message.content.includes('discord.com/invite/')) {
                 await applyPunishment(automodConfig.antiInvite, 'Anti Invite: Sending a Discord invite link');
+                return;
             }
         }
 
@@ -688,6 +693,7 @@ module.exports = {
 
                 if (!isWhitelistedLink) {
                     await applyPunishment(automodConfig.antiLinks, `Anti Links: Sending unwhitelisted links (${urls.join(', ')})`);
+                    return;
                 }
             }
         }
@@ -700,6 +706,7 @@ module.exports = {
             const mentionCount = (message.mentions.users.size + message.mentions.roles.size);
             if (mentionCount > automodConfig.mentionsSpam.maxMentions) {
                 await applyPunishment(automodConfig.mentionsSpam, `Mentions Spam: Too many mentions (${mentionCount} mentions, max allowed: ${automodConfig.mentionsSpam.maxMentions})`);
+                return;
             }
         }
 
@@ -711,6 +718,7 @@ module.exports = {
             const capsPercentage = (message.content.replace(/[^A-Z]/g, '').length / message.content.length) * 100;
             if (capsPercentage > 80 && message.content.length > 10) {
                 await applyPunishment(automodConfig.capsSpam, `Caps Spam: Using too many capital letters (${capsPercentage.toFixed(2)}% caps, max allowed: 80%)`);
+                return;
             }
         }
     },

@@ -1389,42 +1389,6 @@ function start(client) {
         }
     });
 
-    // Route untuk menampilkan halaman manage achievements
-    app.get('/dashboard/:guildId/achievements', ensureAuthenticated, ensureAdmin, async (req, res) => {
-        const guildId = req.params.guildId;
-        log('Achievements', `Accessing achievements settings for guild: ${guildId}`);
-
-        const guild = client.guilds.cache.get(guildId);
-        if (!guild) {
-            log('Achievements', `Guild ${guildId} not found`, 'error');
-            return res.status(404).send('Guild not found');
-        }
-
-        try {
-            // Pastikan serverList[guildId] ada
-            ensureGuildConfig(guildId);
-
-            // Ambil daftar channel teks dari guild
-            const textChannels = guild.channels.cache
-                .filter(channel => channel.type === ChannelType.GuildText)
-                .map(channel => ({
-                    id: channel.id,
-                    name: channel.name
-                }));
-
-            res.render('achievements', {
-                guild,
-                achievements: achievementList,
-                guildAchievements: serverList[guildId].achievements,
-                textChannels, // Kirim daftar channel ke template
-                achievementChannel: serverList[guildId].achievementChannel // Kirim channel yang dipilih
-            });
-        } catch (error) {
-            log('Achievements', `Failed to load achievements settings for guild ${guildId}: ${error.message}`, 'error');
-            res.status(500).send(`Failed to load achievements settings: ${error.message}`);
-        }
-    });
-
     // Route untuk toggle aktif/tidak aktif achievement
     app.post('/dashboard/:guildId/achievements/toggle/:id', ensureAuthenticated, ensureAdmin, async (req, res) => {
         const guildId = req.params.guildId;

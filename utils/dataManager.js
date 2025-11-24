@@ -65,7 +65,7 @@ const loadData = () => {
         config.rulesBanner = process.env.RULES_BANNER || config.rulesBanner || 'https://s6.gifyu.com/images/bz2Gc.gif';
         config.lastYouTubeVideoId = process.env.LAST_YOUTUBE_VIDEO_ID || config.lastYouTubeVideoId || 'R6wFMjABpjU';
         config.youtubeApiKey = process.env.YOUTUBE_API_KEY || config.youtubeApiKey || '';
-        config.youtubeChannelId = process.env.YOUTUBE_CHANNEL_ID || config.youtubeChannelId || 'UCUlSBRbY5sRo-9b9ewkWQ';
+        config.youtubeChannelId = process.env.YOUTUBE_CHANNEL_ID || config.youtubeChannelId || 'UCUlSBRbY5sRo-9b9ewkWQrA';
         config.categoryImages = {
             'Games Catalog': process.env.CATEGORY_GAMES_CATALOG_IMAGE || config.categoryImages?.['Games Catalog'] || 'https://s6.gifyu.com/images/bbXYP.gif',
             'PC & Mobile Games Catalog': process.env.CATEGORY_PC_MOBILE_GAMES_CATALOG_IMAGE || config.categoryImages?.['PC & Mobile Games Catalog'] || 'https://s6.gifyu.com/images/bbXru.md.gif',

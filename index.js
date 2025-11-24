@@ -87,18 +87,9 @@ for (const file of eventFiles) {
     }
 }
 
+// Note: ready event is handled in events/ready.js
+// Additional initialization after bot is ready
 client.once('ready', async () => {
-    log('Index', `Bot is ready as ${client.user.tag}`, 'success');
-    log('Index', `Logged in as ${client.user.tag}`);
-
-    client.user.setPresence({
-        activities: [{
-            name: 'Configure me at codefauzanbot-v1-production.up.railway.app',
-            type: ActivityType.Playing
-        }],
-        status: 'online'
-    });
-
     log('Index', 'Starting YouTube update check interval (every 5 minutes)...');
     setInterval(() => checkYouTubeUpdates(client), 300000);
     checkYouTubeUpdates(client);

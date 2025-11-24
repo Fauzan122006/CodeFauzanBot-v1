@@ -46,13 +46,18 @@ function ensureAdmin(req, res, next) {
         return res.redirect('/auth/discord');
     }
 
-    const member = guild.members.cache.get(req.user.id);
-    if (!member) {
+    // Gunakan permissions dari req.user.guilds
+    const userGuild = req.user.guilds?.find(g => g.id === guildId);
+    if (!userGuild) {
         log('Admin', `User ${req.user.id} is not a member of guild ${guildId}`, 'error');
         return res.status(403).send('Kamu tidak menjadi anggota server ini.');
     }
 
-    if (!member.permissions.has('Administrator')) {
+    // Cek izin Administrator menggunakan bitwise
+    const permissions = parseInt(userGuild.permissions);
+    const hasAdmin = (permissions & 0x8) === 0x8; // 0x8 adalah bit untuk Administrator
+    
+    if (!hasAdmin) {
         log('Admin', `User ${req.user.id} does not have Administrator permissions in guild ${guildId}`, 'error');
         return res.status(403).send('Kamu harus menjadi Administrator untuk mengatur server ini.');
     }
