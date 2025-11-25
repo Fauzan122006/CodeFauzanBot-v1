@@ -2,10 +2,24 @@ const { Events, EmbedBuilder, AttachmentBuilder } = require('discord.js');
 const { serverList } = require('../utils/dataManager');
 const { createCanvas, loadImage } = require('@napi-rs/canvas');
 
+// Track recent welcomes to prevent duplicates
+const recentWelcomes = new Map();
+const WELCOME_COOLDOWN = 5000; // 5 seconds cooldown
+
 module.exports = {
     name: Events.GuildMemberAdd,
     async execute(member) {
         const guildId = member.guild.id;
+        const userId = member.user.id;
+        const welcomeKey = `${guildId}-${userId}`;
+        
+        // Check if we just sent a welcome for this user
+        const lastWelcome = recentWelcomes.get(welcomeKey);
+        if (lastWelcome && Date.now() - lastWelcome < WELCOME_COOLDOWN) {
+            console.log(`[GuildMemberAdd] Skipping duplicate welcome for ${member.user.tag} (cooldown: ${Date.now() - lastWelcome}ms)`);
+            return;
+        }
+        
         const config = serverList[guildId]?.welcome;
 
         console.log(`[GuildMemberAdd] Member joined: ${member.user.tag} in guild ${guildId}`);
@@ -28,6 +42,14 @@ module.exports = {
             console.warn(`[GuildMemberAdd] Bot lacks permissions to send messages in channel ${channel.id} for guild ${guildId}`);
             return;
         }
+
+        // Mark this welcome as sent
+        recentWelcomes.set(welcomeKey, Date.now());
+        
+        // Clean up old entries (older than 1 minute)
+        setTimeout(() => {
+            recentWelcomes.delete(welcomeKey);
+        }, 60000);
 
         // ... (bagian sebelumnya seperti pembuatan canvas tetap sama)
 
@@ -111,16 +133,18 @@ try {
             .setImage('attachment://welcome-image.png')
             .setTimestamp();
 
+        console.log(`[GuildMemberAdd] Sending EMBED welcome for ${member.user.tag} with key ${welcomeKey}`);
         await channel.send({ embeds: [embed], files: [attachment] });
-        console.log(`[GuildMemberAdd] Sent embed welcome message with image for ${member.user.tag} in guild ${guildId}`);
+        console.log(`[GuildMemberAdd] ✅ Sent embed welcome message with image for ${member.user.tag} in guild ${guildId}`);
     } else {
+        console.log(`[GuildMemberAdd] Sending TEXT welcome for ${member.user.tag} with key ${welcomeKey}`);
         await channel.send({
             content: (config.welcomeText || 'Hey {user}, selamat datang di {server}!')
                 .replace('{user}', member.user.toString())
                 .replace('{server}', member.guild.name),
             files: [attachment]
         });
-        console.log(`[GuildMemberAdd] Sent text welcome message with image for ${member.user.tag} in guild ${guildId}`);
+        console.log(`[GuildMemberAdd] ✅ Sent text welcome message with image for ${member.user.tag} in guild ${guildId}`);
     }
 } catch (error) {
     console.error(`[GuildMemberAdd] Error sending welcome message for ${member.user.tag} in guild ${guildId}: ${error.message}`);
