@@ -1,40 +1,40 @@
-const { userData } = require('../utils/userDataHandler');
-
-const log = (module, message) => {
-    const timestamp = new Date().toISOString();
-    console.log(`[${timestamp}] [${module}] ${message}`);
-};
+const { userData, initUser, saveData } = require('../utils/userDataHandler');
+const { handleAchievements } = require('../utils/achievementHandler');
 
 module.exports = {
     name: 'guildMemberUpdate',
     async execute(oldMember, newMember) {
         try {
-            if (newMember.premiumSince && !oldMember.premiumSince) {
-                const userId = newMember.id;
-                if (!userData[userId]) {
-                    userData[userId] = {
-                        xp: 0,
-                        level: 0,
-                        messageCount: 0,
-                        achievements: [],
-                        activeTime: 0,
-                        voiceTime: 0,
-                        lastActive: Date.now(),
-                        joinDate: Date.now(),
-                        reactionCount: 0,
-                        memeCount: 0,
-                        supportMessages: 0,
-                        gameTime: 0,
-                        eventCount: 0,
-                        isBooster: false
-                    };
-                    log('GuildMemberUpdate', `Initialized user data for ${userId}`);
+            const userId = newMember.id;
+            const guildId = newMember.guild.id;
+
+            // Initialize user if needed
+            initUser(userId, guildId);
+
+            // Check if user started boosting
+            const wasBooster = oldMember.premiumSince !== null;
+            const isBooster = newMember.premiumSince !== null;
+
+            if (!wasBooster && isBooster) {
+                // User just started boosting!
+                if (userData[userId]?.guilds?.[guildId]) {
+                    userData[userId].guilds[guildId].isBooster = true;
+                    saveData();
+                    
+                    // Check for server-booster achievement
+                    await handleAchievements(userId, newMember.guild, 'boost');
+                    
+                    console.log(`[GuildMemberUpdate] User ${userId} started boosting server ${guildId}`);
                 }
-                userData[userId].isBooster = true;
-                log('GuildMemberUpdate', `User ${userId} started boosting guild ${newMember.guild.id}`);
+            } else if (wasBooster && !isBooster) {
+                // User stopped boosting
+                if (userData[userId]?.guilds?.[guildId]) {
+                    userData[userId].guilds[guildId].isBooster = false;
+                    saveData();
+                }
             }
         } catch (error) {
-            log('GuildMemberUpdate', `Error in guildMemberUpdate event for user ${newMember.id}: ${error.message}`);
+            console.error('[GuildMemberUpdate] Error:', error);
         }
     },
 };

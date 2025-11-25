@@ -102,6 +102,9 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.set('view engine', 'ejs');
 
+// Serve static files (untuk achievement icons, dll)
+app.use('/asset', express.static(path.join(__dirname, 'asset')));
+
 function start(client) {
     app.use(session({
         secret: config.sessionsecret || 'your-secret-key',

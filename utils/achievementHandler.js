@@ -160,7 +160,7 @@ async function checkAchievements(userId, guild) {
                     const lastActiveDate = new Date(userValue);
                     const wibOffset = 7 * 60; // WIB adalah UTC+7 (dalam menit)
                     const localTime = new Date(lastActiveDate.getTime() + (wibOffset * 60 * 1000));
-                    const currentHour = localTime.getUTCHours();
+                    const currentHour = localTime.getHours(); // Fixed: use getHours() not getUTCHours()
                     achieved = currentHour >= condition.startHour && currentHour < condition.endHour;
                 }
                 break;

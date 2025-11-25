@@ -35,13 +35,13 @@
     },
     "voice-legend": {
         "name": "Voice Legend",
-        "description": "Spend 10 hours in voice chat",
-        "xpReward": 150,
+        "description": "Spend 50 hours in voice chat",
+        "xpReward": 1000,
         "icon": "https://i.imgur.com/dv5jVFt.png",
         "condition": {
             "type": "threshold",
             "key": "voiceTime",
-            "value": 36000,
+            "value": 180000,
             "unit": "seconds"
         }
     },
@@ -207,13 +207,13 @@
     },
     "reaction-king": {
         "name": "Reaction King",
-        "description": "Add 100 reactions to messages in the server.",
-        "xpReward": 300,
+        "description": "Add 500 reactions to messages in the server.",
+        "xpReward": 500,
         "icon": "asset/achievement/reaction-king.png",
         "condition": {
             "type": "threshold",
-            "key": "reactionCount",
-            "value": 100
+            "key": "reactionsGiven",
+            "value": 500
         }
     },
     "event-joiner": {
@@ -262,12 +262,12 @@
     },
     "gamer": {
         "name": "Gamer",
-        "description": "Play games in the server for 5 hours.",
+        "description": "Play games for 5 hours.",
         "xpReward": 400,
         "icon": "asset/achievement/gamer.png",
         "condition": {
             "type": "threshold",
-            "key": "gameTime",
+            "key": "totalGameTime",
             "value": 18000,
             "unit": "seconds"
         }

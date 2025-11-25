@@ -392,8 +392,17 @@
                 
                 if (!isUnlocked && userData && userData.guilds && userData.guilds[guild.id]) {
                     const userGuildData = userData.guilds[guild.id];
-                    currentValue = userGuildData[achievement.condition?.key] || 0;
-                    progress = Math.min((currentValue / targetValue) * 100, 100);
+                    const rawValue = userGuildData[achievement.condition?.key] || 0;
+                    
+                    // Handle timeElapsed comparison (like anniversary)
+                    if (achievement.condition?.comparison === 'timeElapsed') {
+                        const timeElapsed = Date.now() - rawValue;
+                        currentValue = timeElapsed;
+                        progress = Math.min((timeElapsed / targetValue) * 100, 100);
+                    } else {
+                        currentValue = rawValue;
+                        progress = Math.min((currentValue / targetValue) * 100, 100);
+                    }
                 }
             %>
             <div class="achievement-card <%= isUnlocked ? 'unlocked' : 'locked' %>" 
@@ -409,7 +418,10 @@
                 <% } %>
 
                 <div class="achievement-header">
-                    <img src="<%= achievement.icon %>" alt="<%= achievement.name %>" class="achievement-icon">
+                    <img src="<%= achievement.icon %>" 
+                         alt="<%= achievement.name %>" 
+                         class="achievement-icon"
+                         onerror="this.src='https://via.placeholder.com/80/16213e/ffa500?text=<%= achievement.name.charAt(0) %>'">
                     <div class="achievement-info">
                         <h3><%= achievement.name %></h3>
                         <span class="rarity-badge rarity-<%= rarity %>"><%= rarityText %></span>
@@ -434,7 +446,32 @@
                     <div class="progress-bar-container">
                         <div class="progress-bar" style="width: <%= progress %>%"></div>
                     </div>
-                    <div class="progress-text"><%= currentValue %> / <%= targetValue %></div>
+                    <% 
+                        // Format display values
+                        let displayCurrent = currentValue;
+                        let displayTarget = targetValue;
+                        
+                        // For time-based achievements, convert to readable format
+                        if (achievement.condition?.unit === 'milliseconds' || achievement.condition?.unit === 'seconds') {
+                            const isMilliseconds = achievement.condition?.unit === 'milliseconds';
+                            const currentSeconds = isMilliseconds ? Math.floor(currentValue / 1000) : currentValue;
+                            const targetSeconds = isMilliseconds ? Math.floor(targetValue / 1000) : targetValue;
+                            
+                            const currentDays = Math.floor(currentSeconds / 86400);
+                            const targetDays = Math.floor(targetSeconds / 86400);
+                            
+                            if (targetDays > 0) {
+                                displayCurrent = currentDays + ' days';
+                                displayTarget = targetDays + ' days';
+                            } else {
+                                const currentHours = Math.floor(currentSeconds / 3600);
+                                const targetHours = Math.floor(targetSeconds / 3600);
+                                displayCurrent = currentHours + 'h';
+                                displayTarget = targetHours + 'h';
+                            }
+                        }
+                    %>
+                    <div class="progress-text"><%= displayCurrent %> / <%= displayTarget %></div>
                 </div>
                 <% } %>
             </div>

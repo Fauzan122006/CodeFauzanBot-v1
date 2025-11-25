@@ -43,6 +43,12 @@ module.exports = {
             // User bergabung ke voice channel
             if (!oldState.channelId && newState.channelId) {
                 userData[userId].guilds[guildId].voiceJoinTime = Date.now();
+                
+                // Track event if it's a stage channel or event
+                const channel = newState.channel;
+                if (channel && (channel.type === 13 || channel.name.toLowerCase().includes('event'))) {
+                    userData[userId].guilds[guildId].eventCount = (userData[userId].guilds[guildId].eventCount || 0) + 1;
+                }
             }
 
             // User keluar dari voice channel

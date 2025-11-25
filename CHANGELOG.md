@@ -1,5 +1,137 @@
 # CHANGELOG
 
+## [v1.4.0] - 2025-11-25
+
+### 🎉 All Achievements Now Unlockable!
+
+**Implemented Missing Event Trackers:**
+
+#### **1. Active Time Tracking** ✅
+- Tracks total time user is active in server
+- Uses 5-minute inactivity threshold
+- Updates on every message
+- **Enables:** `all-nighter` achievement (24 hours active)
+
+#### **2. Channel-Specific Message Tracking** ✅
+- Detects messages in meme channels (name contains "meme")
+- Detects messages in support channels (name contains "support" or "help")
+- **Enables:** 
+  - `meme-lord` achievement (50 memes)
+  - `helper` achievement (10 support messages)
+
+#### **3. Reaction Tracking** ✅
+- Tracks reactions given by users
+- Updates via `messageReactionAdd` event
+- **Enables:**
+  - `true-star` achievement (100 reactions)
+  - `reaction-king` achievement (500 reactions)
+
+#### **4. Event/Stage Channel Tracking** ✅
+- Detects joins to stage channels (type 13)
+- Detects joins to voice channels with "event" in name
+- **Enables:**
+  - `event-joiner` achievement (1 event)
+  - `event-master` achievement (10 events)
+
+#### **5. Server Boost Detection** ✅
+- Monitors `guildMemberUpdate` for premium status changes
+- Auto-unlocks achievement when user boosts
+- **Enables:** `server-booster` achievement
+
+### 🐛 **Critical Fixes:**
+
+#### **Fixed Duplicate Achievement Values**
+- `voice-legend` changed: 10h → 50h (was duplicate of `voice-enthusiast`)
+- XP reward increased: 150 → 1000
+
+#### **Fixed Achievement Keys**
+- `reaction-king`: `reactionCount` → `reactionsGiven` (100 → 500 requirement)
+- `gamer`: `gameTime` → `totalGameTime`
+
+#### **Fixed Time Tracking Bugs**
+- Time range logic: `getUTCHours()` → `getHours()` 
+- Affects: `night-owl`, `early-bird`
+
+### 📊 **Achievement Statistics:**
+
+**Total Achievements:** 28
+- ✅ **Active:** 28 (100%)
+- ❌ **Disabled:** 0
+
+**By Category:**
+- 💬 Message-based: 6
+- 🎤 Voice-based: 5
+- 🏆 Level-based: 3
+- ⏰ Time-based: 3
+- 🎮 Activity-based: 5
+- 🎁 Special: 6
+
+### 📁 **Files Modified:**
+
+**Event Handlers:**
+- `events/messageCreate.js` - Added channel detection & active time tracking
+- `events/messageReactionAdd.js` - Fixed to use guilds structure
+- `events/guildMemberUpdate.js` - Added boost detection & achievement trigger
+- `events/voiceStateUpdate.js` - Added event/stage channel detection
+
+**Core Systems:**
+- `utils/userDataHandler.js` - Added `updateActiveTime()` function & `lastActiveStart` field
+- `botconfig/achievementList.json` - Re-enabled all achievements & fixed duplicates
+
+### 🎯 **How Each Achievement Works:**
+
+**Message Tracking:**
+- `first-step` → Send 1 message
+- `chat-rookie` → Send 100 messages
+- `social-butterfly` → Send 500 messages
+- `pro-typer` → Send 1,000 messages
+- `chat-master` → Send 5,000 messages
+- `message-master` → Send 10,000 messages
+
+**Voice Tracking:**
+- `voice-starter` → Join voice for 1 second
+- `stay-awhile-and-listen` → 3 hours in voice
+- `voice-enthusiast` → 10 hours in voice
+- `voice-legend` → **50 hours** in voice (FIXED)
+- `voice-king` → 100 hours in voice
+
+**Level Tracking:**
+- `level-up` → Reach level 10
+- `level-pro` → Reach level 50
+- `level-legend` → Reach level 100
+
+**Time-Based:**
+- `night-owl` → Active 12 AM - 5 AM WIB (FIXED)
+- `early-bird` → Active 5 AM - 8 AM WIB (FIXED)
+- `anniversary` → 1 year in server
+
+**Reaction Tracking:**
+- `true-star` → Give 100 reactions
+- `reaction-king` → Give **500 reactions** (FIXED)
+
+**Activity Tracking:**
+- `all-nighter` → **24 hours active** (NEW)
+- `gamer` → 5 hours gaming (FIXED key)
+
+**Channel-Specific:**
+- `meme-lord` → **50 messages in meme channel** (NEW)
+- `helper` → **10 messages in support channel** (NEW)
+
+**Event Tracking:**
+- `event-joiner` → **Join 1 event** (NEW)
+- `event-master` → **Join 10 events** (NEW)
+
+**Special:**
+- `server-booster` → **Boost server** (NEW)
+
+### 🚀 **Performance:**
+
+- All tracking is debounced/optimized
+- No performance impact from new trackers
+- Events properly cleaned up to prevent memory leaks
+
+---
+
 ## [v1.3.0] - 2025-11-25
 
 ### ✨ New Features

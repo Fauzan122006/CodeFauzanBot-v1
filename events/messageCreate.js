@@ -1,7 +1,7 @@
 const { EmbedBuilder, PermissionFlagsBits } = require('discord.js');
 const { handleLevelUp } = require('../utils/levelUpHandler');
 const { handleAchievements } = require('../utils/achievementHandler');
-const { userData, initUser, saveData } = require('../utils/userDataHandler');
+const { userData, initUser, saveData, updateActiveTime } = require('../utils/userDataHandler');
 const { config, serverList, ensureGuildConfig } = require('../utils/dataManager');
 const chalk = require('chalk');
 const { createCanvas, loadImage } = require('canvas');
@@ -111,9 +111,25 @@ module.exports = {
         // Inisialisasi data user
         initUser(userId, guildId);
 
+        // Update active time tracking
+        updateActiveTime(userId, guildId);
+
         // Tambah message count
         userData[userId].guilds[guildId].messageCount = (userData[userId].guilds[guildId].messageCount || 0) + 1;
         userData[userId].guilds[guildId].lastActive = Date.now();
+
+        // Channel-specific tracking
+        const channelName = message.channel.name.toLowerCase();
+        
+        // Track meme channel messages
+        if (channelName.includes('meme')) {
+            userData[userId].guilds[guildId].memeCount = (userData[userId].guilds[guildId].memeCount || 0) + 1;
+        }
+        
+        // Track support/help channel messages
+        if (channelName.includes('support') || channelName.includes('help')) {
+            userData[userId].guilds[guildId].supportMessages = (userData[userId].guilds[guildId].supportMessages || 0) + 1;
+        }
 
         // XP Cooldown Check
         const cooldownKey = `${userId}-${guildId}`;

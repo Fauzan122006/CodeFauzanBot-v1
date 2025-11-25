@@ -3,6 +3,33 @@ const { userData } = require('./dataManager');
 
 const userDataPath = './database/userData.json';
 
+// Active time tracking - consider user inactive after 5 minutes
+const INACTIVE_THRESHOLD = 5 * 60 * 1000; // 5 minutes
+
+function updateActiveTime(userId, guildId) {
+    if (!userData[userId] || !userData[userId].guilds || !userData[userId].guilds[guildId]) {
+        return;
+    }
+
+    const user = userData[userId].guilds[guildId];
+    const now = Date.now();
+    
+    // If user has lastActiveStart, calculate time since then
+    if (user.lastActiveStart) {
+        const timeSinceLastActive = now - user.lastActive;
+        
+        // Only add to activeTime if within inactive threshold
+        if (timeSinceLastActive < INACTIVE_THRESHOLD) {
+            const sessionTime = Math.floor((now - user.lastActiveStart) / 1000);
+            user.activeTime = (user.activeTime || 0) + sessionTime;
+        }
+    }
+    
+    // Update tracking
+    user.lastActiveStart = now;
+    user.lastActive = now;
+}
+
 function initUser(userId, guildId) {
     let isNewUser = false;
     
@@ -23,6 +50,7 @@ function initUser(userId, guildId) {
             messageCount: 0,
             achievements: [],
             activeTime: 0,
+            lastActiveStart: null,
             voiceTime: 0,
             voiceJoinTime: null,
             lastActive: Date.now(),
@@ -31,7 +59,7 @@ function initUser(userId, guildId) {
             reactionsGiven: 0,
             memeCount: 0,
             supportMessages: 0,
-            gameTime: 0,
+            totalGameTime: 0,
             eventCount: 0,
             isBooster: false,
             coins: 0
@@ -74,5 +102,6 @@ function saveData(immediate = false) {
 module.exports = {
     initUser,
     saveData,
+    updateActiveTime,
     userData
 };
