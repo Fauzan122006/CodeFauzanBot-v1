@@ -49,6 +49,16 @@ class MusicQueue {
 
     async playSong(song) {
         try {
+            // Validasi URL dulu
+            if (!song.url || song.url === 'undefined') {
+                console.error('Invalid song URL:', song);
+                if (this.textChannel) {
+                    await this.textChannel.send(`❌ Invalid URL for: ${song.title}`);
+                }
+                await this.playNext();
+                return;
+            }
+
             let stream;
             
             if (song.source === 'youtube') {
@@ -191,15 +201,22 @@ function deleteQueue(guildId) {
 
 async function searchYouTube(query) {
     try {
-        const yt_info = await play.search(query, { limit: 1 });
+        const yt_info = await play.search(query, { limit: 1, source: { youtube: "video" } });
         if (yt_info.length === 0) return null;
         
         const video = yt_info[0];
+        
+        // Pastikan URL valid
+        if (!video.url) {
+            console.error('No URL found for video:', video.title);
+            return null;
+        }
+        
         return {
-            title: video.title,
+            title: video.title || 'Unknown Title',
             url: video.url,
-            duration: formatDuration(video.durationInSec),
-            thumbnail: video.thumbnails[0]?.url || '',
+            duration: formatDuration(video.durationInSec || 0),
+            thumbnail: video.thumbnail?.url || video.thumbnails?.[0]?.url || '',
             source: 'youtube'
         };
     } catch (error) {

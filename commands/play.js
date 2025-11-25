@@ -57,20 +57,26 @@ module.exports = {
                 let songInfo;
                 
                 if (isUrl) {
-                    const info = await play.video_info(query);
-                    songInfo = {
-                        title: info.video_details.title,
-                        url: info.video_details.url,
-                        duration: formatDuration(info.video_details.durationInSec),
-                        thumbnail: info.video_details.thumbnails[0]?.url || '',
-                        source: 'youtube',
-                        requester: interaction.user.tag
-                    };
+                    try {
+                        const info = await play.video_info(query);
+                        songInfo = {
+                            title: info.video_details.title || 'Unknown Title',
+                            url: info.video_details.url || query,
+                            duration: formatDuration(info.video_details.durationInSec || 0),
+                            thumbnail: info.video_details.thumbnails?.[0]?.url || '',
+                            source: 'youtube',
+                            requester: interaction.user.tag
+                        };
+                    } catch (error) {
+                        console.error('Error getting video info:', error);
+                        return interaction.editReply('❌ Could not load video from URL!');
+                    }
                 } else {
                     songInfo = await searchYouTube(query);
                     if (!songInfo) {
                         return interaction.editReply('❌ No results found!');
                     }
+                    console.log('Search result:', songInfo); // Debug
                     songInfo.requester = interaction.user.tag;
                 }
 
