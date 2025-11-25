@@ -295,5 +295,677 @@
             "unit": "milliseconds",
             "comparison": "timeElapsed"
         }
+    },
+    "welcome-home": {
+        "name": "Welcome Home",
+        "description": "Join the server for the first time.",
+        "xpReward": 50,
+        "icon": "https://em-content.zobj.net/source/twitter/376/waving-hand_1f44b.png",
+        "condition": {
+            "type": "threshold",
+            "key": "joinDate",
+            "value": 1,
+            "unit": "milliseconds",
+            "comparison": "timeElapsed"
+        }
+    },
+    "week-warrior": {
+        "name": "Week Warrior",
+        "description": "Stay in the server for 1 week.",
+        "xpReward": 200,
+        "icon": "https://em-content.zobj.net/source/twitter/376/calendar_1f4c5.png",
+        "condition": {
+            "type": "threshold",
+            "key": "joinDate",
+            "value": 604800000,
+            "unit": "milliseconds",
+            "comparison": "timeElapsed"
+        }
+    },
+    "monthly-member": {
+        "name": "Monthly Member",
+        "description": "Stay in the server for 1 month.",
+        "xpReward": 500,
+        "icon": "https://em-content.zobj.net/source/twitter/376/spiral-calendar_1f5d3-fe0f.png",
+        "condition": {
+            "type": "threshold",
+            "key": "joinDate",
+            "value": 2592000000,
+            "unit": "milliseconds",
+            "comparison": "timeElapsed"
+        }
+    },
+    "half-year-hero": {
+        "name": "Half Year Hero",
+        "description": "Stay in the server for 6 months.",
+        "xpReward": 1000,
+        "icon": "https://em-content.zobj.net/source/twitter/376/star_2b50.png",
+        "condition": {
+            "type": "threshold",
+            "key": "joinDate",
+            "value": 15552000000,
+            "unit": "milliseconds",
+            "comparison": "timeElapsed"
+        }
+    },
+    "mega-chatter": {
+        "name": "Mega Chatter",
+        "description": "Send 25,000 messages in the server.",
+        "xpReward": 5000,
+        "icon": "https://em-content.zobj.net/source/twitter/376/megaphone_1f4e3.png",
+        "condition": {
+            "type": "threshold",
+            "key": "messageCount",
+            "value": 25000
+        }
+    },
+    "epic-communicator": {
+        "name": "Epic Communicator",
+        "description": "Send 50,000 messages in the server.",
+        "xpReward": 10000,
+        "icon": "https://em-content.zobj.net/source/twitter/376/sparkles_2728.png",
+        "condition": {
+            "type": "threshold",
+            "key": "messageCount",
+            "value": 50000
+        }
+    },
+    "legendary-speaker": {
+        "name": "Legendary Speaker",
+        "description": "Send 100,000 messages in the server.",
+        "xpReward": 20000,
+        "icon": "https://em-content.zobj.net/source/twitter/376/gem-stone_1f48e.png",
+        "condition": {
+            "type": "threshold",
+            "key": "messageCount",
+            "value": 100000
+        }
+    },
+    "voice-addict": {
+        "name": "Voice Addict",
+        "description": "Spend 250 hours in voice channels.",
+        "xpReward": 3000,
+        "icon": "https://em-content.zobj.net/source/twitter/376/loudspeaker_1f4e2.png",
+        "condition": {
+            "type": "threshold",
+            "key": "voiceTime",
+            "value": 900000,
+            "unit": "seconds"
+        }
+    },
+    "voice-god": {
+        "name": "Voice God",
+        "description": "Spend 500 hours in voice channels.",
+        "xpReward": 5000,
+        "icon": "https://em-content.zobj.net/source/twitter/376/star-struck_1f929.png",
+        "condition": {
+            "type": "threshold",
+            "key": "voiceTime",
+            "value": 1800000,
+            "unit": "seconds"
+        }
+    },
+    "voice-immortal": {
+        "name": "Voice Immortal",
+        "description": "Spend 1000 hours in voice channels.",
+        "xpReward": 10000,
+        "icon": "https://em-content.zobj.net/source/twitter/376/dizzy_1f4ab.png",
+        "condition": {
+            "type": "threshold",
+            "key": "voiceTime",
+            "value": 3600000,
+            "unit": "seconds"
+        }
+    },
+    "reaction-lover": {
+        "name": "Reaction Lover",
+        "description": "Add 1000 reactions to messages.",
+        "xpReward": 800,
+        "icon": "https://em-content.zobj.net/source/twitter/376/heart-with-arrow_1f498.png",
+        "condition": {
+            "type": "threshold",
+            "key": "reactionsGiven",
+            "value": 1000
+        }
+    },
+    "reaction-legend": {
+        "name": "Reaction Legend",
+        "description": "Add 5000 reactions to messages.",
+        "xpReward": 2000,
+        "icon": "https://em-content.zobj.net/source/twitter/376/beating-heart_1f493.png",
+        "condition": {
+            "type": "threshold",
+            "key": "reactionsGiven",
+            "value": 5000
+        }
+    },
+    "reaction-god": {
+        "name": "Reaction God",
+        "description": "Add 10,000 reactions to messages.",
+        "xpReward": 5000,
+        "icon": "https://em-content.zobj.net/source/twitter/376/revolving-hearts_1f49e.png",
+        "condition": {
+            "type": "threshold",
+            "key": "reactionsGiven",
+            "value": 10000
+        }
+    },
+    "level-25": {
+        "name": "Quarter Century",
+        "description": "Reach level 25 in the server.",
+        "xpReward": 1000,
+        "icon": "https://em-content.zobj.net/source/twitter/376/chart-increasing_1f4c8.png",
+        "condition": {
+            "type": "threshold",
+            "key": "level",
+            "value": 25
+        }
+    },
+    "level-75": {
+        "name": "Diamond Rank",
+        "description": "Reach level 75 in the server.",
+        "xpReward": 2500,
+        "icon": "https://em-content.zobj.net/source/twitter/376/large-blue-diamond_1f537.png",
+        "condition": {
+            "type": "threshold",
+            "key": "level",
+            "value": 75
+        }
+    },
+    "level-150": {
+        "name": "Mythical Being",
+        "description": "Reach level 150 in the server.",
+        "xpReward": 5000,
+        "icon": "https://em-content.zobj.net/source/twitter/376/dragon_1f409.png",
+        "condition": {
+            "type": "threshold",
+            "key": "level",
+            "value": 150
+        }
+    },
+    "level-200": {
+        "name": "Beyond Human",
+        "description": "Reach level 200 in the server.",
+        "xpReward": 8000,
+        "icon": "https://em-content.zobj.net/source/twitter/376/alien_1f47d.png",
+        "condition": {
+            "type": "threshold",
+            "key": "level",
+            "value": 200
+        }
+    },
+    "event-enthusiast": {
+        "name": "Event Enthusiast",
+        "description": "Join 5 events in the server.",
+        "xpReward": 600,
+        "icon": "https://em-content.zobj.net/source/twitter/376/balloon_1f388.png",
+        "condition": {
+            "type": "threshold",
+            "key": "eventCount",
+            "value": 5
+        }
+    },
+    "event-champion": {
+        "name": "Event Champion",
+        "description": "Join 25 events in the server.",
+        "xpReward": 2000,
+        "icon": "https://em-content.zobj.net/source/twitter/376/sports-medal_1f3c5.png",
+        "condition": {
+            "type": "threshold",
+            "key": "eventCount",
+            "value": 25
+        }
+    },
+    "event-legend": {
+        "name": "Event Legend",
+        "description": "Join 50 events in the server.",
+        "xpReward": 5000,
+        "icon": "https://em-content.zobj.net/source/twitter/376/1st-place-medal_1f947.png",
+        "condition": {
+            "type": "threshold",
+            "key": "eventCount",
+            "value": 50
+        }
+    },
+    "meme-expert": {
+        "name": "Meme Expert",
+        "description": "Send 100 memes in the #meme channel.",
+        "xpReward": 1000,
+        "icon": "https://em-content.zobj.net/source/twitter/376/rolling-on-the-floor-laughing_1f923.png",
+        "condition": {
+            "type": "threshold",
+            "key": "memeCount",
+            "value": 100
+        }
+    },
+    "meme-god": {
+        "name": "Meme God",
+        "description": "Send 500 memes in the #meme channel.",
+        "xpReward": 3000,
+        "icon": "https://em-content.zobj.net/source/twitter/376/face-screaming-in-fear_1f631.png",
+        "condition": {
+            "type": "threshold",
+            "key": "memeCount",
+            "value": 500
+        }
+    },
+    "super-helper": {
+        "name": "Super Helper",
+        "description": "Send 50 messages in the #support channel.",
+        "xpReward": 800,
+        "icon": "https://em-content.zobj.net/source/twitter/376/raising-hands_1f64c.png",
+        "condition": {
+            "type": "threshold",
+            "key": "supportMessages",
+            "value": 50
+        }
+    },
+    "support-master": {
+        "name": "Support Master",
+        "description": "Send 100 messages in the #support channel.",
+        "xpReward": 1500,
+        "icon": "https://em-content.zobj.net/source/twitter/376/clapping-hands_1f44f.png",
+        "condition": {
+            "type": "threshold",
+            "key": "supportMessages",
+            "value": 100
+        }
+    },
+    "hardcore-gamer": {
+        "name": "Hardcore Gamer",
+        "description": "Play games for 25 hours.",
+        "xpReward": 1200,
+        "icon": "https://em-content.zobj.net/source/twitter/376/joystick_1f579-fe0f.png",
+        "condition": {
+            "type": "threshold",
+            "key": "totalGameTime",
+            "value": 90000,
+            "unit": "seconds"
+        }
+    },
+    "gaming-legend": {
+        "name": "Gaming Legend",
+        "description": "Play games for 50 hours.",
+        "xpReward": 2500,
+        "icon": "https://em-content.zobj.net/source/twitter/376/alien-monster_1f47e.png",
+        "condition": {
+            "type": "threshold",
+            "key": "totalGameTime",
+            "value": 180000,
+            "unit": "seconds"
+        }
+    },
+    "gaming-god": {
+        "name": "Gaming God",
+        "description": "Play games for 100 hours.",
+        "xpReward": 5000,
+        "icon": "https://em-content.zobj.net/source/twitter/376/crossed-swords_2694-fe0f.png",
+        "condition": {
+            "type": "threshold",
+            "key": "totalGameTime",
+            "value": 360000,
+            "unit": "seconds"
+        }
+    },
+    "super-booster": {
+        "name": "Super Booster",
+        "description": "Keep boosting the server for 30 days.",
+        "xpReward": 2000,
+        "icon": "https://em-content.zobj.net/source/twitter/376/comet_2604-fe0f.png",
+        "condition": {
+            "type": "boolean",
+            "key": "isBooster",
+            "value": true
+        }
+    },
+    "nitro-legend": {
+        "name": "Nitro Legend",
+        "description": "Keep boosting the server for 90 days.",
+        "xpReward": 5000,
+        "icon": "https://em-content.zobj.net/source/twitter/376/high-voltage_26a1.png",
+        "condition": {
+            "type": "boolean",
+            "key": "isBooster",
+            "value": true
+        }
+    },
+    "weekend-warrior": {
+        "name": "Weekend Warrior",
+        "description": "Be active on Saturday or Sunday.",
+        "xpReward": 300,
+        "icon": "https://em-content.zobj.net/source/twitter/376/beach-with-umbrella_1f3d6-fe0f.png",
+        "condition": {
+            "type": "timeRange",
+            "key": "lastActive",
+            "startHour": 0,
+            "endHour": 23
+        }
+    },
+    "workday-grinder": {
+        "name": "Workday Grinder",
+        "description": "Be active between 9 AM and 5 PM on weekdays.",
+        "xpReward": 400,
+        "icon": "https://em-content.zobj.net/source/twitter/376/briefcase_1f4bc.png",
+        "condition": {
+            "type": "timeRange",
+            "key": "lastActive",
+            "startHour": 9,
+            "endHour": 17
+        }
+    },
+    "midnight-messenger": {
+        "name": "Midnight Messenger",
+        "description": "Send a message exactly at midnight (12:00 AM).",
+        "xpReward": 500,
+        "icon": "https://em-content.zobj.net/source/twitter/376/twelve-oclock_1f55b.png",
+        "condition": {
+            "type": "timeRange",
+            "key": "lastActive",
+            "startHour": 0,
+            "endHour": 0
+        }
+    },
+    "streaming-star": {
+        "name": "Streaming Star",
+        "description": "Stream in voice channels for 5 hours.",
+        "xpReward": 800,
+        "icon": "https://em-content.zobj.net/source/twitter/376/television_1f4fa.png",
+        "condition": {
+            "type": "threshold",
+            "key": "streamTime",
+            "value": 18000,
+            "unit": "seconds"
+        }
+    },
+    "streaming-pro": {
+        "name": "Streaming Pro",
+        "description": "Stream in voice channels for 25 hours.",
+        "xpReward": 2000,
+        "icon": "https://em-content.zobj.net/source/twitter/376/film-projector_1f4fd-fe0f.png",
+        "condition": {
+            "type": "threshold",
+            "key": "streamTime",
+            "value": 90000,
+            "unit": "seconds"
+        }
+    },
+    "streaming-legend": {
+        "name": "Streaming Legend",
+        "description": "Stream in voice channels for 100 hours.",
+        "xpReward": 5000,
+        "icon": "https://em-content.zobj.net/source/twitter/376/camera-with-flash_1f4f8.png",
+        "condition": {
+            "type": "threshold",
+            "key": "streamTime",
+            "value": 360000,
+            "unit": "seconds"
+        }
+    },
+    "curious-explorer": {
+        "name": "Curious Explorer",
+        "description": "Use 10 different bot commands.",
+        "xpReward": 300,
+        "icon": "https://em-content.zobj.net/source/twitter/376/compass_1f9ed.png",
+        "condition": {
+            "type": "threshold",
+            "key": "uniqueCommands",
+            "value": 10
+        }
+    },
+    "command-master": {
+        "name": "Command Master",
+        "description": "Use 50 different bot commands.",
+        "xpReward": 1000,
+        "icon": "https://em-content.zobj.net/source/twitter/376/robot_1f916.png",
+        "condition": {
+            "type": "threshold",
+            "key": "uniqueCommands",
+            "value": 50
+        }
+    },
+    "command-god": {
+        "name": "Command God",
+        "description": "Use 100 different bot commands.",
+        "xpReward": 3000,
+        "icon": "https://em-content.zobj.net/source/twitter/376/desktop-computer_1f5a5-fe0f.png",
+        "condition": {
+            "type": "threshold",
+            "key": "uniqueCommands",
+            "value": 100
+        }
+    },
+    "emoji-fan": {
+        "name": "Emoji Fan",
+        "description": "Use 100 emojis in messages.",
+        "xpReward": 300,
+        "icon": "https://em-content.zobj.net/source/twitter/376/grinning-face_1f600.png",
+        "condition": {
+            "type": "threshold",
+            "key": "emojiCount",
+            "value": 100
+        }
+    },
+    "emoji-master": {
+        "name": "Emoji Master",
+        "description": "Use 500 emojis in messages.",
+        "xpReward": 800,
+        "icon": "https://em-content.zobj.net/source/twitter/376/partying-face_1f973.png",
+        "condition": {
+            "type": "threshold",
+            "key": "emojiCount",
+            "value": 500
+        }
+    },
+    "emoji-legend": {
+        "name": "Emoji Legend",
+        "description": "Use 1000 emojis in messages.",
+        "xpReward": 1500,
+        "icon": "https://em-content.zobj.net/source/twitter/376/face-blowing-a-kiss_1f618.png",
+        "condition": {
+            "type": "threshold",
+            "key": "emojiCount",
+            "value": 1000
+        }
+    },
+    "attachment-sender": {
+        "name": "Attachment Sender",
+        "description": "Send 50 attachments (images, videos, files).",
+        "xpReward": 400,
+        "icon": "https://em-content.zobj.net/source/twitter/376/paperclip_1f4ce.png",
+        "condition": {
+            "type": "threshold",
+            "key": "attachmentCount",
+            "value": 50
+        }
+    },
+    "media-master": {
+        "name": "Media Master",
+        "description": "Send 200 attachments (images, videos, files).",
+        "xpReward": 1000,
+        "icon": "https://em-content.zobj.net/source/twitter/376/camera_1f4f7.png",
+        "condition": {
+            "type": "threshold",
+            "key": "attachmentCount",
+            "value": 200
+        }
+    },
+    "link-sharer": {
+        "name": "Link Sharer",
+        "description": "Share 50 links in messages.",
+        "xpReward": 300,
+        "icon": "https://em-content.zobj.net/source/twitter/376/link_1f517.png",
+        "condition": {
+            "type": "threshold",
+            "key": "linkCount",
+            "value": 50
+        }
+    },
+    "mention-master": {
+        "name": "Mention Master",
+        "description": "Mention other users 100 times.",
+        "xpReward": 500,
+        "icon": "https://em-content.zobj.net/source/twitter/376/busts-in-silhouette_1f465.png",
+        "condition": {
+            "type": "threshold",
+            "key": "mentionCount",
+            "value": 100
+        }
+    },
+    "thread-starter": {
+        "name": "Thread Starter",
+        "description": "Create your first thread.",
+        "xpReward": 200,
+        "icon": "https://em-content.zobj.net/source/twitter/376/thread_1f9f5.png",
+        "condition": {
+            "type": "threshold",
+            "key": "threadCount",
+            "value": 1
+        }
+    },
+    "thread-master": {
+        "name": "Thread Master",
+        "description": "Create 10 threads.",
+        "xpReward": 800,
+        "icon": "https://em-content.zobj.net/source/twitter/376/memo_1f4dd.png",
+        "condition": {
+            "type": "threshold",
+            "key": "threadCount",
+            "value": 10
+        }
+    },
+    "poll-creator": {
+        "name": "Poll Creator",
+        "description": "Create your first poll.",
+        "xpReward": 300,
+        "icon": "https://em-content.zobj.net/source/twitter/376/bar-chart_1f4ca.png",
+        "condition": {
+            "type": "threshold",
+            "key": "pollCount",
+            "value": 1
+        }
+    },
+    "poll-master": {
+        "name": "Poll Master",
+        "description": "Create 10 polls.",
+        "xpReward": 1000,
+        "icon": "https://em-content.zobj.net/source/twitter/376/chart-increasing-with-yen_1f4b9.png",
+        "condition": {
+            "type": "threshold",
+            "key": "pollCount",
+            "value": 10
+        }
+    },
+    "forum-contributor": {
+        "name": "Forum Contributor",
+        "description": "Post 25 messages in forum channels.",
+        "xpReward": 500,
+        "icon": "https://em-content.zobj.net/source/twitter/376/pushpin_1f4cc.png",
+        "condition": {
+            "type": "threshold",
+            "key": "forumPosts",
+            "value": 25
+        }
+    },
+    "trivia-beginner": {
+        "name": "Trivia Beginner",
+        "description": "Answer 10 trivia questions correctly.",
+        "xpReward": 300,
+        "icon": "https://em-content.zobj.net/source/twitter/376/thinking-face_1f914.png",
+        "condition": {
+            "type": "threshold",
+            "key": "triviaCorrect",
+            "value": 10
+        }
+    },
+    "trivia-expert": {
+        "name": "Trivia Expert",
+        "description": "Answer 50 trivia questions correctly.",
+        "xpReward": 1000,
+        "icon": "https://em-content.zobj.net/source/twitter/376/nerd-face_1f913.png",
+        "condition": {
+            "type": "threshold",
+            "key": "triviaCorrect",
+            "value": 50
+        }
+    },
+    "trivia-master": {
+        "name": "Trivia Master",
+        "description": "Answer 100 trivia questions correctly.",
+        "xpReward": 2500,
+        "icon": "https://em-content.zobj.net/source/twitter/376/brain_1f9e0.png",
+        "condition": {
+            "type": "threshold",
+            "key": "triviaCorrect",
+            "value": 100
+        }
+    },
+    "daily-visitor": {
+        "name": "Daily Visitor",
+        "description": "Be active for 7 consecutive days.",
+        "xpReward": 500,
+        "icon": "https://em-content.zobj.net/source/twitter/376/check-mark_2714-fe0f.png",
+        "condition": {
+            "type": "threshold",
+            "key": "consecutiveDays",
+            "value": 7
+        }
+    },
+    "dedicated-member": {
+        "name": "Dedicated Member",
+        "description": "Be active for 30 consecutive days.",
+        "xpReward": 1500,
+        "icon": "https://em-content.zobj.net/source/twitter/376/fire_1f525.png",
+        "condition": {
+            "type": "threshold",
+            "key": "consecutiveDays",
+            "value": 30
+        }
+    },
+    "unstoppable": {
+        "name": "Unstoppable",
+        "description": "Be active for 100 consecutive days.",
+        "xpReward": 5000,
+        "icon": "https://em-content.zobj.net/source/twitter/376/hundred-points_1f4af.png",
+        "condition": {
+            "type": "threshold",
+            "key": "consecutiveDays",
+            "value": 100
+        }
+    },
+    "music-lover": {
+        "name": "Music Lover",
+        "description": "Play music for 5 hours.",
+        "xpReward": 500,
+        "icon": "https://em-content.zobj.net/source/twitter/376/musical-note_1f3b5.png",
+        "condition": {
+            "type": "threshold",
+            "key": "musicTime",
+            "value": 18000,
+            "unit": "seconds"
+        }
+    },
+    "music-addict": {
+        "name": "Music Addict",
+        "description": "Play music for 25 hours.",
+        "xpReward": 1500,
+        "icon": "https://em-content.zobj.net/source/twitter/376/musical-notes_1f3b6.png",
+        "condition": {
+            "type": "threshold",
+            "key": "musicTime",
+            "value": 90000,
+            "unit": "seconds"
+        }
+    },
+    "dj-legend": {
+        "name": "DJ Legend",
+        "description": "Play music for 100 hours.",
+        "xpReward": 5000,
+        "icon": "https://em-content.zobj.net/source/twitter/376/saxophone_1f3b7.png",
+        "condition": {
+            "type": "threshold",
+            "key": "musicTime",
+            "value": 360000,
+            "unit": "seconds"
+        }
     }
 }
