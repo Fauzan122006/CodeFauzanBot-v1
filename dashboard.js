@@ -1500,6 +1500,56 @@ function start(client) {
         res.redirect(`/dashboard/${guildId}/achievements`);
     });
 
+    // Public route untuk user melihat achievements mereka
+    app.get('/achievements/:guildId/:userId', async (req, res) => {
+        const { guildId, userId } = req.params;
+        log('UserAchievements', `User ${userId} accessing achievements for guild: ${guildId}`);
+
+        try {
+            const guild = client.guilds.cache.get(guildId);
+            if (!guild) {
+                log('UserAchievements', `Guild ${guildId} not found`, 'error');
+                return res.status(404).send('Guild not found');
+            }
+
+            // Get user from guild
+            let member;
+            try {
+                member = await guild.members.fetch(userId);
+            } catch (error) {
+                log('UserAchievements', `User ${userId} not found in guild ${guildId}`, 'error');
+                return res.status(404).send('User not found in this server');
+            }
+
+            // Load userData
+            const { userData } = require('./utils/userDataHandler');
+            const userGuildData = userData[userId]?.guilds?.[guildId];
+            const userAchievements = userGuildData?.achievements || [];
+
+            // Count unlocked vs total
+            const totalCount = Object.keys(achievementList).length;
+            const unlockedCount = userAchievements.length;
+
+            // Get user avatar
+            const userAvatar = member.user.displayAvatarURL({ extension: 'png', size: 128 });
+
+            res.render('user-achievements', {
+                guild: guild,
+                user: member.user,
+                userAvatar: userAvatar,
+                achievements: achievementList,
+                userAchievements: userAchievements,
+                userData: userData[userId],
+                totalCount: totalCount,
+                unlockedCount: unlockedCount
+            });
+        } catch (error) {
+            log('UserAchievements', `Error loading achievements: ${error.message}`, 'error');
+            console.error(error);
+            res.status(500).send('Error loading achievements');
+        }
+    });
+
     // node web server
     const port = process.env.PORT || 3000;
 

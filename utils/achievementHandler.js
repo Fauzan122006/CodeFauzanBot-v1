@@ -185,19 +185,24 @@ async function checkAchievements(userId, guild) {
                 // Create custom achievement card
                 const cardBuffer = await createAchievementCard(achievement, achievementId);
                 
+                // Create achievement URL
+                const baseUrl = process.env.CALLBACK_URL || config.callbackurl || 'http://localhost:3000';
+                const cleanBaseUrl = baseUrl.replace('/auth/discord/callback', '');
+                const achievementUrl = `${cleanBaseUrl}/achievements/${guild.id}/${userId}`;
+                
                 if (cardBuffer) {
                     // Send with custom card
                     const attachment = new AttachmentBuilder(cardBuffer, { name: 'achievement.png' });
                     
                     await achievementChannel.send({
-                        content: `GG <@${userId}>, you just unlocked the achievement: **${achievement.name}!** 🎉`,
+                        content: `GG <@${userId}>, you just unlocked the achievement: **${achievement.name}!** 🎉\n[See Min-Erva's achievements](${achievementUrl})`,
                         files: [attachment]
                     });
                 } else {
                     // Fallback to simple embed if card creation failed
                     const embed = new EmbedBuilder()
                         .setTitle(`🎉 ACHIEVEMENT UNLOCKED!`)
-                        .setDescription(`**${achievement.name}**\n${achievement.description}`)
+                        .setDescription(`**${achievement.name}**\n${achievement.description}\n\n[View all achievements](${achievementUrl})`)
                         .addFields(
                             { name: '🎁 Rewards', value: `+${achievement.xpReward} XP • +${Math.floor(achievement.xpReward / 2)} Coins`, inline: true }
                         )

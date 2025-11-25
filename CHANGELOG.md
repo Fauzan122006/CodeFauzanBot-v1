@@ -1,5 +1,55 @@
 # CHANGELOG
 
+## [v1.3.0] - 2025-11-25
+
+### ✨ New Features
+
+#### Achievement Web Dashboard
+- **Public Achievement Viewer** - User bisa lihat semua achievements mereka via web
+- **Features:**
+  - Beautiful card-based UI dengan dark theme
+  - Filter by status (All/Unlocked/Locked) dan rarity (Legendary/Epic/Rare/Common)
+  - Search achievements by name
+  - Progress bars untuk locked achievements
+  - Statistics (Total unlocked, progress percentage)
+  - Rarity system dengan color-coded badges
+  - Responsive design (mobile-friendly)
+
+#### New Command: `/my-achievements`
+- Command untuk akses achievement dashboard
+- Menampilkan quick stats (unlocked count, progress %)
+- Button link langsung ke web dashboard
+- Ephemeral reply (private)
+
+#### Enhanced Achievement Notifications
+- Achievement notifications sekarang include link ke web dashboard
+- Format: "See [Username]'s achievements" dengan clickable link
+- User bisa langsung lihat semua achievements setelah unlock
+
+### 📁 Files Added
+- `views/user-achievements.ejs` - Public achievement viewer page
+- `commands/my-achievements.js` - Command untuk akses achievements
+
+### 📝 Files Modified
+- `dashboard.js` - Added public route `/achievements/:guildId/:userId`
+- `utils/achievementHandler.js` - Added achievement URL in notifications
+
+### 🎨 Design Features
+- **Rarity Tiers:**
+  - LEGENDARY (200+ XP) - Purple gradient
+  - EPIC (150-199 XP) - Epic purple
+  - RARE (100-149 XP) - Blue
+  - COMMON (<100 XP) - Grey
+- **Progress Tracking:** Real-time progress untuk locked achievements
+- **Interactive Filters:** Filter dan search dengan smooth animations
+
+### 🔗 Access Methods
+1. `/my-achievements` command - Ephemeral link
+2. Achievement notification - Click link saat unlock achievement
+3. Direct URL: `yourbot.com/achievements/{guildId}/{userId}`
+
+---
+
 ## [v1.2.1] - 2025-11-25
 
 ### 🐛 Bug Fixes
