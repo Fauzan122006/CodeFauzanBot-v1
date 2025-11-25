@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= guild.name %> - Analytics</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        /* Hamburger Menu (Mobile) */
+        .hamburger {
+            display: none;
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 100;
+            background: white;
+            border: none;
+            border-radius: 8px;
+            padding: 10px;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .hamburger span {
+            display: block;
+            width: 25px;
+            height: 3px;
+            background: #333;
+            margin: 5px 0;
+            transition: all 0.3s;
+            border-radius: 3px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            color: #333;
+            font-size: 32px;
+        }
+
+        .header .subtitle {
+            color: #666;
+            font-size: 16px;
+            margin-top: 5px;
+        }
+
+        .back-btn {
+            background: #5865F2;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .back-btn:hover {
+            background: #4752C4;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(88, 101, 242, 0.4);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+        }
+
+        .stat-card .icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            margin-bottom: 15px;
+        }
+
+        .stat-card.users .icon { background: linear-gradient(135deg, #667eea, #764ba2); }
+        .stat-card.xp .icon { background: linear-gradient(135deg, #f093fb, #f5576c); }
+        .stat-card.messages .icon { background: linear-gradient(135deg, #4facfe, #00f2fe); }
+        .stat-card.voice .icon { background: linear-gradient(135deg, #43e97b, #38f9d7); }
+        .stat-card.coins .icon { background: linear-gradient(135deg, #fa709a, #fee140); }
+        .stat-card.active .icon { background: linear-gradient(135deg, #30cfd0, #330867); }
+
+        .stat-card .label {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+
+        .stat-card .value {
+            font-size: 32px;
+            font-weight: 700;
+            color: #333;
+        }
+
+        .stat-card .subvalue {
+            color: #999;
+            font-size: 13px;
+            margin-top: 5px;
+        }
+
+        .section {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+
+        .section h2 {
+            color: #333;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #5865F2;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #eee;
+        }
+
+        .tab {
+            padding: 12px 24px;
+            cursor: pointer;
+            border: none;
+            background: none;
+            color: #666;
+            font-weight: 600;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .tab.active {
+            color: #5865F2;
+            border-bottom-color: #5865F2;
+        }
+
+        .tab:hover {
+            color: #5865F2;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .leaderboard {
+            list-style: none;
+        }
+
+        .leaderboard-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            margin-bottom: 10px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            transition: all 0.3s;
+        }
+
+        .leaderboard-item:hover {
+            background: #e9ecef;
+            transform: translateX(5px);
+        }
+
+        .rank {
+            font-size: 20px;
+            font-weight: 700;
+            color: #666;
+            width: 40px;
+        }
+
+        .rank.gold { color: #FFD700; }
+        .rank.silver { color: #C0C0C0; }
+        .rank.bronze { color: #CD7F32; }
+
+        .avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            margin-right: 15px;
+        }
+
+        .user-info {
+            flex: 1;
+        }
+
+        .user-info .username {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .user-info .displayname {
+            color: #999;
+            font-size: 13px;
+        }
+
+        .stat-value {
+            font-weight: 700;
+            color: #5865F2;
+            font-size: 18px;
+        }
+
+        .chart-container {
+            margin-top: 20px;
+        }
+
+        .bar-chart {
+            display: flex;
+            gap: 10px;
+            align-items: flex-end;
+            height: 200px;
+            padding: 20px 0;
+        }
+
+        .bar {
+            flex: 1;
+            background: linear-gradient(to top, #667eea, #764ba2);
+            border-radius: 8px 8px 0 0;
+            position: relative;
+            min-height: 10px;
+            transition: all 0.3s;
+        }
+
+        .bar:hover {
+            opacity: 0.8;
+        }
+
+        .bar-label {
+            position: absolute;
+            bottom: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 12px;
+            color: #666;
+            white-space: nowrap;
+        }
+
+        .bar-value {
+            position: absolute;
+            top: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-weight: 700;
+            color: #333;
+            font-size: 14px;
+        }
+
+        .achievement-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .achievement-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .achievement-item .name {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .achievement-item .count {
+            color: #5865F2;
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .achievement-item .percent {
+            color: #999;
+            font-size: 12px;
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hamburger {
+                display: block;
+            }
+
+            .header {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stat-card .value {
+                font-size: 24px;
+            }
+
+            .section {
+                padding: 20px;
+            }
+
+            .leaderboard-item {
+                padding: 12px;
+            }
+
+            .rank {
+                width: 30px;
+                font-size: 16px;
+            }
+
+            .avatar {
+                width: 35px;
+                height: 35px;
+            }
+
+            .stat-value {
+                font-size: 14px;
+            }
+
+            .bar-chart {
+                height: 150px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div>
+                <h1>📊 Analytics Dashboard</h1>
+                <div class="subtitle"><%= guild.name %></div>
+            </div>
+            <a href="/dashboard/<%= guild.id %>" class="back-btn">← Back to Dashboard</a>
+        </div>
+
+        <!-- Stats Overview -->
+        <div class="stats-grid">
+            <div class="stat-card users">
+                <div class="icon">👥</div>
+                <div class="label">Total Users Tracked</div>
+                <div class="value"><%= stats.totalUsers.toLocaleString() %></div>
+                <div class="subvalue">Out of <%= stats.guildMemberCount.toLocaleString() %> members</div>
+            </div>
+
+            <div class="stat-card xp">
+                <div class="icon">⭐</div>
+                <div class="label">Total XP</div>
+                <div class="value"><%= stats.totalXP.toLocaleString() %></div>
+                <div class="subvalue">Avg: <%= stats.avgXP.toLocaleString() %> XP/user</div>
+            </div>
+
+            <div class="stat-card messages">
+                <div class="icon">💬</div>
+                <div class="label">Total Messages</div>
+                <div class="value"><%= stats.totalMessages.toLocaleString() %></div>
+                <div class="subvalue">Avg: <%= stats.avgMessages.toLocaleString() %>/user</div>
+            </div>
+
+            <div class="stat-card voice">
+                <div class="icon">🎤</div>
+                <div class="label">Voice Hours</div>
+                <div class="value"><%= stats.totalVoiceTime.toLocaleString() %></div>
+                <div class="subvalue">Total time in voice</div>
+            </div>
+
+            <div class="stat-card coins">
+                <div class="icon">🪙</div>
+                <div class="label">Total Coins</div>
+                <div class="value"><%= stats.totalCoins.toLocaleString() %></div>
+                <div class="subvalue">Economy circulation</div>
+            </div>
+
+            <div class="stat-card active">
+                <div class="icon">📈</div>
+                <div class="label">Active (7 days)</div>
+                <div class="value"><%= stats.activeUsers.toLocaleString() %></div>
+                <div class="subvalue"><%= stats.activePercentage %>% of members</div>
+            </div>
+        </div>
+
+        <!-- Top Performers -->
+        <div class="section">
+            <h2>🏆 Top Performers</h2>
+            
+            <div class="tabs">
+                <button class="tab active" onclick="switchTab(event, 'xp')">XP Leaders</button>
+                <button class="tab" onclick="switchTab(event, 'messages')">Most Active</button>
+                <button class="tab" onclick="switchTab(event, 'voice')">Voice Kings</button>
+                <button class="tab" onclick="switchTab(event, 'coins')">Richest</button>
+            </div>
+
+            <!-- XP Leaders -->
+            <div id="xp" class="tab-content active">
+                <% if (topPerformers.xp.length > 0) { %>
+                    <ol class="leaderboard">
+                        <% topPerformers.xp.forEach((user, index) => { %>
+                            <li class="leaderboard-item">
+                                <span class="rank <%= index === 0 ? 'gold' : index === 1 ? 'silver' : index === 2 ? 'bronze' : '' %>">
+                                    #<%= index + 1 %>
+                                </span>
+                                <img src="<%= user.avatar %>" alt="Avatar" class="avatar">
+                                <div class="user-info">
+                                    <div class="username"><%= user.username %></div>
+                                    <div class="displayname"><%= user.displayName %></div>
+                                </div>
+                                <div class="stat-value"><%= user.xp.toLocaleString() %> XP (Lv <%= user.level %>)</div>
+                            </li>
+                        <% }); %>
+                    </ol>
+                <% } else { %>
+                    <div class="no-data">No data available</div>
+                <% } %>
+            </div>
+
+            <!-- Most Active (Messages) -->
+            <div id="messages" class="tab-content">
+                <% if (topPerformers.messages.length > 0) { %>
+                    <ol class="leaderboard">
+                        <% topPerformers.messages.forEach((user, index) => { %>
+                            <li class="leaderboard-item">
+                                <span class="rank <%= index === 0 ? 'gold' : index === 1 ? 'silver' : index === 2 ? 'bronze' : '' %>">
+                                    #<%= index + 1 %>
+                                </span>
+                                <img src="<%= user.avatar %>" alt="Avatar" class="avatar">
+                                <div class="user-info">
+                                    <div class="username"><%= user.username %></div>
+                                    <div class="displayname"><%= user.displayName %></div>
+                                </div>
+                                <div class="stat-value"><%= user.messageCount.toLocaleString() %> messages</div>
+                            </li>
+                        <% }); %>
+                    </ol>
+                <% } else { %>
+                    <div class="no-data">No data available</div>
+                <% } %>
+            </div>
+
+            <!-- Voice Kings -->
+            <div id="voice" class="tab-content">
+                <% if (topPerformers.voice.length > 0) { %>
+                    <ol class="leaderboard">
+                        <% topPerformers.voice.forEach((user, index) => { %>
+                            <li class="leaderboard-item">
+                                <span class="rank <%= index === 0 ? 'gold' : index === 1 ? 'silver' : index === 2 ? 'bronze' : '' %>">
+                                    #<%= index + 1 %>
+                                </span>
+                                <img src="<%= user.avatar %>" alt="Avatar" class="avatar">
+                                <div class="user-info">
+                                    <div class="username"><%= user.username %></div>
+                                    <div class="displayname"><%= user.displayName %></div>
+                                </div>
+                                <div class="stat-value"><%= Math.floor(user.voiceTime / 3600) %> hours</div>
+                            </li>
+                        <% }); %>
+                    </ol>
+                <% } else { %>
+                    <div class="no-data">No data available</div>
+                <% } %>
+            </div>
+
+            <!-- Richest -->
+            <div id="coins" class="tab-content">
+                <% if (topPerformers.coins.length > 0) { %>
+                    <ol class="leaderboard">
+                        <% topPerformers.coins.forEach((user, index) => { %>
+                            <li class="leaderboard-item">
+                                <span class="rank <%= index === 0 ? 'gold' : index === 1 ? 'silver' : index === 2 ? 'bronze' : '' %>">
+                                    #<%= index + 1 %>
+                                </span>
+                                <img src="<%= user.avatar %>" alt="Avatar" class="avatar">
+                                <div class="user-info">
+                                    <div class="username"><%= user.username %></div>
+                                    <div class="displayname"><%= user.displayName %></div>
+                                </div>
+                                <div class="stat-value">🪙 <%= user.coins.toLocaleString() %></div>
+                            </li>
+                        <% }); %>
+                    </ol>
+                <% } else { %>
+                    <div class="no-data">No data available</div>
+                <% } %>
+            </div>
+        </div>
+
+        <!-- Level Distribution -->
+        <div class="section">
+            <h2>📊 Level Distribution</h2>
+            <div class="chart-container">
+                <div class="bar-chart">
+                    <% 
+                    const maxCount = Math.max(...Object.values(levelDistribution));
+                    Object.entries(levelDistribution).sort((a, b) => {
+                        const aNum = parseInt(a[0].split('-')[0]);
+                        const bNum = parseInt(b[0].split('-')[0]);
+                        return aNum - bNum;
+                    }).forEach(([range, count]) => { 
+                        const height = maxCount > 0 ? (count / maxCount) * 100 : 0;
+                    %>
+                        <div class="bar" style="height: <%= height %>%">
+                            <div class="bar-value"><%= count %></div>
+                            <div class="bar-label">Lv <%= range %></div>
+                        </div>
+                    <% }); %>
+                </div>
+            </div>
+        </div>
+
+        <!-- Achievement Stats -->
+        <div class="section">
+            <h2>🏅 Popular Achievements</h2>
+            <% if (Object.keys(achievementStats).length > 0) { %>
+                <div class="achievement-grid">
+                    <% 
+                    Object.entries(achievementStats)
+                        .sort((a, b) => b[1] - a[1])
+                        .slice(0, 12)
+                        .forEach(([achievement, count]) => { 
+                            const percent = stats.totalUsers > 0 ? ((count / stats.totalUsers) * 100).toFixed(1) : 0;
+                    %>
+                        <div class="achievement-item">
+                            <div class="name"><%= achievement %></div>
+                            <div class="count"><%= count %></div>
+                            <div class="percent"><%= percent %>% unlocked</div>
+                        </div>
+                    <% }); %>
+                </div>
+            <% } else { %>
+                <div class="no-data">No achievement data available</div>
+            <% } %>
+        </div>
+    </div>
+
+    <script>
+        function switchTab(event, tabName) {
+            // Hide all tab contents
+            const contents = document.querySelectorAll('.tab-content');
+            contents.forEach(content => content.classList.remove('active'));
+
+            // Remove active class from all tabs
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(tab => tab.classList.remove('active'));
+
+            // Show selected tab content
+            document.getElementById(tabName).classList.add('active');
+
+            // Add active class to clicked tab
+            event.currentTarget.classList.add('active');
+        }
+    </script>
+</body>
+</html>

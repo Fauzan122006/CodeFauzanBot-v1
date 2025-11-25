@@ -1407,6 +1407,125 @@ function start(client) {
     
         res.redirect(`/dashboard/${guildId}`);
     });
+
+    // Route untuk analytics dashboard
+    app.get('/dashboard/:guildId/analytics', ensureAuthenticated, ensureAdmin, async (req, res) => {
+        const guildId = req.params.guildId;
+        log('Analytics', `Accessing analytics for guild: ${guildId}`);
+
+        const guild = client.guilds.cache.get(guildId);
+        if (!guild) {
+            log('Analytics', `Guild ${guildId} not found`, 'error');
+            return res.status(404).send('Guild not found');
+        }
+
+        try {
+            const { getAllGuildUsers, db } = require('./utils/userDataHandler');
+            
+            // Get all users for this guild
+            const allUsers = getAllGuildUsers(guildId);
+            
+            // Calculate stats
+            const totalUsers = allUsers.length;
+            const totalXP = allUsers.reduce((sum, user) => sum + (user.xp || 0), 0);
+            const totalMessages = allUsers.reduce((sum, user) => sum + (user.messageCount || 0), 0);
+            const totalVoiceTime = allUsers.reduce((sum, user) => sum + (user.voiceTime || 0), 0);
+            const totalCoins = allUsers.reduce((sum, user) => sum + (user.coins || 0), 0);
+            
+            // Average stats
+            const avgLevel = totalUsers > 0 ? (allUsers.reduce((sum, user) => sum + (user.level || 1), 0) / totalUsers).toFixed(1) : 0;
+            const avgMessages = totalUsers > 0 ? Math.floor(totalMessages / totalUsers) : 0;
+            const avgXP = totalUsers > 0 ? Math.floor(totalXP / totalUsers) : 0;
+            
+            // Top performers
+            const topXP = [...allUsers].sort((a, b) => (b.xp || 0) - (a.xp || 0)).slice(0, 10);
+            const topMessages = [...allUsers].sort((a, b) => (b.messageCount || 0) - (a.messageCount || 0)).slice(0, 10);
+            const topVoice = [...allUsers].sort((a, b) => (b.voiceTime || 0) - (a.voiceTime || 0)).slice(0, 10);
+            const topCoins = [...allUsers].sort((a, b) => (b.coins || 0) - (a.coins || 0)).slice(0, 10);
+            
+            // Activity timeline (last 7 days)
+            const sevenDaysAgo = Date.now() - (7 * 24 * 60 * 60 * 1000);
+            const activeUsers = allUsers.filter(user => user.lastActive && user.lastActive > sevenDaysAgo).length;
+            
+            // Level distribution
+            const levelDistribution = {};
+            allUsers.forEach(user => {
+                const level = user.level || 1;
+                const bracket = Math.floor(level / 10) * 10; // Group by 10s: 0-9, 10-19, etc
+                const key = bracket === 0 ? '1-9' : `${bracket}-${bracket + 9}`;
+                levelDistribution[key] = (levelDistribution[key] || 0) + 1;
+            });
+            
+            // Achievement stats
+            const achievementStats = {};
+            allUsers.forEach(user => {
+                if (user.achievements && Array.isArray(user.achievements)) {
+                    user.achievements.forEach(ach => {
+                        achievementStats[ach] = (achievementStats[ach] || 0) + 1;
+                    });
+                }
+            });
+            
+            // Get guild member count for activity percentage
+            const guildMemberCount = guild.memberCount;
+            const activePercentage = guildMemberCount > 0 ? ((activeUsers / guildMemberCount) * 100).toFixed(1) : 0;
+            
+            // Get member info for top users
+            const enrichUser = async (user) => {
+                try {
+                    const member = await guild.members.fetch(user.user_id).catch(() => null);
+                    return {
+                        ...user,
+                        username: member ? member.user.username : 'Unknown User',
+                        displayName: member ? member.displayName : 'Unknown',
+                        avatar: member ? member.user.displayAvatarURL() : 'https://cdn.discordapp.com/embed/avatars/0.png'
+                    };
+                } catch (error) {
+                    return {
+                        ...user,
+                        username: 'Unknown User',
+                        displayName: 'Unknown',
+                        avatar: 'https://cdn.discordapp.com/embed/avatars/0.png'
+                    };
+                }
+            };
+            
+            // Enrich top performers with member data
+            const enrichedTopXP = await Promise.all(topXP.map(enrichUser));
+            const enrichedTopMessages = await Promise.all(topMessages.map(enrichUser));
+            const enrichedTopVoice = await Promise.all(topVoice.map(enrichUser));
+            const enrichedTopCoins = await Promise.all(topCoins.map(enrichUser));
+            
+            res.render('analytics', {
+                guild,
+                stats: {
+                    totalUsers,
+                    totalXP,
+                    totalMessages,
+                    totalVoiceTime: Math.floor(totalVoiceTime / 3600), // Convert to hours
+                    totalCoins,
+                    avgLevel,
+                    avgMessages,
+                    avgXP,
+                    activeUsers,
+                    activePercentage,
+                    guildMemberCount
+                },
+                topPerformers: {
+                    xp: enrichedTopXP,
+                    messages: enrichedTopMessages,
+                    voice: enrichedTopVoice,
+                    coins: enrichedTopCoins
+                },
+                levelDistribution,
+                achievementStats
+            });
+        } catch (error) {
+            log('Analytics', `Error: ${error.message}`, 'error');
+            console.error(error);
+            res.status(500).send('Error loading analytics');
+        }
+    });
 
     // Route untuk menampilkan halaman manage achievements
     app.get('/dashboard/:guildId/achievements', ensureAuthenticated, ensureAdmin, async (req, res) => {
