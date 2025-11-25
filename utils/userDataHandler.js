@@ -28,13 +28,27 @@ function initUser(userId, guildId) {
     }
 }
 
-function saveData() {
-    try {
-        fs.writeFileSync(userDataPath, JSON.stringify(userData, null, 2));
-        console.log('UserData saved successfully from userDataHandler.js');
-    } catch (error) {
-        console.error('Error saving userData:', error);
+let saveTimeout = null;
+
+function saveData(immediate = false) {
+    if (immediate) {
+        try {
+            fs.writeFileSync(userDataPath, JSON.stringify(userData, null, 2));
+        } catch (error) {
+            console.error('[UserDataHandler] Error saving userData:', error);
+        }
+        return;
     }
+
+    // Debounce: save after 5 seconds of inactivity
+    if (saveTimeout) clearTimeout(saveTimeout);
+    saveTimeout = setTimeout(() => {
+        try {
+            fs.writeFileSync(userDataPath, JSON.stringify(userData, null, 2));
+        } catch (error) {
+            console.error('[UserDataHandler] Error saving userData:', error);
+        }
+    }, 5000);
 }
 
 module.exports = {

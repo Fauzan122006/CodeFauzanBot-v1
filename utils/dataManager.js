@@ -232,9 +232,8 @@ function saveRules() {
 function saveServerList() {
     try {
         fs.writeFileSync(serverListPath, JSON.stringify(serverList, null, 2));
-        console.log('ServerList saved successfully.');
     } catch (error) {
-        console.error('Error saving serverList:', error);
+        console.error('[DataManager] Error saving serverList:', error);
     }
 }
 
@@ -243,14 +242,13 @@ function ensureGuildConfig(guildId) {
     if (!serverList[guildId]) {
         serverList[guildId] = {
             achievements: {},
-            achievementChannel: null // Inisialisasi achievementChannel
+            achievementChannel: null
         };
         // Inisialisasi status aktif untuk setiap achievement
         Object.keys(achievementList).forEach(achievementId => {
             serverList[guildId].achievements[achievementId] = { enabled: false };
         });
         saveServerList();
-        console.log(`[DataManager] Initialized config for guild: ${guildId}`);
     } else {
         if (!serverList[guildId].achievements) {
             serverList[guildId].achievements = {};
@@ -259,10 +257,8 @@ function ensureGuildConfig(guildId) {
             });
         }
         if (!serverList[guildId].achievementChannel) {
-            serverList[guildId].achievementChannel = null; // Pastikan ada achievementChannel
+            serverList[guildId].achievementChannel = null;
         }
-        saveServerList();
-        console.log(`[DataManager] Ensured achievements and achievementChannel for guild: ${guildId}`);
     }
 }
 

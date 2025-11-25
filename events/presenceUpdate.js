@@ -14,30 +14,24 @@ module.exports = {
             const userId = newPresence.user.id;
             if (!userData[userId]) {
                 userData[userId] = {
-                    xp: 0,
-                    level: 0,
-                    messageCount: 0,
-                    achievements: [],
-                    activeTime: 0,
-                    voiceTime: 0,
-                    lastActive: Date.now(),
-                    joinDate: Date.now(),
-                    reactionCount: 0,
-                    memeCount: 0,
-                    supportMessages: 0,
-                    gameTime: 0,
-                    eventCount: 0,
-                    isBooster: false
+                    guilds: {}
                 };
-                log('PresenceUpdate', `Initialized user data for ${userId}`);
             }
 
+            // Only track game time if activity changed
             if (newPresence.activities.some(activity => activity.type === 'PLAYING')) {
-                userData[userId].gameTime = (userData[userId].gameTime || 0) + 60; // Tambah 1 menit
-                log('PresenceUpdate', `User ${userId} is playing a game. Total game time: ${userData[userId].gameTime}s`);
+                if (!oldPresence || !oldPresence.activities.some(activity => activity.type === 'PLAYING')) {
+                    // User just started playing
+                    userData[userId].gameStartTime = Date.now();
+                }
+            } else if (userData[userId].gameStartTime) {
+                // User stopped playing, calculate time
+                const gameTime = Math.floor((Date.now() - userData[userId].gameStartTime) / 1000);
+                userData[userId].totalGameTime = (userData[userId].totalGameTime || 0) + gameTime;
+                delete userData[userId].gameStartTime;
             }
         } catch (error) {
-            log('PresenceUpdate', `Error in presenceUpdate event for user ${newPresence?.user?.id || 'unknown'}: ${error.message}`);
+            // Silent fail
         }
     },
 };

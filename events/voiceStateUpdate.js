@@ -14,13 +14,11 @@ module.exports = {
                 return;
             }
 
-            console.log(`[VoiceStateUpdate] Processing voice state update for user ${userId} in guild ${guildId}`);
-
             // Inisialisasi userData jika belum ada
             if (!userData[userId]) {
                 userData[userId] = { guilds: {} };
             }
-            if (!userData[userId].guilds[guildId]) {
+            if (!userData[userId]?.guilds?.[guildId]) {
                 userData[userId].guilds[guildId] = {
                     xp: 0,
                     level: 1,
@@ -45,7 +43,6 @@ module.exports = {
             // User bergabung ke voice channel
             if (!oldState.channelId && newState.channelId) {
                 userData[userId].guilds[guildId].voiceJoinTime = Date.now();
-                console.log(`[VoiceStateUpdate] User ${userId} joined voice channel`);
             }
 
             // User keluar dari voice channel
@@ -55,14 +52,15 @@ module.exports = {
                     const timeSpent = Math.floor((Date.now() - joinTime) / 1000);
                     userData[userId].guilds[guildId].voiceTime = (userData[userId].guilds[guildId].voiceTime || 0) + timeSpent;
                     userData[userId].guilds[guildId].voiceJoinTime = null;
-                    console.log(`[VoiceStateUpdate] User ${userId} left voice channel. Time spent: ${timeSpent}s, Total voiceTime: ${userData[userId].guilds[guildId].voiceTime}s`);
 
-                    await handleAchievements(userId, newState.guild, 'voice');
+                    // Only check achievements if time spent is significant
+                    if (timeSpent > 60) {
+                        await handleAchievements(userId, newState.guild, 'voice');
+                    }
                 }
             }
 
             saveData();
-            console.log(`[VoiceStateUpdate] Data saved for user ${userId}`);
         } catch (error) {
             console.error('[VoiceStateUpdate] Error in voiceStateUpdate:', error);
         }

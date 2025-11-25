@@ -11,8 +11,7 @@ async function checkAchievements(userId, guild) {
 
     const user = userData[userId]?.guilds?.[guildId];
     if (!user) {
-        console.log(`[CheckAchievements] User data not found for user ${userId} in guild ${guildId}`);
-        return;
+        return; // Skip silently
     }
 
     const achievements = user.achievements || [];
@@ -20,7 +19,6 @@ async function checkAchievements(userId, guild) {
 
     let achievementChannel = guild.channels.cache.get(achievementChannelId);
     if (!achievementChannel) {
-        console.log(`[CheckAchievements] Channel ${achievementChannelId} not in cache, attempting to fetch...`);
         try {
             achievementChannel = await guild.channels.fetch(achievementChannelId);
         } catch (error) {
@@ -29,16 +27,14 @@ async function checkAchievements(userId, guild) {
     }
 
     if (!achievementChannel) {
-        console.warn(`[CheckAchievements] Achievement channel not found for guild: ${guild.id}. Tried: ${serverList[guildId].achievementChannel}, ${config.defaultChannels.achievementChannel}, or channel named 'achievements'`);
-        return;
+        return; // Skip silently if channel not found
     }
 
     if (!achievementChannel.permissionsFor(guild.members.me).has(['SendMessages', 'ViewChannel'])) {
-        console.warn(`[CheckAchievements] Bot lacks permissions (SendMessages, ViewChannel) for channel: ${achievementChannelId}`);
-        return;
+        return; // Skip silently if no permissions
     }
 
-    console.log(`[CheckAchievements] Found achievement channel: ${achievementChannel.name} (${achievementChannelId})`);
+    let newAchievements = 0;
 
     for (const [achievementId, achievement] of Object.entries(achievementList)) {
         if (achievements.includes(achievementId)) continue;
@@ -46,16 +42,10 @@ async function checkAchievements(userId, guild) {
         let achieved = false;
         const condition = achievement.condition;
 
-        if (!condition) {
-            console.warn(`[CheckAchievements] No condition defined for achievement ${achievementId}`);
-            continue;
-        }
+        if (!condition) continue;
 
         const userValue = user[condition.key];
-        if (userValue === undefined) {
-            console.warn(`[CheckAchievements] User data key ${condition.key} not found for user ${userId}`);
-            continue;
-        }
+        if (userValue === undefined) continue;
 
         switch (condition.type) {
             case 'threshold':
@@ -86,7 +76,6 @@ async function checkAchievements(userId, guild) {
                 break;
 
             default:
-                console.warn(`[CheckAchievements] Unknown condition type ${condition.type} for achievement ${achievementId}`);
                 continue;
         }
 
@@ -95,6 +84,7 @@ async function checkAchievements(userId, guild) {
             userData[userId].guilds[guildId].achievements = achievements;
             userData[userId].guilds[guildId].xp += achievement.xpReward || 0;
             userData[userId].guilds[guildId].coins += Math.floor(achievement.xpReward / 2) || 0; // Bonus coins
+            newAchievements++;
 
             const imagePath = achievement.icon;
             let attachment;
@@ -128,17 +118,15 @@ async function checkAchievements(userId, guild) {
         }
     }
 
-    // Simpan perubahan ke userData
-    saveData();
+    // Only save if there are new achievements
+    if (newAchievements > 0) {
+        saveData();
+        console.log(`[CheckAchievements] User ${userId} unlocked ${newAchievements} new achievement(s)`);
+    }
 }
 
 async function handleAchievements(userId, guild, type) {
-    console.log(`[AchievementHandler] Checking achievements for user ${userId} (type: ${type})`);
-    console.log(`[AchievementHandler] Current achievements for user ${userId}: ${userData[userId]?.guilds?.[guild.id]?.achievements || 'none'}`);
-
     await checkAchievements(userId, guild);
-
-    console.log(`[AchievementHandler] Updated achievements for user ${userId}: ${userData[userId]?.guilds?.[guild.id]?.achievements || 'none'}`);
 }
 
 module.exports = {

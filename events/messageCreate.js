@@ -66,9 +66,6 @@ module.exports = {
         // Pastikan serverList[guildId] ada
         ensureGuildConfig(guildId);
 
-        // Log untuk memastikan event messageCreate dipicu
-        log('MessageCreate', `Received message from user ${userId} in guild ${guildId}: "${message.content}"`);
-
         // Handle prefix commands
         const prefix = config.prefix || '..';
         if (message.content.startsWith(prefix)) {
@@ -118,10 +115,6 @@ module.exports = {
         userData[userId].guilds[guildId].messageCount = (userData[userId].guilds[guildId].messageCount || 0) + 1;
         userData[userId].guilds[guildId].lastActive = Date.now();
 
-        // Log aktivitas
-        log('MessageCreate', `Processing message from user ${userId} in guild ${guildId}`);
-        log('MessageCreate', `User ${userId} sent a message. Message count: ${userData[userId].guilds[guildId].messageCount}`);
-
         // XP Cooldown Check
         const cooldownKey = `${userId}-${guildId}`;
         const now = Date.now();
@@ -132,13 +125,9 @@ module.exports = {
             // Tambah coin hanya jika cooldown selesai
             const coinGain = Math.floor(Math.random() * 10) + 5; // 5-15 coin per pesan
             userData[userId].guilds[guildId].coins = (userData[userId].guilds[guildId].coins || 0) + coinGain;
-            log('MessageCreate', `User ${userId} gained ${coinGain} coins. Total coins: ${userData[userId].guilds[guildId].coins}`);
             
             // Update cooldown
             xpCooldowns.set(cooldownKey, now);
-        } else {
-            const timeLeft = Math.ceil((XP_COOLDOWN_MS - (now - lastXPGain)) / 1000);
-            log('MessageCreate', `User ${userId} is on XP cooldown (${timeLeft}s remaining)`);
         }
 
         // Fungsi untuk menghasilkan rank card
@@ -235,12 +224,10 @@ module.exports = {
 
             // Cek apakah fitur levels diaktifkan
             if (!serverList[guildId]?.levels?.enabled) {
-                log('MessageCreate', `Levels feature is disabled for guild ${guildId}`, 'info');
                 return;
             }
 
             const levelConfig = serverList[guildId].levels;
-            log('MessageCreate', `Level channel configured: ${levelConfig.levelChannel}`, 'info');
 
             // Cek No-XP Roles
             let member;
@@ -252,11 +239,9 @@ module.exports = {
             }
             const hasNoXPRole = member.roles.cache.some(role => levelConfig.noXPRoles?.includes(role.id));
             if (levelConfig.noXPRolesMode === 'allowAll' && hasNoXPRole) {
-                log('MessageCreate', `User ${userId} has a no-XP role in guild ${guildId}`, 'info');
                 return;
             }
             if (levelConfig.noXPRolesMode === 'denyAll' && !hasNoXPRole) {
-                log('MessageCreate', `User ${userId} does not have an allowed role for XP in guild ${guildId}`, 'info');
                 return;
             }
 
@@ -264,17 +249,14 @@ module.exports = {
             const channelId = message.channel.id;
             const isNoXPChannel = levelConfig.noXPChannels?.includes(channelId);
             if (levelConfig.noXPChannelsMode === 'allowAll' && isNoXPChannel) {
-                log('MessageCreate', `Channel ${channelId} is a no-XP channel in guild ${guildId}`, 'info');
                 return;
             }
             if (levelConfig.noXPChannelsMode === 'denyAll' && !isNoXPChannel) {
-                log('MessageCreate', `Channel ${channelId} is not an allowed channel for XP in guild ${guildId}`, 'info');
                 return;
             }
 
             // Berikan XP hanya jika cooldown selesai
             if (!canGainXP) {
-                log('MessageCreate', `User ${userId} cannot gain XP due to cooldown`);
                 return;
             }
 
@@ -288,7 +270,6 @@ module.exports = {
             const baseXP = Math.floor(Math.random() * 10) + 15; // XP acak antara 15-25
             const xpGain = baseXP * (levelConfig.xpRate || 1);
             user.xp += xpGain;
-            log('MessageCreate', `User ${userId} gained ${xpGain} XP in guild ${guildId}`, 'success');
 
             // Hitung level
             const xpNeeded = user.level * 100 + 100; // XP yang dibutuhkan untuk naik level
@@ -341,7 +322,6 @@ module.exports = {
                                     const oldRole = message.guild.roles.cache.get(reward.roleId);
                                     if (oldRole && member.roles.cache.has(oldRole.id)) {
                                         await member.roles.remove(oldRole);
-                                        log('MessageCreate', `Menghapus role lama ${oldRole.name} dari ${member.user.tag}`, 'success');
                                     }
                                 }
                             }
@@ -350,7 +330,7 @@ module.exports = {
                         // Tambahkan role baru jika belum dimiliki
                         if (!member.roles.cache.has(role.id)) {
                             await member.roles.add(role);
-                            log('MessageCreate', `Menambahkan role ${role.name} ke ${member.user.tag}`, 'success');
+                            log('MessageCreate', `Added role ${role.name} to ${member.user.tag}`, 'success');
                         }
                     }
 
@@ -382,7 +362,6 @@ module.exports = {
 
                     // Logika untuk mengirim ke levelChannel
                     const levelChannelId = levelConfig.levelChannel || message.channel.id;
-                    log('MessageCreate', `Attempting to send level-up message to channel ${levelChannelId}`);
 
                     const levelChannel = message.guild.channels.cache.get(levelChannelId);
                     if (levelChannel) {
@@ -431,7 +410,6 @@ module.exports = {
 
         // Fitur baru: Deteksi dan balas salam berdasarkan waktu
         const content = message.content.toLowerCase();
-        log('MessageCreate', `Checking for greeting in message: "${content}"`);
 
         const greetings = {
             pagi: ['selamat pagi', 'pagi', 'good morning', 'morning'],
@@ -530,31 +508,19 @@ module.exports = {
                 currentTimeOfDay = 'malam';
             }
 
-            log('MessageCreate', `Determined time of day: ${currentTimeOfDay}`);
-
             const replyList = detectedGreeting === currentTimeOfDay ? replies[detectedGreeting].match : replies[detectedGreeting].mismatch;
             const randomReply = replyList[Math.floor(Math.random() * replyList.length)];
             const reply = randomReply.replace('@user', `<@${message.author.id}>`);
 
-            log('MessageCreate', `Sending reply: "${reply}"`);
-
             try {
                 await message.reply(reply);
-                log('MessageCreate', `Replied to greeting "${detectedGreeting}" from user ${userId} with: ${reply}`, 'success');
             } catch (error) {
                 log('MessageCreate', `Failed to reply to greeting: ${error.message}`, 'error');
             }
-        } else {
-            log('MessageCreate', `No greeting detected in message: "${content}"`);
         }
 
-        // Simpan data user setelah semua perubahan
-        try {
-            await saveData();
-            log('MessageCreate', `Successfully saved user data for user ${userId}`, 'success');
-        } catch (error) {
-            log('MessageCreate', `Failed to save user data for user ${userId}: ${error.message}`, 'error');
-        }
+        // Simpan data user setelah semua perubahan (debounced)
+        saveData();
 
         // Logika Automod
         const automodConfig = serverList[guildId]?.automod;

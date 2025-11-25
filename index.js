@@ -104,24 +104,44 @@ client.once('ready', async () => {
     setInterval(() => checkYouTubeUpdates(client), 300000);
     checkYouTubeUpdates(client);
 
-    log('Index', 'Starting user data save interval (every 5 minutes)...');
+    log('Index', 'Starting user data auto-save interval (every 5 minutes)...');
     setInterval(() => {
-        saveData();
-        log('Index', 'UserData saved successfully', 'success');
+        saveData(true); // Force immediate save
+        log('Index', 'UserData auto-saved', 'success');
     }, 300000);
+
+    // Graceful shutdown
+    process.on('SIGINT', () => {
+        log('Index', 'Received SIGINT. Saving data before shutdown...', 'warning');
+        saveData(true);
+        process.exit(0);
+    });
+    process.on('SIGTERM', () => {
+        log('Index', 'Received SIGTERM. Saving data before shutdown...', 'warning');
+        saveData(true);
+        process.exit(0);
+    });
 });
 
 async function checkYouTubeUpdates(client) {
-    log('YouTubeUpdate', 'Checking YouTube updates...');
     const youtubeApiKey = config.youtubeApiKey;
 
     if (!youtubeApiKey || youtubeApiKey === 'YOUR_YOUTUBE_API_KEY') {
-        log('YouTubeUpdate', 'Error: youtubeApiKey is missing or not set in botconfig/config.json.', 'error');
-        return;
+        return; // Silently skip if not configured
     }
 
     const guilds = Object.keys(serverList).filter(key => key.match(/^\d+$/));
-    for (const guildId of guilds) {
+    const configuredGuilds = guilds.filter(guildId => 
+        serverList[guildId]?.socialChannel && serverList[guildId]?.youtubeChannelId
+    );
+
+    if (configuredGuilds.length === 0) {
+        return; // No guilds configured, skip silently
+    }
+
+    log('YouTubeUpdate', `Checking updates for ${configuredGuilds.length} configured guild(s)...`);
+
+    for (const guildId of configuredGuilds) {
         const socialChannelId = serverList[guildId]?.socialChannel;
         const channelId = serverList[guildId]?.youtubeChannelId;
 
@@ -165,8 +185,7 @@ async function checkYouTubeUpdates(client) {
             const data = await response.json();
 
             if (!data.items || data.items.length === 0) {
-                log('YouTubeUpdate', `No recent videos found on YouTube for guild: ${guildId}`);
-                continue;
+                continue; // Skip silently
             }
 
             const latestVideo = data.items[0];
@@ -190,9 +209,7 @@ async function checkYouTubeUpdates(client) {
                 await socialChannel.send({ embeds: [embed] });
                 serverList[guildId].lastYouTubeVideoId = videoId;
                 saveServerList();
-                log('YouTubeUpdate', `Posted new YouTube video in guild ${guildId}: ${videoLink}`, 'success');
-            } else {
-                log('YouTubeUpdate', `No new videos to post for guild: ${guildId}`);
+                log('YouTubeUpdate', `Posted new video in guild ${guildId}: ${videoTitle}`, 'success');
             }
         } catch (error) {
             log('YouTubeUpdate', `Error checking YouTube updates for guild ${guildId}: ${error.message}`, 'error');
