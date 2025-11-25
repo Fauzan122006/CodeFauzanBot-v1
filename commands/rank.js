@@ -18,23 +18,33 @@ module.exports = {
             await interaction.deferReply();
 
             const targetUser = interaction.options.getUser('user') || interaction.user;
-            const userId = targetUser.id; // Pastikan userId didefinisikan di sini
+            const userId = targetUser.id;
             const guildId = interaction.guild.id;
 
             // Inisialisasi user jika belum ada
             initUser(userId, guildId);
 
-            // Ambil data user
-            const userGuildData = userData[userId]?.guilds?.[guildId];
-            if (!userGuildData) {
-                throw new Error('User data not found');
+            // Verifikasi inisialisasi berhasil
+            if (!userData[userId] || !userData[userId].guilds || !userData[userId].guilds[guildId]) {
+                console.error(`[RankCommand] Failed to initialize user data for ${userId} in guild ${guildId}`);
+                await interaction.editReply({ 
+                    content: 'Failed to load your rank data. Please try sending a message first to initialize your profile.', 
+                    ephemeral: true 
+                });
+                return;
             }
+
+            // Ambil data user
+            const userGuildData = userData[userId].guilds[guildId];
 
             const userLevel = userGuildData.level || 1;
             const userXP = userGuildData.xp || 0;
             const userCoins = userGuildData.coins || 0;
+            const messageCount = userGuildData.messageCount || 0;
             const requiredXP = getRequiredXP(userLevel);
             const rank = getRank(userId, guildId);
+
+            console.log(`[RankCommand] User ${userId} - Level: ${userLevel}, XP: ${userXP}, Coins: ${userCoins}, Rank: ${rank}`);
 
             // Ambil preferensi kustomisasi dari serverList
             const rankCardConfig = serverList[guildId]?.rankCard || {
@@ -124,10 +134,13 @@ module.exports = {
             await interaction.editReply({ files: [attachment] });
             console.log(`[RankCommand] Rank card sent for user ${userId} in guild ${guildId}`);
         } catch (error) {
-            const userId = interaction.user.id; // Pastikan userId didefinisikan di sini jika error terjadi
-            console.error(`[RankCommand] Error in rank command for user ${userId}: ${error.message}`);
+            const userId = interaction.user.id;
+            console.error(`[RankCommand] Error in rank command for user ${userId}:`, error);
             try {
-                await interaction.editReply({ content: 'There was an error while fetching your rank.', ephemeral: true });
+                await interaction.editReply({ 
+                    content: 'There was an error while fetching your rank. Please try again later.', 
+                    ephemeral: true 
+                });
             } catch (replyError) {
                 console.error(`[RankCommand] Failed to send error reply: ${replyError.message}`);
             }

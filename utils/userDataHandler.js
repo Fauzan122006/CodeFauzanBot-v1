@@ -4,7 +4,18 @@ const { userData } = require('./dataManager');
 const userDataPath = './database/userData.json';
 
 function initUser(userId, guildId) {
-    if (!userData[userId]) userData[userId] = { guilds: {} };
+    let isNewUser = false;
+    
+    if (!userData[userId]) {
+        userData[userId] = { guilds: {} };
+        isNewUser = true;
+    }
+    
+    if (!userData[userId].guilds) {
+        userData[userId].guilds = {};
+        isNewUser = true;
+    }
+    
     if (!userData[userId].guilds[guildId]) {
         userData[userId].guilds[guildId] = {
             xp: 0,
@@ -25,7 +36,16 @@ function initUser(userId, guildId) {
             isBooster: false,
             coins: 0
         };
+        isNewUser = true;
     }
+    
+    // Save immediately if new user was created
+    if (isNewUser) {
+        saveData(true);
+        console.log(`[UserDataHandler] Initialized new user ${userId} in guild ${guildId}`);
+    }
+    
+    return userData[userId].guilds[guildId];
 }
 
 let saveTimeout = null;
