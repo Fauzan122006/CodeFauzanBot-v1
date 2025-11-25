@@ -3,7 +3,7 @@
         "name": "Pro Typer",
         "description": "Send 1000 messages",
         "xpReward": 150,
-        "icon": "https://i.imgur.com/t5tuYA4.png",
+        "icon": "https://em-content.zobj.net/source/twitter/376/keyboard_2328-fe0f.png",
         "condition": {
             "type": "threshold",
             "key": "messageCount",
@@ -14,7 +14,7 @@
         "name": "All Nighter",
         "description": "Be active for 24 hours",
         "xpReward": 100,
-        "icon": "https://i.imgur.com/DqhZQkD.png",
+        "icon": "https://em-content.zobj.net/source/twitter/376/crescent-moon_1f319.png",
         "condition": {
             "type": "threshold",
             "key": "activeTime",
@@ -26,7 +26,7 @@
         "name": "Chat Master",
         "description": "Send 5000 messages",
         "xpReward": 200,
-        "icon": "https://i.imgur.com/sdFvPZ4.png",
+        "icon": "https://em-content.zobj.net/source/twitter/376/speech-balloon_1f4ac.png",
         "condition": {
             "type": "threshold",
             "key": "messageCount",
@@ -37,7 +37,7 @@
         "name": "Voice Legend",
         "description": "Spend 50 hours in voice chat",
         "xpReward": 1000,
-        "icon": "https://i.imgur.com/dv5jVFt.png",
+        "icon": "https://em-content.zobj.net/source/twitter/376/crown_1f451.png",
         "condition": {
             "type": "threshold",
             "key": "voiceTime",
@@ -49,7 +49,7 @@
         "name": "First Step",
         "description": "Send your first message in the server!",
         "xpReward": 100,
-        "icon": "asset/achievement/first-step.png",
+        "icon": "https://em-content.zobj.net/source/twitter/376/footprints_1f463.png",
         "condition": {
             "type": "threshold",
             "key": "messageCount",
@@ -60,7 +60,7 @@
         "name": "Chat Rookie",
         "description": "Send 100 messages in the server.",
         "xpReward": 250,
-        "icon": "asset/achievement/chat-rookie.png",
+        "icon": "https://em-content.zobj.net/source/twitter/376/speaking-head_1f5e3-fe0f.png",
         "condition": {
             "type": "threshold",
             "key": "messageCount",
@@ -71,7 +71,7 @@
         "name": "Social Butterfly",
         "description": "Send 500 messages in the server.",
         "xpReward": 500,
-        "icon": "asset/achievement/social-butterfly.png",
+        "icon": "https://em-content.zobj.net/source/twitter/376/butterfly_1f98b.png",
         "condition": {
             "type": "threshold",
             "key": "messageCount",
@@ -82,7 +82,7 @@
         "name": "Message Master",
         "description": "Send 10,000 messages in the server.",
         "xpReward": 2000,
-        "icon": "asset/achievement/message-master.png",
+        "icon": "https://em-content.zobj.net/source/twitter/376/trophy_1f3c6.png",
         "condition": {
             "type": "threshold",
             "key": "messageCount",
@@ -93,7 +93,7 @@
         "name": "Voice Starter",
         "description": "Join a voice channel for the first time.",
         "xpReward": 100,
-        "icon": "asset/achievement/voice-starter.png",
+        "icon": "https://em-content.zobj.net/source/twitter/376/microphone_1f3a4.png",
         "condition": {
             "type": "threshold",
             "key": "voiceTime",
@@ -105,7 +105,7 @@
         "name": "Voice Enthusiast",
         "description": "Spend 10 hours in voice channels.",
         "xpReward": 500,
-        "icon": "asset/achievement/voice-enthusiast.png",
+        "icon": "https://em-content.zobj.net/source/twitter/376/studio-microphone_1f399-fe0f.png",
         "condition": {
             "type": "threshold",
             "key": "voiceTime",
@@ -117,7 +117,7 @@
         "name": "Voice King",
         "description": "Spend 100 hours in voice channels.",
         "xpReward": 1500,
-        "icon": "asset/achievement/voice-king.png",
+        "icon": "https://em-content.zobj.net/source/twitter/376/headphone_1f3a7.png",
         "condition": {
             "type": "threshold",
             "key": "voiceTime",
@@ -129,7 +129,7 @@
         "name": "Stay Awhile and Listen",
         "description": "Spend 3 hours in voice channels.",
         "xpReward": 300,
-        "icon": "asset/achievement/stay-awhile-and-listen.png",
+        "icon": "https://em-content.zobj.net/source/twitter/376/ear_1f442.png",
         "condition": {
             "type": "threshold",
             "key": "voiceTime",
@@ -141,7 +141,7 @@
         "name": "True Star",
         "description": "Add 100 reactions to messages in the server.",
         "xpReward": 300,
-        "icon": "asset/achievement/true-star.png",
+        "icon": "https://em-content.zobj.net/source/twitter/376/glowing-star_1f31f.png",
         "condition": {
             "type": "threshold",
             "key": "reactionsGiven",
@@ -152,7 +152,7 @@
         "name": "Night Owl",
         "description": "Be active in the server between 12 AM and 5 AM.",
         "xpReward": 200,
-        "icon": "asset/achievement/night-owl.png",
+        "icon": "https://em-content.zobj.net/source/twitter/376/owl_1f989.png",
         "condition": {
             "type": "timeRange",
             "key": "lastActive",
@@ -164,7 +164,7 @@
         "name": "Early Bird",
         "description": "Be active in the server between 5 AM and 8 AM.",
         "xpReward": 200,
-        "icon": "asset/achievement/early-bird.png",
+        "icon": "https://em-content.zobj.net/source/twitter/376/bird_1f426.png",
         "condition": {
             "type": "timeRange",
             "key": "lastActive",
@@ -176,7 +176,7 @@
         "name": "Level Up!",
         "description": "Reach level 10 in the server.",
         "xpReward": 500,
-        "icon": "asset/achievement/level-up.png",
+        "icon": "https://em-content.zobj.net/source/twitter/376/up-arrow_2b06-fe0f.png",
         "condition": {
             "type": "threshold",
             "key": "level",
@@ -187,7 +187,7 @@
         "name": "Level Pro",
         "description": "Reach level 50 in the server.",
         "xpReward": 1500,
-        "icon": "asset/achievement/level-pro.png",
+        "icon": "https://em-content.zobj.net/source/twitter/376/collision_1f4a5.png",
         "condition": {
             "type": "threshold",
             "key": "level",
@@ -198,7 +198,7 @@
         "name": "Level Legend",
         "description": "Reach level 100 in the server.",
         "xpReward": 3000,
-        "icon": "asset/achievement/level-legend.png",
+        "icon": "https://em-content.zobj.net/source/twitter/376/fire_1f525.png",
         "condition": {
             "type": "threshold",
             "key": "level",
@@ -209,7 +209,7 @@
         "name": "Reaction King",
         "description": "Add 500 reactions to messages in the server.",
         "xpReward": 500,
-        "icon": "asset/achievement/reaction-king.png",
+        "icon": "https://em-content.zobj.net/source/twitter/376/smiling-face-with-heart-eyes_1f60d.png",
         "condition": {
             "type": "threshold",
             "key": "reactionsGiven",
@@ -220,7 +220,7 @@
         "name": "Event Joiner",
         "description": "Join your first event in the server.",
         "xpReward": 200,
-        "icon": "asset/achievement/event-joiner.png",
+        "icon": "https://em-content.zobj.net/source/twitter/376/party-popper_1f389.png",
         "condition": {
             "type": "threshold",
             "key": "eventCount",
@@ -231,7 +231,7 @@
         "name": "Event Master",
         "description": "Join 10 events in the server.",
         "xpReward": 1000,
-        "icon": "asset/achievement/event-master.png",
+        "icon": "https://em-content.zobj.net/source/twitter/376/confetti-ball_1f38a.png",
         "condition": {
             "type": "threshold",
             "key": "eventCount",
@@ -242,7 +242,7 @@
         "name": "Meme Lord",
         "description": "Send 50 memes in the #meme channel.",
         "xpReward": 500,
-        "icon": "asset/achievement/meme-lord.png",
+        "icon": "https://em-content.zobj.net/source/twitter/376/face-with-tears-of-joy_1f602.png",
         "condition": {
             "type": "threshold",
             "key": "memeCount",
@@ -253,7 +253,7 @@
         "name": "Helper",
         "description": "Send 10 messages in the #support channel.",
         "xpReward": 300,
-        "icon": "asset/achievement/helper.png",
+        "icon": "https://em-content.zobj.net/source/twitter/376/handshake_1f91d.png",
         "condition": {
             "type": "threshold",
             "key": "supportMessages",
@@ -264,7 +264,7 @@
         "name": "Gamer",
         "description": "Play games for 5 hours.",
         "xpReward": 400,
-        "icon": "asset/achievement/gamer.png",
+        "icon": "https://em-content.zobj.net/source/twitter/376/video-game_1f3ae.png",
         "condition": {
             "type": "threshold",
             "key": "totalGameTime",
@@ -276,7 +276,7 @@
         "name": "Server Booster",
         "description": "Boost the server for the first time.",
         "xpReward": 1000,
-        "icon": "asset/achievement/server-booster.png",
+        "icon": "https://em-content.zobj.net/source/twitter/376/rocket_1f680.png",
         "condition": {
             "type": "boolean",
             "key": "isBooster",
@@ -287,7 +287,7 @@
         "name": "Anniversary",
         "description": "Stay in the server for 1 year.",
         "xpReward": 2000,
-        "icon": "asset/achievement/anniversary.png",
+        "icon": "https://em-content.zobj.net/source/twitter/376/birthday-cake_1f382.png",
         "condition": {
             "type": "threshold",
             "key": "joinDate",
