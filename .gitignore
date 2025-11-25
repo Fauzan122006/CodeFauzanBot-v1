@@ -36,6 +36,9 @@ yarn-error.log*
 *.bak
 tes.md
 
+# YouTube player scripts (contains API keys)
+*-player-script.js
+
 # OS generated files
 .DS_Store
 .DS_Store?
