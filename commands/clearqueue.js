@@ -1,26 +1,20 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
-const { getQueue } = require('../utils/musicPlayer');
 
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('clearqueue')
         .setDescription('Clear all songs from the queue'),
     async execute(interaction) {
-        const member = interaction.member;
-        const voiceChannel = member.voice.channel;
+        const queue = interaction.client.distube.getQueue(interaction.guildId);
 
-        if (!voiceChannel) {
-            return interaction.reply({ content: '❌ You need to be in a voice channel!', ephemeral: true });
-        }
-
-        const queue = getQueue(interaction.guildId);
-
-        if (queue.songs.length === 0) {
+        if (!queue || queue.songs.length <= 1) {
             return interaction.reply({ content: '❌ Queue is already empty!', ephemeral: true });
         }
 
-        const count = queue.songs.length;
-        queue.clearQueue();
+        const count = queue.songs.length - 1;
+        
+        // Keep first song (now playing), remove the rest
+        queue.songs = [queue.songs[0]];
 
         const embed = new EmbedBuilder()
             .setColor('#FF0000')

@@ -5,6 +5,7 @@ const chalk = require('chalk');
 global.fetch = fetch;
 const { config, saveConfig, serverList, saveServerList } = require('./utils/dataManager');
 const { saveData } = require('./utils/userDataHandler');
+const { initializeMusic } = require('./utils/musicPlayer');
 const codefauzan = `
 ---
 
@@ -67,6 +68,12 @@ const client = new Client({
 });
 
 client.commands = new Collection();
+
+// Initialize DisTube
+log('Index', 'Initializing music system...');
+initializeMusic(client);
+log('Index', 'Music system initialized!', 'success');
+
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
 
 for (const file of commandFiles) {

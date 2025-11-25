@@ -1,5 +1,4 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
-const { getQueue } = require('../utils/musicPlayer');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -10,31 +9,24 @@ module.exports = {
                 .setDescription('Loop mode')
                 .setRequired(true)
                 .addChoices(
-                    { name: 'Off', value: 'none' },
-                    { name: 'Song', value: 'song' },
-                    { name: 'Queue', value: 'queue' }
+                    { name: 'Off', value: '0' },
+                    { name: 'Song', value: '1' },
+                    { name: 'Queue', value: '2' }
                 )),
     async execute(interaction) {
-        const member = interaction.member;
-        const voiceChannel = member.voice.channel;
+        const queue = interaction.client.distube.getQueue(interaction.guildId);
 
-        if (!voiceChannel) {
-            return interaction.reply({ content: '❌ You need to be in a voice channel!', ephemeral: true });
-        }
-
-        const queue = getQueue(interaction.guildId);
-
-        if (!queue.isPlaying && queue.songs.length === 0) {
+        if (!queue) {
             return interaction.reply({ content: '❌ Nothing is playing!', ephemeral: true });
         }
 
-        const mode = interaction.options.getString('mode');
-        queue.setLoop(mode);
+        const mode = parseInt(interaction.options.getString('mode'));
+        queue.setRepeatMode(mode);
 
         const modeText = {
-            'none': '🔁 Loop disabled',
-            'song': '🔂 Looping current song',
-            'queue': '🔁 Looping queue'
+            0: '🔁 Loop disabled',
+            1: '🔂 Looping current song',
+            2: '🔁 Looping queue'
         };
 
         const embed = new EmbedBuilder()

@@ -1,5 +1,4 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
-const { getQueue } = require('../utils/musicPlayer');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -12,16 +11,9 @@ module.exports = {
                 .setMinValue(0)
                 .setMaxValue(200)),
     async execute(interaction) {
-        const member = interaction.member;
-        const voiceChannel = member.voice.channel;
+        const queue = interaction.client.distube.getQueue(interaction.guildId);
 
-        if (!voiceChannel) {
-            return interaction.reply({ content: '❌ You need to be in a voice channel!', ephemeral: true });
-        }
-
-        const queue = getQueue(interaction.guildId);
-
-        if (!queue.isPlaying) {
+        if (!queue) {
             return interaction.reply({ content: '❌ Nothing is playing!', ephemeral: true });
         }
 
