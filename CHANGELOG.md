@@ -28,17 +28,14 @@
 - ✅ **/queue** - Enhanced display dengan stats & thumbnail
 - ✅ **/filter** - Apply audio filters (clear, bassboost, 8d, nightcore, dll)
 
-##### **4. DisTube Configuration Improvements**
+##### **4. DisTube Configuration**
 ```javascript
 {
-    leaveOnEmpty: true,           // Leave when voice channel empty
-    leaveOnFinish: false,         // Stay after queue finishes
-    leaveOnStop: true,            // Leave when stopped
-    savePreviousSongs: true,      // Save history for Back button
-    emitNewSongOnly: true,        // Better event handling
+    plugins: [SpotifyPlugin, SoundCloudPlugin, YtDlpPlugin],
     customFilters: { ... }        // 15+ professional audio filters
 }
 ```
+**Note:** Minimal config untuk kompatibilitas DisTube v5.0.7+
 
 #### **Files Changed:**
 - `utils/musicPlayer.js` - Enhanced DisTube config + custom filters

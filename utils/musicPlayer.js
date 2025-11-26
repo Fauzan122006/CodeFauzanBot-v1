@@ -4,21 +4,13 @@ const { SoundCloudPlugin } = require('@distube/soundcloud');
 const { YtDlpPlugin } = require('@distube/yt-dlp');
 
 function initializeMusic(client) {
+    // Konfigurasi minimal DisTube v5 untuk kompatibilitas maksimal
     client.distube = new DisTube(client, {
         plugins: [
             new SpotifyPlugin(),
             new SoundCloudPlugin(),
             new YtDlpPlugin()
         ],
-        // Konfigurasi untuk meningkatkan kualitas audio
-        leaveOnEmpty: true,
-        leaveOnFinish: false,
-        leaveOnStop: true,
-        savePreviousSongs: true,
-        emitNewSongOnly: true,
-        emitAddSongWhenCreatingQueue: false,
-        emitAddListWhenCreatingQueue: false,
-        nsfw: false,
         // Custom audio filters untuk kualitas tinggi
         customFilters: {
             "clear": "dynaudnorm=f=200",
@@ -42,17 +34,10 @@ function initializeMusic(client) {
         }
     });
 
-    // Enable autoplay by default for continuous music
-    client.distube.on('playSong', (queue) => {
-        // Auto-enable autoplay when queue has only 1 song
-        if (!queue.autoplay && queue.songs.length <= 1) {
-            try {
-                queue.toggleAutoplay();
-                console.log(`[DisTube] Autoplay enabled for guild ${queue.id}`);
-            } catch (error) {
-                console.error('[DisTube] Failed to enable autoplay:', error);
-            }
-        }
+    // Event handlers untuk auto-enable features
+    client.distube.on('initQueue', (queue) => {
+        // Set default volume
+        queue.volume = 100;
     });
 
     return client.distube;
