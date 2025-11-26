@@ -11,8 +11,6 @@ function initializeMusic(client) {
             new YtDlpPlugin()
         ],
         // Konfigurasi untuk meningkatkan kualitas audio
-        searchSongs: 5,
-        searchCooldown: 30,
         leaveOnEmpty: true,
         leaveOnFinish: false,
         leaveOnStop: true,
@@ -21,9 +19,7 @@ function initializeMusic(client) {
         emitAddSongWhenCreatingQueue: false,
         emitAddListWhenCreatingQueue: false,
         nsfw: false,
-        // Audio quality settings
-        youtubeDL: true,
-        updateYouTubeDL: false,
+        // Custom audio filters untuk kualitas tinggi
         customFilters: {
             "clear": "dynaudnorm=f=200",
             "bassboost": "bass=g=10,dynaudnorm=f=200",

@@ -31,10 +31,12 @@
 ##### **4. DisTube Configuration Improvements**
 ```javascript
 {
-    savePreviousSongs: true,      // Previous song history
-    emitNewSongOnly: true,         // Better event handling
-    youtubeDL: true,               // Better quality
-    customFilters: { ... }         // 15+ professional filters
+    leaveOnEmpty: true,           // Leave when voice channel empty
+    leaveOnFinish: false,         // Stay after queue finishes
+    leaveOnStop: true,            // Leave when stopped
+    savePreviousSongs: true,      // Save history for Back button
+    emitNewSongOnly: true,        // Better event handling
+    customFilters: { ... }        // 15+ professional audio filters
 }
 ```
 
