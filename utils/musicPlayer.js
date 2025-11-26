@@ -9,7 +9,41 @@ function initializeMusic(client) {
             new SpotifyPlugin(),
             new SoundCloudPlugin(),
             new YtDlpPlugin()
-        ]
+        ],
+        // Konfigurasi untuk meningkatkan kualitas audio
+        searchSongs: 5,
+        searchCooldown: 30,
+        leaveOnEmpty: true,
+        leaveOnFinish: false,
+        leaveOnStop: true,
+        savePreviousSongs: true,
+        emitNewSongOnly: true,
+        emitAddSongWhenCreatingQueue: false,
+        emitAddListWhenCreatingQueue: false,
+        nsfw: false,
+        // Audio quality settings
+        youtubeDL: true,
+        updateYouTubeDL: false,
+        customFilters: {
+            "clear": "dynaudnorm=f=200",
+            "bassboost": "bass=g=10,dynaudnorm=f=200",
+            "8d": "apulsator=hz=0.09",
+            "vaporwave": "aresample=48000,asetrate=48000*0.8",
+            "nightcore": "aresample=48000,asetrate=48000*1.25",
+            "phaser": "aphaser=in_gain=0.4",
+            "tremolo": "tremolo",
+            "vibrato": "vibrato=f=6.5",
+            "reverse": "areverse",
+            "treble": "treble=g=5",
+            "surrounding": "surround",
+            "pulsator": "apulsator=hz=1",
+            "subboost": "asubboost",
+            "karaoke": "stereotools=mlev=0.03",
+            "flanger": "flanger",
+            "gate": "agate",
+            "haas": "haas",
+            "mcompand": "mcompand"
+        }
     });
 
     // Enable autoplay by default for continuous music

@@ -26,8 +26,107 @@ module.exports = {
                 await interaction.reply({ content: 'Terjadi error saat menjalankan perintah ini!', ephemeral: true });
             }
         } else if (interaction.isButton()) {
+            // Music control buttons
+            if (interaction.customId.startsWith('music_')) {
+                const queue = interaction.client.distube.getQueue(interaction.guildId);
+                
+                if (!queue) {
+                    return interaction.reply({ content: '❌ No music is currently playing!', ephemeral: true });
+                }
+
+                try {
+                    switch (interaction.customId) {
+                        case 'music_pause':
+                            if (queue.paused) {
+                                await queue.resume();
+                                await interaction.reply({ content: '▶️ Resumed the music!', ephemeral: true });
+                            } else {
+                                await queue.pause();
+                                await interaction.reply({ content: '⏸️ Paused the music!', ephemeral: true });
+                            }
+                            break;
+
+                        case 'music_skip':
+                            await queue.skip();
+                            await interaction.reply({ content: '⏭️ Skipped to the next song!', ephemeral: true });
+                            break;
+
+                        case 'music_stop':
+                            await queue.stop();
+                            await interaction.reply({ content: '⏹️ Stopped the music and cleared the queue!', ephemeral: true });
+                            break;
+
+                        case 'music_shuffle':
+                            await queue.shuffle();
+                            await interaction.reply({ content: '🔀 Shuffled the queue!', ephemeral: true });
+                            break;
+
+                        case 'music_loop':
+                            const loopMode = queue.repeatMode;
+                            if (loopMode === 0) {
+                                await queue.setRepeatMode(1);
+                                await interaction.reply({ content: '🔂 Looping current song!', ephemeral: true });
+                            } else if (loopMode === 1) {
+                                await queue.setRepeatMode(2);
+                                await interaction.reply({ content: '🔁 Looping queue!', ephemeral: true });
+                            } else {
+                                await queue.setRepeatMode(0);
+                                await interaction.reply({ content: '▶️ Loop disabled!', ephemeral: true });
+                            }
+                            break;
+
+                        case 'music_autoplay':
+                            const autoplay = queue.toggleAutoplay();
+                            await interaction.reply({ 
+                                content: autoplay ? '🔄 Autoplay enabled!' : '🔄 Autoplay disabled!', 
+                                ephemeral: true 
+                            });
+                            break;
+
+                        case 'music_volume_up':
+                            const newVolumeUp = Math.min(queue.volume + 10, 100);
+                            await queue.setVolume(newVolumeUp);
+                            await interaction.reply({ content: `🔊 Volume set to ${newVolumeUp}%`, ephemeral: true });
+                            break;
+
+                        case 'music_volume_down':
+                            const newVolumeDown = Math.max(queue.volume - 10, 0);
+                            await queue.setVolume(newVolumeDown);
+                            await interaction.reply({ content: `🔉 Volume set to ${newVolumeDown}%`, ephemeral: true });
+                            break;
+
+                        case 'music_previous':
+                            if (queue.previousSongs?.length > 0) {
+                                await queue.previous();
+                                await interaction.reply({ content: '⏮️ Playing previous song!', ephemeral: true });
+                            } else {
+                                await interaction.reply({ content: '❌ No previous songs in history!', ephemeral: true });
+                            }
+                            break;
+
+                        case 'music_queue':
+                            const { EmbedBuilder } = require('discord.js');
+                            const queueEmbed = new EmbedBuilder()
+                                .setColor('#5865F2')
+                                .setTitle('📜 Music Queue')
+                                .setDescription(
+                                    queue.songs.length === 0 
+                                        ? 'No songs in queue' 
+                                        : queue.songs.slice(0, 10).map((song, i) => 
+                                            `${i === 0 ? '🎵 Now Playing' : `${i}.`} **[${song.name}](${song.url})** - \`${song.formattedDuration}\``
+                                        ).join('\n')
+                                )
+                                .setFooter({ text: `${queue.songs.length} song(s) in queue` });
+                            await interaction.reply({ embeds: [queueEmbed], ephemeral: true });
+                            break;
+                    }
+                } catch (error) {
+                    console.error('Music button error:', error);
+                    await interaction.reply({ content: '❌ An error occurred while processing your request!', ephemeral: true }).catch(() => {});
+                }
+            }
             // Tangani tombol "accept_rules"
-            if (interaction.customId === 'accept_rules') {
+            else if (interaction.customId === 'accept_rules') {
                 try {
                     await interaction.deferReply({ ephemeral: true });
 

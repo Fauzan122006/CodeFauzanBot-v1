@@ -1,5 +1,79 @@
 # CHANGELOG
 
+## [v2.1.0] - 2025-11-26 🎵
+
+### 🎵 **MAJOR UPDATE: Music Dashboard & Audio Quality Enhancement**
+
+**Interactive Music Control Panel**
+
+#### **New Features:**
+
+##### **1. Interactive Music Dashboard**
+- ✅ **Button-based controls** - Control music dengan click buttons
+- ✅ **Real-time panel** - Muncul otomatis saat musik diputar
+- ✅ **10 control buttons** - Down, Up, Back, Pause, Skip, Shuffle, Loop, Stop, AutoPlay, Playlist
+- ✅ **Ephemeral responses** - Hanya requester yang melihat response
+- ✅ **Visual feedback** - Emoji dan labels yang jelas
+
+##### **2. Audio Quality Enhancements**
+- ✅ **Dynamic Audio Normalization** - Filter `clear` otomatis diterapkan
+- ✅ **15+ Audio Filters** - Bass Boost, 8D, Nightcore, Vaporwave, dll
+- ✅ **High-quality codec** - Better audio streaming
+- ✅ **Volume normalization** - Konsisten di semua lagu
+- ✅ **/filter command** - Terapkan audio filter manual
+
+##### **3. Enhanced Music Commands**
+- ✅ **/play** - Support YouTube, Spotify, SoundCloud with auto-quality filter
+- ✅ **/nowplaying** - Shows interactive panel dengan semua controls
+- ✅ **/queue** - Enhanced display dengan stats & thumbnail
+- ✅ **/filter** - Apply audio filters (clear, bassboost, 8d, nightcore, dll)
+
+##### **4. DisTube Configuration Improvements**
+```javascript
+{
+    savePreviousSongs: true,      // Previous song history
+    emitNewSongOnly: true,         // Better event handling
+    youtubeDL: true,               // Better quality
+    customFilters: { ... }         // 15+ professional filters
+}
+```
+
+#### **Files Changed:**
+- `utils/musicPlayer.js` - Enhanced DisTube config + custom filters
+- `events/disTubeEvents.js` - Interactive button panels
+- `events/interactionCreate.js` - Music button handlers
+- `commands/nowplaying.js` - Interactive panel display
+- `commands/queue.js` - Enhanced queue display
+- `commands/filter.js` - NEW: Audio filter command
+- `MUSIC_DASHBOARD.md` - NEW: Complete documentation
+- `README.md` - Updated with music features
+
+#### **Button Controls:**
+| Button | Function | Emoji |
+|--------|----------|-------|
+| Down | Volume -10% | 🔉 |
+| Up | Volume +10% | 🔊 |
+| Back | Previous song | ⏮️ |
+| Pause | Pause/Resume | ⏸️/▶️ |
+| Skip | Next song | ⏭️ |
+| Shuffle | Shuffle queue | 🔀 |
+| Loop | Toggle loop mode | 🔁 |
+| Stop | Stop & clear | ⏹️ |
+| AutoPlay | Toggle autoplay | 🔄 |
+| Playlist | Show queue | 📜 |
+
+#### **Audio Filters Available:**
+- **clear** - Best quality with dynamic normalization (DEFAULT)
+- **bassboost** - Enhanced bass (g=10)
+- **8d** - 3D surround effect
+- **nightcore** - Higher pitch & tempo
+- **vaporwave** - Lower pitch retro effect
+- **treble** - Enhanced high frequencies
+- **surrounding** - Surround sound
+- And 8 more filters!
+
+---
+
 ## [v2.0.0] - 2025-11-25 🚀
 
 ### 🎉 **MAJOR UPGRADE: SQLite Database Migration**

@@ -25,32 +25,46 @@ module.exports = {
         const upNext = queue.songs.slice(start + 1, end + 1);
 
         const embed = new EmbedBuilder()
-            .setColor('#00BFFF')
-            .setTitle('🎵 Music Queue')
+            .setColor('#5865F2')
+            .setTitle('📜 Music Queue')
+            .setThumbnail(currentSong.thumbnail)
             .setTimestamp();
 
         embed.addFields({
-            name: '▶️ Now Playing',
-            value: `**[${currentSong.name}](${currentSong.url})**\nDuration: ${currentSong.formattedDuration} | Requested by: ${currentSong.user.tag}`,
+            name: '🎵 Now Playing',
+            value: `**[${currentSong.name}](${currentSong.url})**\n⏱️ ${currentSong.formattedDuration} | 🎤 ${currentSong.user}`,
             inline: false
         });
 
         if (upNext.length > 0) {
             const queueList = upNext
-                .map((song, index) => `**${start + index + 1}.** [${song.name}](${song.url})\nDuration: ${song.formattedDuration} | Requested by: ${song.user.tag}`)
-                .join('\n\n');
+                .map((song, index) => `**${start + index + 1}.** [${song.name}](${song.url}) - \`${song.formattedDuration}\``)
+                .join('\n');
 
             embed.addFields({
-                name: `📃 Up Next (${queue.songs.length - 1} songs)`,
+                name: `📃 Up Next (${queue.songs.length - 1} song${queue.songs.length > 2 ? 's' : ''})`,
                 value: queueList,
                 inline: false
             });
         }
 
+        // Add queue stats
+        const loopMode = queue.repeatMode === 0 ? 'Off' : queue.repeatMode === 1 ? 'Song' : 'Queue';
+        const stats = [
+            `🔊 Volume: ${queue.volume}%`,
+            `🔁 Loop: ${loopMode}`,
+            `🔄 AutoPlay: ${queue.autoplay ? 'On' : 'Off'}`,
+            `⏸️ Status: ${queue.paused ? 'Paused' : 'Playing'}`
+        ].join(' | ');
+
+        embed.addFields({
+            name: '📊 Queue Stats',
+            value: stats,
+            inline: false
+        });
+
         if (totalPages > 1) {
-            embed.setFooter({ text: `Page ${page}/${totalPages} | Loop: ${queue.repeatMode ? 'Enabled' : 'Disabled'} | Autoplay: ${queue.autoplay ? 'On' : 'Off'}` });
-        } else {
-            embed.setFooter({ text: `Loop: ${queue.repeatMode ? 'Enabled' : 'Disabled'} | Autoplay: ${queue.autoplay ? 'On' : 'Off'}` });
+            embed.setFooter({ text: `Page ${page}/${totalPages}` });
         }
 
         return interaction.reply({ embeds: [embed] });

@@ -78,7 +78,16 @@ Dashboard akan tersedia di: `http://localhost:3000`
 - Support text dan embed
 - Custom font dan warna
 
-### 4. **Auto Moderation**
+### 4. **Music System** 🎵 NEW!
+- Interactive music control panel dengan buttons
+- Support YouTube, Spotify, SoundCloud
+- High-quality audio filters (Clear, Bass Boost, 8D, etc.)
+- Volume control, loop, shuffle, autoplay
+- Queue management & previous song history
+- Dynamic audio normalization untuk kualitas terbaik
+- [Lihat dokumentasi lengkap](MUSIC_DASHBOARD.md)
+
+### 5. **Auto Moderation**
 - Anti Spam
 - Anti Invite Links
 - Anti Links (dengan whitelist)
@@ -86,24 +95,24 @@ Dashboard akan tersedia di: `http://localhost:3000`
 - Caps Spam Protection
 - Multiple punishment types (timeout, warn, kick, ban)
 
-### 5. **Role Management**
+### 6. **Role Management**
 - Auto role untuk member baru
 - Auto role untuk bot
 - Role selection menu
 - Custom role categories
 
-### 6. **Rules System**
+### 7. **Rules System**
 - HTML editor untuk rules
 - Auto-convert ke Markdown
 - Role assignment saat accept rules
 - Custom embed styling
 
-### 7. **Achievement System**
+### 8. **Achievement System**
 - Custom achievements
 - Auto notification
 - Progress tracking
 
-### 8. **YouTube Integration**
+### 9. **YouTube Integration**
 - Auto-post video baru
 - Channel monitoring
 - Custom notification
@@ -129,16 +138,30 @@ CodeFauzanBot-v1/
 
 ## 🔧 Commands
 
-Bot menggunakan prefix `!!` (dapat diubah di config).
+Bot menggunakan Slash Commands (/).
+
+**Music:** 🎵
+- `/play <query>` - Putar musik dari YouTube/Spotify/SoundCloud
+- `/nowplaying` - Tampilkan musik yang sedang diputar dengan control panel
+- `/pause` - Pause musik
+- `/resume` - Resume musik
+- `/skip` - Skip ke lagu berikutnya
+- `/stop` - Stop musik dan clear queue
+- `/queue` - Lihat queue
+- `/shuffle` - Acak queue
+- `/loop` - Toggle loop mode
+- `/autoplay` - Toggle autoplay
+- `/volume <level>` - Set volume (0-200)
+- `/filter <type>` - Terapkan audio filter untuk kualitas terbaik
 
 **Leveling:**
-- `!!rank` - Lihat rank card Anda
-- `!!leaderboard` - Top 10 leaderboard
-- `!!balance` - Cek coin Anda
+- `/rank` - Lihat rank card Anda
+- `/leaderboard` - Top 10 leaderboard
+- `/balance` - Cek coin Anda
 
 **Admin:**
-- `!!set-level <user> <level>` - Set level user
-- `!!warn <user> <reason>` - Warn user
+- `/set-level <user> <level>` - Set level user
+- `/warn <user> <reason>` - Warn user
 - Gunakan dashboard untuk pengaturan lainnya
 
 ## 🛠️ Troubleshooting
