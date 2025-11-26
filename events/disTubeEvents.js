@@ -56,8 +56,9 @@ module.exports = {
         // Error event
         distube.on('error', (channel, error) => {
             console.error('DisTube error:', error);
-            if (channel) {
-                channel.send(`❌ An error occurred: ${error.message.slice(0, 100)}`);
+            if (channel && error && error.message) {
+                const errorMsg = error.message.slice(0, 100);
+                channel.send(`❌ An error occurred: ${errorMsg}`).catch(() => {});
             }
         });
 

@@ -15,9 +15,13 @@ function initializeMusic(client) {
     // Enable autoplay by default for continuous music
     client.distube.on('playSong', (queue) => {
         // Auto-enable autoplay when queue has only 1 song
-        if (!queue.autoplay && queue.songs.length === 1) {
-            queue.toggleAutoplay();
-            console.log(`[DisTube] Autoplay enabled for guild ${queue.id}`);
+        if (!queue.autoplay && queue.songs.length <= 1) {
+            try {
+                queue.toggleAutoplay();
+                console.log(`[DisTube] Autoplay enabled for guild ${queue.id}`);
+            } catch (error) {
+                console.error('[DisTube] Failed to enable autoplay:', error);
+            }
         }
     });
 
