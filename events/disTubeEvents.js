@@ -68,7 +68,7 @@ module.exports = {
 
         // No related song
         distube.on('noRelated', (queue) => {
-            queue.textChannel.send('❌ No related song found!');
+            queue.textChannel.send('❌ Could not find related song! Autoplay stopped.');
         });
 
         console.log('[DisTube] Events registered!');
