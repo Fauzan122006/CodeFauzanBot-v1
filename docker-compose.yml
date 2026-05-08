@@ -1,0 +1,17 @@
+services:
+  codefauzanbot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: codefauzanbot
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      - NODE_ENV=production
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./botconfig:/app/botconfig
+      - ./database:/app/database
+      - ./fonts:/app/fonts

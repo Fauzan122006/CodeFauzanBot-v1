@@ -58,6 +58,21 @@ node index.js
 
 Dashboard akan tersedia di: `http://localhost:3000`
 
+### 6. Jalankan dengan Docker Compose
+
+```bash
+# 1. Copy env
+cp .env.example .env
+
+# 2. Edit .env sesuai kredensial Discord Anda
+
+# 3. Build + run
+docker compose up -d --build
+
+# 4. Lihat log
+docker compose logs -f
+```
+
 ## 🎯 Fitur Utama
 
 ### 1. **Dashboard Web**
