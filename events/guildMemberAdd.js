@@ -12,6 +12,33 @@ module.exports = {
         const guildId = member.guild.id;
         const userId = member.user.id;
         const welcomeKey = `${guildId}-${userId}`;
+
+        const autoRolesConfig = serverList[guildId]?.autoRoles;
+        if (autoRolesConfig?.enabled) {
+            try {
+                const { joinRole, botRole } = autoRolesConfig;
+
+                if (member.user.bot && botRole) {
+                    const role = member.guild.roles.cache.get(botRole);
+                    if (role) {
+                        await member.roles.add(role);
+                        console.log(`[GuildMemberAdd] Added bot role ${role.name} to ${member.user.tag} in guild ${guildId}`);
+                    } else {
+                        console.warn(`[GuildMemberAdd] Bot role ${botRole} not found in guild ${guildId}`);
+                    }
+                } else if (!member.user.bot && joinRole) {
+                    const role = member.guild.roles.cache.get(joinRole);
+                    if (role) {
+                        await member.roles.add(role);
+                        console.log(`[GuildMemberAdd] Added join role ${role.name} to ${member.user.tag} in guild ${guildId}`);
+                    } else {
+                        console.warn(`[GuildMemberAdd] Join role ${joinRole} not found in guild ${guildId}`);
+                    }
+                }
+            } catch (error) {
+                console.error(`[GuildMemberAdd] Error assigning auto role for ${member.user.tag} in guild ${guildId}: ${error.message}`);
+            }
+        }
         
         // Check if we just sent a welcome for this user
         const lastWelcome = recentWelcomes.get(welcomeKey);
@@ -101,14 +128,16 @@ try {
     ctx.stroke();
 
     // Tambah teks title
-    ctx.font = `bold 36px ${config.font === 'Default' ? 'Sans' : config.font}`;
+    const selectedFont = config.font || 'Default';
+    const fontFamily = selectedFont.toLowerCase() === 'default' ? 'Sans' : selectedFont;
+    ctx.font = `bold 36px "${fontFamily}", Sans`;
     ctx.fillStyle = config.welcomeTextColor || '#ffffff';
     ctx.textAlign = 'center';
     const titleText = (config.title || 'Welcome to {server}').replace('{server}', member.guild.name);
     ctx.fillText(titleText, canvas.width / 2, 180);
 
     // Tambah teks subtitle
-    ctx.font = `24px ${config.font === 'Default' ? 'Sans' : config.font}`;
+    ctx.font = `24px "${fontFamily}", Sans`;
     ctx.fillStyle = config.memberTextColor || '#ff8c00';
     const rulesChannel = member.guild.channels.cache.find(ch => ch.name.includes('rules'))?.id || '78978103164978979'; // Ganti dengan ID channel #rules
     const subtitleText = (config.subtitle || 'You are member #{server_member_count}. Make sure to read #rules!')
