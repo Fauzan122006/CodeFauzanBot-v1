@@ -1,4 +1,8 @@
 const { SlashCommandBuilder, PermissionFlagsBits, EmbedBuilder } = require('discord.js');
+const { fetchTargetMember, canModerate, buildCooldownGuard } = require('../utils/commandGuards');
+const { addModerationAction } = require('../utils/moderationManager');
+
+const moderationCooldowns = new Map();
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -32,31 +36,20 @@ module.exports = {
             return;
         }
 
-        if (targetUser.id === interaction.user.id) {
-            await interaction.editReply({ content: '❌ Kamu tidak bisa timeout diri sendiri!' });
+        const member = await fetchTargetMember(interaction, targetUser);
+        const guard = canModerate(interaction, member);
+        if (!guard.ok) {
+            await interaction.editReply({ content: guard.message });
             return;
         }
 
-        if (targetUser.id === interaction.client.user.id) {
-            await interaction.editReply({ content: '❌ Kamu tidak bisa timeout bot!' });
-            return;
-        }
-
-        let member;
-        try {
-            member = await interaction.guild.members.fetch(targetUser.id);
-        } catch (error) {
-            await interaction.editReply({ content: '❌ User tidak ada di server!' });
-            return;
-        }
-
-        if (member.roles.highest.position >= interaction.member.roles.highest.position) {
-            await interaction.editReply({ content: '❌ Kamu tidak bisa timeout user dengan role lebih tinggi atau sama!' });
-            return;
-        }
-
-        if (member.roles.highest.position >= interaction.guild.members.me.roles.highest.position) {
-            await interaction.editReply({ content: '❌ Bot tidak bisa timeout user dengan role lebih tinggi atau sama!' });
+        const cooldown = buildCooldownGuard(
+            moderationCooldowns,
+            `${interaction.guildId}:${targetUser.id}`,
+            10_000
+        );
+        if (!cooldown.ok) {
+            await interaction.editReply({ content: cooldown.message });
             return;
         }
 
@@ -82,6 +75,13 @@ module.exports = {
 
         try {
             await member.timeout(durationMs, `${reason} | Timed out by ${interaction.user.tag}`);
+            addModerationAction({
+                guildId: interaction.guildId,
+                userId: targetUser.id,
+                moderatorId: interaction.user.id,
+                action: 'timeout',
+                reason
+            });
 
             const embed = new EmbedBuilder()
                 .setColor('#00FF00')

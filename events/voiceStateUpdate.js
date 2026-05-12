@@ -1,5 +1,8 @@
 const { userData, initUser, saveData } = require('../utils/userDataHandler');
 const { handleAchievements } = require('../utils/achievementHandler');
+const { createLogger } = require('../utils/logger');
+
+const log = createLogger('VoiceStateUpdate');
 
 module.exports = {
     name: 'voiceStateUpdate',
@@ -7,57 +10,40 @@ module.exports = {
         try {
             const userId = newState.id || oldState.id;
             const guildId = newState.guild?.id || oldState.guild?.id;
+            const member = newState.member || oldState.member;
 
             // Validasi userId dan guildId
             if (!userId || !guildId) {
-                console.error(`[VoiceStateUpdate] Invalid userId (${userId}) or guildId (${guildId})`);
+                log.error('Invalid identifiers', { userId, guildId });
                 return;
             }
 
-            // Inisialisasi userData jika belum ada
-            if (!userData[userId]) {
-                userData[userId] = { guilds: {} };
+            if (member?.user?.bot) {
+                return;
             }
-            if (!userData[userId]?.guilds?.[guildId]) {
-                userData[userId].guilds[guildId] = {
-                    xp: 0,
-                    level: 1,
-                    messageCount: 0,
-                    achievements: [],
-                    activeTime: 0,
-                    voiceTime: 0,
-                    voiceJoinTime: null,
-                    lastActive: Date.now(),
-                    joinDate: Date.now(),
-                    reactionCount: 0,
-                    reactionsGiven: 0,
-                    memeCount: 0,
-                    supportMessages: 0,
-                    gameTime: 0,
-                    eventCount: 0,
-                    isBooster: false,
-                    coins: 0
-                };
-            }
+
+            initUser(userId, guildId);
+            const guildUser = userData[userId]?.guilds?.[guildId];
+            if (!guildUser) return;
 
             // User bergabung ke voice channel
             if (!oldState.channelId && newState.channelId) {
-                userData[userId].guilds[guildId].voiceJoinTime = Date.now();
+                guildUser.voiceJoinTime = Date.now();
                 
                 // Track event if it's a stage channel or event
                 const channel = newState.channel;
                 if (channel && (channel.type === 13 || channel.name.toLowerCase().includes('event'))) {
-                    userData[userId].guilds[guildId].eventCount = (userData[userId].guilds[guildId].eventCount || 0) + 1;
+                    guildUser.eventCount = (guildUser.eventCount || 0) + 1;
                 }
             }
 
             // User keluar dari voice channel
             if (oldState.channelId && !newState.channelId) {
-                const joinTime = userData[userId].guilds[guildId].voiceJoinTime;
+                const joinTime = guildUser.voiceJoinTime;
                 if (joinTime) {
                     const timeSpent = Math.floor((Date.now() - joinTime) / 1000);
-                    userData[userId].guilds[guildId].voiceTime = (userData[userId].guilds[guildId].voiceTime || 0) + timeSpent;
-                    userData[userId].guilds[guildId].voiceJoinTime = null;
+                    guildUser.voiceTime = (guildUser.voiceTime || 0) + timeSpent;
+                    guildUser.voiceJoinTime = null;
 
                     // Only check achievements if time spent is significant
                     if (timeSpent > 60) {
@@ -68,7 +54,7 @@ module.exports = {
 
             saveData();
         } catch (error) {
-            console.error('[VoiceStateUpdate] Error in voiceStateUpdate:', error);
+            log.error('Unhandled error', { error: error.message });
         }
     },
 };

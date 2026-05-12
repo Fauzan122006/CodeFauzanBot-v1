@@ -109,6 +109,9 @@ docker compose logs -f
 - Mentions Spam Protection
 - Caps Spam Protection
 - Multiple punishment types (timeout, warn, kick, ban)
+- Smart moderation escalation pada `/warn`:
+  - 3 warning (7 hari) => auto-timeout 15 menit
+  - 5 warning (7 hari) => auto-kick
 
 ### 6. **Role Management**
 - Auto role untuk member baru
@@ -178,6 +181,10 @@ Bot menggunakan Slash Commands (/).
 - `/set-level <user> <level>` - Set level user
 - `/warn <user> <reason>` - Warn user
 - Gunakan dashboard untuk pengaturan lainnya
+
+**Dashboard API (Admin only):**
+- `GET /api/guild/:guildId/status` - Live guild + music + storage health status
+- `GET /api/guild/:guildId/audit/moderation` - Audit feed aksi moderasi terbaru
 
 ## 🛠️ Troubleshooting
 

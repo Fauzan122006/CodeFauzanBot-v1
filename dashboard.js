@@ -2,12 +2,13 @@ const express = require('express');
 const session = require('express-session');
 const passport = require('passport');
 const DiscordStrategy = require('passport-discord').Strategy;
-const { serverList, saveServerList, config, ensureGuildConfig, initRankCard, achievementList } = require('./utils/dataManager');
+const { serverList, saveServerList, config, ensureGuildConfig, initRankCard, achievementList, getStorageHealth } = require('./utils/dataManager');
 const chalk = require('chalk');
 const { EmbedBuilder, ActionRowBuilder, SelectMenuBuilder, SelectMenuOptionBuilder, ButtonBuilder, ButtonStyle, ChannelType } = require('discord.js');
 const htmlToMd = require('html-to-md');
 const fs = require('fs');
 const path = require('path');
+const { listRecentActions } = require('./utils/moderationManager');
 
 // Try to load canvas, fallback if not available
 let createCanvas, loadImage, registerFont, fontkit;
@@ -1506,6 +1507,51 @@ function start(client) {
             console.error(error);
             res.status(500).send('Error loading achievements');
         }
+    });
+
+    // Live status endpoint for dashboard observability
+    app.get('/api/guild/:guildId/status', ensureAuthenticated, ensureAdmin, async (req, res) => {
+        const guildId = req.params.guildId;
+        const guild = client.guilds.cache.get(guildId);
+        if (!guild) {
+            return res.status(404).json({ success: false, message: 'Guild not found' });
+        }
+
+        const queue = client.distube?.getQueue(guildId);
+        const activeVoiceMembers = guild.channels.cache
+            .filter(ch => ch.type === ChannelType.GuildVoice || ch.type === ChannelType.GuildStageVoice)
+            .reduce((total, ch) => total + ch.members.filter(m => !m.user.bot).size, 0);
+
+        return res.json({
+            success: true,
+            data: {
+                guildId,
+                guildName: guild.name,
+                uptimeSeconds: Math.floor(process.uptime()),
+                wsPingMs: client.ws.ping,
+                memberCount: guild.memberCount,
+                activeVoiceMembers,
+                storage: getStorageHealth(),
+                music: queue ? {
+                    isPlaying: !queue.paused,
+                    songCount: queue.songs.length,
+                    volume: queue.volume,
+                    loopMode: queue.repeatMode,
+                    autoplay: queue.autoplay
+                } : {
+                    isPlaying: false,
+                    songCount: 0
+                }
+            }
+        });
+    });
+
+    // Simple audit feed for moderation actions
+    app.get('/api/guild/:guildId/audit/moderation', ensureAuthenticated, ensureAdmin, (req, res) => {
+        const guildId = req.params.guildId;
+        const limit = Math.min(Math.max(parseInt(req.query.limit, 10) || 50, 1), 200);
+        const actions = listRecentActions(guildId, limit);
+        res.json({ success: true, data: actions });
     });
 
     // node web server

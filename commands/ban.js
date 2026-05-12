@@ -1,5 +1,9 @@
 const { SlashCommandBuilder, PermissionFlagsBits, EmbedBuilder } = require('discord.js');
 const { config } = require('../utils/dataManager');
+const { fetchTargetMember, canModerate, buildCooldownGuard } = require('../utils/commandGuards');
+const { addModerationAction } = require('../utils/moderationManager');
+
+const moderationCooldowns = new Map();
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -33,35 +37,11 @@ module.exports = {
             return;
         }
 
-        // Cek apakah user mencoba ban diri sendiri
-        if (targetUser.id === interaction.user.id) {
-            await interaction.editReply({ content: '❌ Kamu tidak bisa ban diri sendiri!' });
-            return;
-        }
-
-        // Cek apakah user mencoba ban bot
-        if (targetUser.id === interaction.client.user.id) {
-            await interaction.editReply({ content: '❌ Kamu tidak bisa ban bot!' });
-            return;
-        }
-
-        let member;
-        try {
-            member = await interaction.guild.members.fetch(targetUser.id);
-        } catch (error) {
-            // User mungkin sudah tidak di server, tapi bisa tetap di-ban
-            member = null;
-        }
-
-        // Cek role hierarchy jika member ada di server
+        const member = await fetchTargetMember(interaction, targetUser);
         if (member) {
-            if (member.roles.highest.position >= interaction.member.roles.highest.position) {
-                await interaction.editReply({ content: '❌ Kamu tidak bisa ban user dengan role lebih tinggi atau sama!' });
-                return;
-            }
-
-            if (member.roles.highest.position >= interaction.guild.members.me.roles.highest.position) {
-                await interaction.editReply({ content: '❌ Bot tidak bisa ban user dengan role lebih tinggi atau sama!' });
+            const guard = canModerate(interaction, member);
+            if (!guard.ok) {
+                await interaction.editReply({ content: guard.message });
                 return;
             }
 
@@ -81,11 +61,28 @@ module.exports = {
             });
         }
 
+        const cooldown = buildCooldownGuard(
+            moderationCooldowns,
+            `${interaction.guildId}:${targetUser.id}`,
+            10_000
+        );
+        if (!cooldown.ok) {
+            await interaction.editReply({ content: cooldown.message });
+            return;
+        }
+
         // Ban user
         try {
             await interaction.guild.members.ban(targetUser.id, {
                 reason: `${reason} | Banned by ${interaction.user.tag}`,
                 deleteMessageSeconds: deleteDays * 24 * 60 * 60
+            });
+            addModerationAction({
+                guildId: interaction.guildId,
+                userId: targetUser.id,
+                moderatorId: interaction.user.id,
+                action: 'ban',
+                reason
             });
 
             const embed = new EmbedBuilder()

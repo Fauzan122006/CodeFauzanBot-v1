@@ -15,11 +15,12 @@ module.exports = {
             return interaction.reply({ content: '❌ Queue is empty!', ephemeral: true });
         }
 
-        const page = interaction.options.getInteger('page') || 1;
+        const requestedPage = interaction.options.getInteger('page') || 1;
         const songsPerPage = 10;
+        const totalPages = Math.max(1, Math.ceil((queue.songs.length - 1) / songsPerPage));
+        const page = Math.min(Math.max(1, requestedPage), totalPages);
         const start = (page - 1) * songsPerPage;
         const end = start + songsPerPage;
-        const totalPages = Math.ceil(queue.songs.length / songsPerPage);
 
         const currentSong = queue.songs[0];
         const upNext = queue.songs.slice(start + 1, end + 1);
@@ -50,11 +51,18 @@ module.exports = {
 
         // Add queue stats
         const loopMode = queue.repeatMode === 0 ? 'Off' : queue.repeatMode === 1 ? 'Song' : 'Queue';
+        const estimatedQueueDuration = queue.songs
+            .slice(1)
+            .reduce((total, song) => total + (song.duration || 0), 0);
+        const queueHours = Math.floor(estimatedQueueDuration / 3600);
+        const queueMinutes = Math.floor((estimatedQueueDuration % 3600) / 60);
+        const queueSeconds = estimatedQueueDuration % 60;
         const stats = [
             `🔊 Volume: ${queue.volume}%`,
             `🔁 Loop: ${loopMode}`,
             `🔄 AutoPlay: ${queue.autoplay ? 'On' : 'Off'}`,
-            `⏸️ Status: ${queue.paused ? 'Paused' : 'Playing'}`
+            `⏸️ Status: ${queue.paused ? 'Paused' : 'Playing'}`,
+            `🕒 Sisa queue: ${queueHours > 0 ? `${queueHours}h ` : ''}${queueMinutes}m ${queueSeconds}s`
         ].join(' | ');
 
         embed.addFields({
@@ -64,7 +72,7 @@ module.exports = {
         });
 
         if (totalPages > 1) {
-            embed.setFooter({ text: `Page ${page}/${totalPages}` });
+            embed.setFooter({ text: `Page ${page}/${totalPages}${requestedPage !== page ? ` (requested ${requestedPage})` : ''}` });
         }
 
         return interaction.reply({ embeds: [embed] });
