@@ -579,6 +579,88 @@
             margin-bottom: 40px;
         }
 
+        /* Live Insights */
+        .insights-section {
+            margin-bottom: 40px;
+        }
+
+        .insights-title {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .insights-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .insight-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 16px;
+        }
+
+        .insight-label {
+            color: var(--text-muted);
+            font-size: 12px;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+        }
+
+        .insight-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .audit-table-wrapper {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 16px;
+            overflow-x: auto;
+        }
+
+        .audit-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 700px;
+        }
+
+        .audit-table th,
+        .audit-table td {
+            text-align: left;
+            padding: 10px 8px;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 13px;
+        }
+
+        .audit-table th {
+            color: var(--text-muted);
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 12px;
+            letter-spacing: 0.4px;
+        }
+
+        .audit-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .audit-empty {
+            color: var(--text-secondary);
+            font-size: 14px;
+            padding: 8px 0 0;
+        }
+
         .quick-actions h3 {
             font-size: 20px;
             font-weight: 700;
@@ -886,6 +968,55 @@
             </div>
         </div>
 
+        <!-- Live Status + Moderation Audit -->
+        <div class="insights-section">
+            <h3 class="insights-title"><i class="fas fa-satellite-dish"></i> Live Status & Moderation Audit</h3>
+            <div class="insights-grid">
+                <div class="insight-card">
+                    <div class="insight-label">Bot Uptime</div>
+                    <div class="insight-value" id="live-uptime">-</div>
+                </div>
+                <div class="insight-card">
+                    <div class="insight-label">Gateway Ping</div>
+                    <div class="insight-value" id="live-ping">-</div>
+                </div>
+                <div class="insight-card">
+                    <div class="insight-label">Voice Active</div>
+                    <div class="insight-value" id="live-voice">-</div>
+                </div>
+                <div class="insight-card">
+                    <div class="insight-label">Music Queue</div>
+                    <div class="insight-value" id="live-queue">-</div>
+                </div>
+                <div class="insight-card">
+                    <div class="insight-label">DB Integrity</div>
+                    <div class="insight-value" id="live-db">-</div>
+                </div>
+            </div>
+
+            <div class="audit-table-wrapper">
+                <table class="audit-table">
+                    <thead>
+                        <tr>
+                            <th>Time</th>
+                            <th>Action</th>
+                            <th>User ID</th>
+                            <th>Moderator ID</th>
+                            <th>Reason</th>
+                        </tr>
+                    </thead>
+                    <tbody id="moderation-audit-body">
+                        <tr>
+                            <td colspan="5">Loading moderation audit...</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="audit-empty" id="moderation-audit-empty" style="display:none;">
+                    Belum ada aksi moderasi yang terekam.
+                </div>
+            </div>
+        </div>
+
         <!-- Quick Actions -->
         <div class="quick-actions">
             <h3><i class="fas fa-bolt"></i> Quick Actions</h3>
@@ -1081,6 +1212,75 @@
                 hamburger.classList.remove('active');
             }
         });
+
+        function formatDuration(seconds) {
+            const s = Number(seconds || 0);
+            const h = Math.floor(s / 3600);
+            const m = Math.floor((s % 3600) / 60);
+            const sec = s % 60;
+            if (h > 0) return `${h}h ${m}m`;
+            if (m > 0) return `${m}m ${sec}s`;
+            return `${sec}s`;
+        }
+
+        function renderStatus(status) {
+            document.getElementById('live-uptime').textContent = formatDuration(status.uptimeSeconds);
+            document.getElementById('live-ping').textContent = `${status.wsPingMs} ms`;
+            document.getElementById('live-voice').textContent = `${status.activeVoiceMembers} user`;
+            document.getElementById('live-queue').textContent = `${status.music?.songCount || 0} lagu`;
+            document.getElementById('live-db').textContent = status.storage?.integrity || 'unknown';
+        }
+
+        function renderAudit(actions) {
+            const body = document.getElementById('moderation-audit-body');
+            const empty = document.getElementById('moderation-audit-empty');
+
+            if (!actions || actions.length === 0) {
+                body.innerHTML = '';
+                empty.style.display = 'block';
+                return;
+            }
+
+            empty.style.display = 'none';
+            body.innerHTML = actions.map(action => {
+                const time = new Date(action.created_at).toLocaleString();
+                const reason = action.reason ? action.reason.replace(/</g, '&lt;').replace(/>/g, '&gt;') : '-';
+                return `
+                    <tr>
+                        <td>${time}</td>
+                        <td>${action.action}</td>
+                        <td>${action.user_id}</td>
+                        <td>${action.moderator_id}</td>
+                        <td>${reason}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        async function refreshLiveInsights() {
+            const guildId = '<%= guild.id %>';
+            try {
+                const [statusRes, auditRes] = await Promise.all([
+                    fetch(`/api/guild/${guildId}/status`),
+                    fetch(`/api/guild/${guildId}/audit/moderation?limit=20`)
+                ]);
+
+                const statusJson = await statusRes.json();
+                const auditJson = await auditRes.json();
+
+                if (statusJson.success && statusJson.data) {
+                    renderStatus(statusJson.data);
+                }
+                if (auditJson.success) {
+                    renderAudit(auditJson.data || []);
+                }
+            } catch (error) {
+                console.error('Failed to refresh live insights:', error);
+            }
+        }
+
+        refreshLiveInsights();
+        setInterval(refreshLiveInsights, 30000);
     </script>
 </body>
 </html>

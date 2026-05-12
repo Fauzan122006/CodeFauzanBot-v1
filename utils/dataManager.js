@@ -3,6 +3,7 @@ const path = require('path');
 const Database = require('better-sqlite3');
 
 const configPath = path.join(__dirname, '../botconfig/config.json');
+const dotenvPath = path.join(__dirname, '../.env');
 const roleListPath = path.join(__dirname, '../botconfig/roleList.json');
 const achievementListPath = path.join(__dirname, '../botconfig/achievementList.json');
 const rulesPath = path.join(__dirname, '../botconfig/rules.json');
@@ -64,6 +65,31 @@ let userData = {};
 let achievementList = {};
 let rules = {};
 let serverList = {};
+
+function loadDotEnvFile() {
+    if (!fs.existsSync(dotenvPath)) return;
+    const raw = fs.readFileSync(dotenvPath, 'utf8');
+    const lines = raw.split('\n');
+
+    for (const line of lines) {
+        const trimmed = line.trim();
+        if (!trimmed || trimmed.startsWith('#')) continue;
+
+        const idx = trimmed.indexOf('=');
+        if (idx <= 0) continue;
+
+        const key = trimmed.slice(0, idx).trim();
+        let value = trimmed.slice(idx + 1).trim();
+
+        if ((value.startsWith('"') && value.endsWith('"')) || (value.startsWith('\'') && value.endsWith('\''))) {
+            value = value.slice(1, -1);
+        }
+
+        if (process.env[key] === undefined) {
+            process.env[key] = value;
+        }
+    }
+}
 
 function readJsonFile(filePath, fallbackValue) {
     if (!fs.existsSync(filePath)) return fallbackValue;
@@ -138,11 +164,28 @@ function applyEnvOverrides() {
 }
 
 const loadData = () => {
+    loadDotEnvFile();
+
     config = loadKeyWithJsonFallback('config', configPath, {});
     roleList = loadKeyWithJsonFallback('roleList', roleListPath, { guilds: {} });
     achievementList = loadKeyWithJsonFallback('achievementList', achievementListPath, {});
     rules = loadKeyWithJsonFallback('rules', rulesPath, {});
     serverList = loadKeyWithJsonFallback('serverList', serverListPath, {});
+
+    // config.json tetap boleh jadi source of truth untuk local/dev.
+    const configFromJson = readJsonFile(configPath, {});
+    config = {
+        ...config,
+        ...configFromJson,
+        defaultChannels: {
+            ...(config.defaultChannels || {}),
+            ...(configFromJson.defaultChannels || {})
+        },
+        categoryImages: {
+            ...(config.categoryImages || {}),
+            ...(configFromJson.categoryImages || {})
+        }
+    };
 
     applyEnvOverrides();
     saveKey('config', config);
