@@ -9,6 +9,7 @@ const htmlToMd = require('html-to-md');
 const fs = require('fs');
 const path = require('path');
 const { listRecentActions } = require('./utils/moderationManager');
+const { bulkAddRoleToMembers } = require('./utils/bulkRoleManager');
 
 // Try to load canvas, fallback if not available
 let createCanvas, loadImage, registerFont, fontkit;
@@ -522,6 +523,38 @@ function start(client) {
         res.render('roles', { guild: req.guild, config });
     });
 
+    app.get('/dashboard/:guildId/bulk-role-add', ensureAuthenticated, ensureAdmin, (req, res) => {
+        const guildId = req.params.guildId;
+        const config = serverList[guildId]?.bulkRoleAdd || {
+            roleToAdd: '',
+            sourceRole: '',
+            includeBots: false
+        };
+
+        const roles = req.guild.roles.cache
+            .filter(role => !role.managed && role.id !== req.guild.id)
+            .sort((a, b) => b.position - a.position);
+
+        const result = req.query.status === 'success' ? {
+            added: Number(req.query.added || 0),
+            alreadyHasRole: Number(req.query.already || 0),
+            filteredOut: Number(req.query.filtered || 0),
+            unmanageable: Number(req.query.unmanageable || 0),
+            failed: Number(req.query.failed || 0),
+            includeBots: req.query.includeBots === 'true',
+            scope: req.query.scope || 'all',
+            failureSamples: req.query.samples ? String(req.query.samples).split(' || ') : []
+        } : null;
+
+        res.render('bulk-role-add', {
+            guild: req.guild,
+            roles,
+            config,
+            errorMessage: req.query.error || '',
+            result
+        });
+    });
+
     app.get('/dashboard/:guildId/rankcard', ensureAuthenticated, ensureAdmin, (req, res) => {
         const guildId = req.params.guildId;
         ensureGuildConfig(guildId);
@@ -818,6 +851,65 @@ function start(client) {
 
         saveServerList();
         res.redirect(`/dashboard/${guildId}`);
+    });
+
+    app.post('/dashboard/:guildId/bulk-role-add', ensureAuthenticated, ensureAdmin, async (req, res) => {
+        const guildId = req.params.guildId;
+        const { roleToAdd, sourceRole, includeBots } = req.body;
+        const guild = client.guilds.cache.get(guildId);
+
+        if (!guild) {
+            return res.redirect(`/dashboard/${guildId}/bulk-role-add?error=${encodeURIComponent('Guild tidak ditemukan.')}`);
+        }
+
+        const targetRole = guild.roles.cache.get(roleToAdd);
+        const sourceFilterRole = sourceRole ? guild.roles.cache.get(sourceRole) : null;
+        const includeBotsValue = includeBots === 'on';
+
+        if (!targetRole) {
+            return res.redirect(`/dashboard/${guildId}/bulk-role-add?error=${encodeURIComponent('Role tujuan tidak valid.')}`);
+        }
+
+        if (sourceRole && !sourceFilterRole) {
+            return res.redirect(`/dashboard/${guildId}/bulk-role-add?error=${encodeURIComponent('Role filter tidak valid.')}`);
+        }
+
+        if (!serverList[guildId]) serverList[guildId] = {};
+        serverList[guildId].bulkRoleAdd = {
+            roleToAdd: targetRole.id,
+            sourceRole: sourceFilterRole?.id || '',
+            includeBots: includeBotsValue
+        };
+        saveServerList();
+
+        const result = await bulkAddRoleToMembers({
+            guild,
+            roleToAdd: targetRole,
+            sourceRole: sourceFilterRole,
+            includeBots: includeBotsValue,
+            reason: `Bulk add role via dashboard by ${req.user?.id || 'unknown-user'}`
+        });
+
+        if (!result.ok) {
+            return res.redirect(`/dashboard/${guildId}/bulk-role-add?error=${encodeURIComponent(result.error)}`);
+        }
+
+        const params = new URLSearchParams({
+            status: 'success',
+            added: String(result.added),
+            already: String(result.alreadyHasRole),
+            filtered: String(result.filteredOut),
+            unmanageable: String(result.unmanageable),
+            failed: String(result.failed),
+            includeBots: String(includeBotsValue),
+            scope: sourceFilterRole ? 'filtered' : 'all'
+        });
+
+        if (result.failureSamples.length > 0) {
+            params.set('samples', result.failureSamples.join(' || '));
+        }
+
+        res.redirect(`/dashboard/${guildId}/bulk-role-add?${params.toString()}`);
     });
 
     // Rute untuk halaman Auto Roles

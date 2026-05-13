@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CodeFauzanBot - Bulk Add Role</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0f0f1e 0%, #1a1a2e 100%);
+            color: #fff;
+            display: flex;
+            min-height: 100vh;
+        }
+        .main-content {
+            flex: 1;
+            padding: 40px;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .header h1 {
+            font-size: 28px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .back {
+            color: #5865f2;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .card {
+            background: #1a1a2e;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+            padding: 24px;
+            margin-bottom: 16px;
+        }
+        .desc {
+            color: #b9bbbe;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+        .form-group { margin-bottom: 16px; }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #b9bbbe;
+            font-weight: 500;
+        }
+        select {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+        }
+        option {
+            background: #1a1a2e;
+            color: #fff;
+        }
+        .checkbox-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 6px 0 4px;
+        }
+        .checkbox-row input {
+            accent-color: #5865f2;
+            width: 16px;
+            height: 16px;
+        }
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 16px;
+        }
+        button, .btn-secondary {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+        }
+        .btn-secondary {
+            background: linear-gradient(90deg, #ff5555, #ff7777);
+            color: #fff;
+        }
+        .alert {
+            border-radius: 8px;
+            padding: 12px 14px;
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+        .alert-error {
+            background: rgba(255, 85, 85, 0.15);
+            border: 1px solid rgba(255, 85, 85, 0.35);
+            color: #ff9d9d;
+        }
+        .alert-success {
+            background: rgba(67, 181, 129, 0.15);
+            border: 1px solid rgba(67, 181, 129, 0.35);
+            color: #8effc3;
+        }
+        .result-list {
+            margin: 6px 0 0 18px;
+            color: #e9e9e9;
+        }
+        @media (max-width: 768px) {
+            body { flex-direction: column; }
+            .main-content { padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+    <%- include('template/sidebar', { guild: guild, currentPage: 'bulkRoleAdd' }) %>
+
+    <div class="main-content">
+        <div class="header">
+            <a href="/dashboard/<%= guild.id %>" class="back">← Back to Dashboard</a>
+            <h1>Bulk Add Role - <%= guild.name %></h1>
+        </div>
+
+        <div class="card">
+            <p class="desc">
+                Tambahkan role secara massal ke semua member, atau batasi hanya ke member yang memiliki role tertentu.
+            </p>
+
+            <% if (errorMessage) { %>
+                <div class="alert alert-error"><%= errorMessage %></div>
+            <% } %>
+
+            <% if (result) { %>
+                <div class="alert alert-success">
+                    <strong>Bulk add role selesai.</strong>
+                    <ul class="result-list">
+                        <li>Berhasil ditambahkan: <strong><%= result.added %></strong></li>
+                        <li>Sudah punya role: <strong><%= result.alreadyHasRole %></strong></li>
+                        <li>Tidak sesuai filter: <strong><%= result.filteredOut %></strong></li>
+                        <li>Tidak bisa dikelola bot: <strong><%= result.unmanageable %></strong></li>
+                        <li>Gagal: <strong><%= result.failed %></strong></li>
+                    </ul>
+                    <% if (result.failureSamples && result.failureSamples.length > 0) { %>
+                        <ul class="result-list">
+                            <% result.failureSamples.forEach(sample => { %>
+                                <li><%= sample %></li>
+                            <% }) %>
+                        </ul>
+                    <% } %>
+                </div>
+            <% } %>
+
+            <form method="POST" action="/dashboard/<%= guild.id %>/bulk-role-add">
+                <div class="form-group">
+                    <label for="roleToAdd">Role Tujuan (akan ditambahkan)</label>
+                    <select name="roleToAdd" id="roleToAdd" required>
+                        <option value="">Pilih role tujuan</option>
+                        <% roles.forEach(role => { %>
+                            <option value="<%= role.id %>" <%= config.roleToAdd === role.id ? 'selected' : '' %>>
+                                <%= role.name %>
+                            </option>
+                        <% }) %>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="sourceRole">Hanya Member Dengan Role Ini (opsional)</label>
+                    <select name="sourceRole" id="sourceRole">
+                        <option value="">Semua member</option>
+                        <% roles.forEach(role => { %>
+                            <option value="<%= role.id %>" <%= config.sourceRole === role.id ? 'selected' : '' %>>
+                                <%= role.name %>
+                            </option>
+                        <% }) %>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Opsi</label>
+                    <div class="checkbox-row">
+                        <input type="checkbox" name="includeBots" id="includeBots" <%= config.includeBots ? 'checked' : '' %>>
+                        <label for="includeBots">Sertakan akun bot</label>
+                    </div>
+                </div>
+
+                <div class="action-buttons">
+                    <button type="submit"><i class="fas fa-users-cog"></i> Jalankan Bulk Add Role</button>
+                    <a class="btn-secondary" href="/dashboard/<%= guild.id %>"><i class="fas fa-times"></i> Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
